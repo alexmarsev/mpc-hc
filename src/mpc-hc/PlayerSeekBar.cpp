@@ -147,7 +147,11 @@ void CPlayerSeekBar::SetPosInternal(__int64 pos)
     CRect after = GetThumbRect();
 
     if (before != after) {
-        InvalidateRect(before | after);
+        //InvalidateRect(before | after);
+        CRect r = before;
+        r.left = min(before.right, after.right);
+        r.right = max(before.right, after.right);
+        InvalidateRect(r);
 
         CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
         if (pFrame && (AfxGetAppSettings().fUseWin7TaskBar && pFrame->m_pTaskbarList)) {
@@ -160,8 +164,9 @@ CRect CPlayerSeekBar::GetChannelRect() const
 {
     CRect r;
     GetClientRect(&r);
-    r.DeflateRect(8, 9, 9, 0);
-    r.bottom = r.top + 5;
+    //r.DeflateRect(8, 9, 9, 0);
+    //r.bottom = r.top + 5;
+    ++r.top;
     return r;
 }
 
@@ -171,11 +176,13 @@ CRect CPlayerSeekBar::GetThumbRect() const
 
     CRect r = GetChannelRect();
 
-    int x = r.left + (int)((m_start < m_stop /*&& fEnabled*/) ? (__int64)r.Width() * (m_pos - m_start) / (m_stop - m_start) : 0);
-    int y = r.CenterPoint().y;
+    //int x = r.left + (int)((m_start < m_stop /*&& fEnabled*/) ? (__int64)r.Width() * (m_pos - m_start) / (m_stop - m_start) : 0);
+    //int y = r.CenterPoint().y;
+    //
+    //r.SetRect(x, y, x, y);
+    //r.InflateRect(6, 7, 7, 8);
 
-    r.SetRect(x, y, x, y);
-    r.InflateRect(6, 7, 7, 8);
+    r.right = r.left + (int)((m_start < m_stop /*&& fEnabled*/) ? (__int64)r.Width() * (m_pos - m_start) / (m_stop - m_start) : 0);
 
     return r;
 }
@@ -252,6 +259,7 @@ void CPlayerSeekBar::OnPaint()
 
     bool fEnabled = m_fEnabled && m_start < m_stop;
 
+    /*
     COLORREF
     dark   = GetSysColor(COLOR_GRAYTEXT),
     white  = GetSysColor(COLOR_WINDOW),
@@ -352,7 +360,21 @@ void CPlayerSeekBar::OnPaint()
         CBrush b(bkg);
         dc.FillRect(&r, &b);
     }
+    */
 
+    {
+        COLORREF bg = 0x00000000, fg = 0x00777777;
+
+        CRect r1 = GetThumbRect();
+        CBrush b1(fg);
+        dc.FillRect(&r1, &b1);
+        dc.ExcludeClipRect(&r1);
+
+        CRect r2;
+        GetClientRect(&r2);
+        CBrush b2(bg);
+        dc.FillRect(&r2, &b2);
+    }
 
     // Do not call CDialogBar::OnPaint() for painting messages
 }
