@@ -10225,8 +10225,8 @@ double CMainFrame::GetZoomAutoFitScale(bool bLargerOnly) const
         return 1.0;
     }
 
-    double sx = (2.0 / 3.0 * (double)width - decorationsSize.cx) / (double)arxy.cx;
-    double sy = (2.0 / 3.0 * (double)height - decorationsSize.cy) / (double)arxy.cy;
+    double sx = ((double)s.nAutoFitFactor / 100.0 * (double)width - decorationsSize.cx) / (double)arxy.cx;
+    double sy = ((double)s.nAutoFitFactor / 100.0 * (double)height - decorationsSize.cy) / (double)arxy.cy;
     sx = sx < sy ? sx : sy;
     // Take movie aspect ratio into consideration
     // The scaling is computed so that the height is an integer value
@@ -10898,7 +10898,7 @@ void CMainFrame::SetupDVDChapters()
     WCHAR buff[MAX_PATH];
     ULONG len = 0;
     DVD_PLAYBACK_LOCATION2 loc;
-    if (SUCCEEDED(pDVDI->GetDVDDirectory(buff, _countof(buff), &len)) &&
+    if (pDVDI && SUCCEEDED(pDVDI->GetDVDDirectory(buff, _countof(buff), &len)) &&
             SUCCEEDED(pDVDI->GetCurrentLocation(&loc))) {
         CStringW path;
         path.Format(L"%s\\VTS_%02d_0.IFO", buff, loc.TitleNum);
@@ -12020,7 +12020,9 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
         if (substm) {
             m_iSubtitleSel = substm - 1; // only select, turn on/off in another place
 
-            if (AfxGetAppSettings().fEnableSubtitles) {
+            if (!AfxGetAppSettings().fEnableSubtitles) {
+                m_iSubtitleSel |= 0x80000000;
+            }else {
                 UpdateSubtitle();
             }
         }
