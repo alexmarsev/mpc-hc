@@ -10063,8 +10063,8 @@ void CMainFrame::ZoomVideoWindow(bool snap, double scale)
     if (!m_fAudioOnly) {
         CSize arxy = GetVideoSize();
 
-        long lWidth  = long(arxy.cx * scale + 0.5);
-        long lHeight = long(arxy.cy * scale + 0.5);
+        long lWidth = long(floor(arxy.cy * scale + 0.5) * arxy.cx / arxy.cy + 0.5);
+        long lHeight = long((double)lWidth * arxy.cy / arxy.cx + 0.5);
 
         DWORD style = GetStyle();
 
@@ -10232,12 +10232,8 @@ double CMainFrame::GetZoomAutoFitScale(bool bLargerOnly) const
 
     double sx = ((double)width  * s.nAutoFitFactor / 100 - decorationsSize.cx) / arxy.cx;
     double sy = ((double)height * s.nAutoFitFactor / 100 - decorationsSize.cy) / arxy.cy;
-    sx = min(sx, sy);
-    // Take movie aspect ratio into consideration
-    // The scaling is computed so that the height is an integer value
-    sy = floor(arxy.cy * floor(arxy.cx * sx + 0.5) / arxy.cx + 0.5) / arxy.cy;
 
-    return sy;
+    return min(sx, sy);
 }
 
 void CMainFrame::RepaintVideo()
