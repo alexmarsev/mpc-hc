@@ -117,7 +117,6 @@ IF DEFINED MPCHC_LITE SET "BUILDCFG=%BUILDCFG% Lite"
 
 CALL :SubDetectWinArch
 
-SET "MSBUILD=%WINDIR%\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe"
 SET "MSBUILD_SWITCHES=/nologo /consoleloggerparameters:Verbosity=minimal /maxcpucount /nodeReuse:true"
 
 SET START_TIME=%TIME%
@@ -188,8 +187,8 @@ TITLE Compiling MPC-HC Filters - %BUILDCFG% Filter^|%1...
 REM Call update_version.bat before building the filters
 CALL "update_version.bat"
 
-"%MSBUILD%" mpc-hc.sln %MSBUILD_SWITCHES%^
- /target:%BUILDTYPE% /property:Configuration="%BUILDCFG% Filter";PPLATFORM=%1^
+MSBuild.exe mpc-hc.sln %MSBUILD_SWITCHES%^
+ /target:%BUILDTYPE% /property:Configuration="%BUILDCFG% Filter";Platform=%1^
  /flp1:LogFile=%LOG_DIR%\filters_errors_%BUILDCFG%_%1.log;errorsonly;Verbosity=diagnostic^
  /flp2:LogFile=%LOG_DIR%\filters_warnings_%BUILDCFG%_%1.log;warningsonly;Verbosity=diagnostic
 IF %ERRORLEVEL% NEQ 0 (
@@ -205,8 +204,8 @@ EXIT /B
 IF %ERRORLEVEL% NEQ 0 EXIT /B
 
 TITLE Compiling MPC-HC - %BUILDCFG%^|%1...
-"%MSBUILD%" mpc-hc.sln %MSBUILD_SWITCHES%^
- /target:%BUILDTYPE% /property:Configuration="%BUILDCFG%";PPLATFORM=%1^
+MSBuild.exe mpc-hc.sln %MSBUILD_SWITCHES%^
+ /target:%BUILDTYPE% /property:Configuration="%BUILDCFG%";Platform=%1^
  /flp1:LogFile="%LOG_DIR%\mpc-hc_errors_%BUILDCFG%_%1.log";errorsonly;Verbosity=diagnostic^
  /flp2:LogFile="%LOG_DIR%\mpc-hc_warnings_%BUILDCFG%_%1.log";warningsonly;Verbosity=diagnostic
 IF %ERRORLEVEL% NEQ 0 (
@@ -240,8 +239,8 @@ EXIT /B
 IF %ERRORLEVEL% NEQ 0 EXIT /B
 
 TITLE Compiling mpciconlib - Release^|%1...
-"%MSBUILD%" mpciconlib.sln %MSBUILD_SWITCHES%^
- /target:%BUILDTYPE% /property:Configuration=Release;PPLATFORM=%1
+MSBuild.exe mpciconlib.sln %MSBUILD_SWITCHES%^
+ /target:%BUILDTYPE% /property:Configuration=Release;Platform=%1
 IF %ERRORLEVEL% NEQ 0 (
   CALL :SubMsg "ERROR" "mpciconlib.sln %1 - Compilation failed!"
   EXIT /B
@@ -260,8 +259,8 @@ FOR %%G IN ("Armenian" "Basque" "Belarusian" "Catalan" "Chinese Simplified"
  "Slovak" "Spanish" "Swedish" "Turkish" "Ukrainian"
 ) DO (
  TITLE Compiling mpcresources - %%~G^|%1...
- "%MSBUILD%" mpcresources.sln %MSBUILD_SWITCHES%^
- /target:%BUILDTYPE% /property:Configuration="Release %%~G";PPLATFORM=%1
+ MSBuild.exe mpcresources.sln %MSBUILD_SWITCHES%^
+ /target:%BUILDTYPE% /property:Configuration="Release %%~G";Platform=%1
  IF %ERRORLEVEL% NEQ 0 CALL :SubMsg "ERROR" "Compilation failed!" & EXIT /B
 )
 EXIT /B

@@ -1043,7 +1043,7 @@ void CMainFrame::ShowTrayIcon(bool fShow)
     BOOL bWasVisible = ShowWindow(SW_HIDE);
     NOTIFYICONDATA tnid;
 
-    SecureZeroMemory(&tnid, sizeof(NOTIFYICONDATA));
+    ZeroMemory(&tnid, sizeof(NOTIFYICONDATA));
     tnid.cbSize = sizeof(NOTIFYICONDATA);
     tnid.hWnd = m_hWnd;
     tnid.uID = IDR_MAINFRAME;
@@ -1461,7 +1461,7 @@ void CMainFrame::OnDisplayChange() // untested, not sure if it's working...
     if (m_pFullscreenWnd && m_pFullscreenWnd->IsWindow()) {
         MONITORINFO MonitorInfo;
         HMONITOR    hMonitor;
-        SecureZeroMemory(&MonitorInfo, sizeof(MonitorInfo));
+        ZeroMemory(&MonitorInfo, sizeof(MonitorInfo));
         MonitorInfo.cbSize = sizeof(MonitorInfo);
         hMonitor = MonitorFromWindow(m_pFullscreenWnd->m_hWnd, 0);
         if (GetMonitorInfo(hMonitor, &MonitorInfo)) {
@@ -12029,7 +12029,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
             if (!AfxGetAppSettings().fEnableSubtitles) {
                 m_iSubtitleSel |= 0x80000000;
-            }else {
+            } else {
                 UpdateSubtitle();
             }
         }
@@ -14691,7 +14691,7 @@ bool CMainFrame::CreateFullScreenWindow()
         m_pFullscreenWnd->DestroyWindow();
     }
 
-    SecureZeroMemory(&MonitorInfo, sizeof(MonitorInfo));
+    ZeroMemory(&MonitorInfo, sizeof(MonitorInfo));
     MonitorInfo.cbSize  = sizeof(MonitorInfo);
 
     CMonitors monitors;
@@ -15958,19 +15958,19 @@ bool CMainFrame::OpenBD(CString Path)
         }
         if (SUCCEEDED(ClipInfo.FindMainMovie(Path, strPlaylistFile, MainPlaylist, m_MPLSPlaylist))) {
             m_bIsBDPlay = true;
-            
+
             if (!InternalMpegSplitter && !ext.IsEmpty() && ext == _T(".bdmv")) {
                 return false;
             } else {
                 m_wndPlaylistBar.Empty();
                 CAtlList<CString> sl;
-                
+
                 if (InternalMpegSplitter) {
                     sl.AddTail(CString(strPlaylistFile));
                 } else {
                     sl.AddTail(CString(Path + _T("BDMV\\index.bdmv")));
                 }
-                
+
                 m_wndPlaylistBar.Append(sl, false);
                 OpenCurPlaylistItem();
                 return true;
