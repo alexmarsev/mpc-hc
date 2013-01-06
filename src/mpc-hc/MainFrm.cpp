@@ -11622,6 +11622,9 @@ DWORD CMainFrame::SetupAudioStreams()
                     break;
                 }
             }
+            if (name.Find(_T("[default,forced]")) != -1) { // for LAV Splitter
+                rating += 4 + 2;
+            }
             if (name.Find(_T("[forced]")) != -1) {
                 rating += 4;
             }
@@ -11685,6 +11688,9 @@ DWORD CMainFrame::SetupSubtitleStreams()
             }
             if (externalPriority) {
                 rating += 8;
+            }
+            if (name.Find(_T("[default,forced]")) != -1) { // for LAV Splitter
+                rating += 4 + 2;
             }
             if (name.Find(_T("[forced]")) != -1) {
                 rating += 4;
