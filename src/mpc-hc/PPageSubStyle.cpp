@@ -1,6 +1,6 @@
 /*
  * (C) 2003-2006 Gabest
- * (C) 2006-2012 see Authors.txt
+ * (C) 2006-2013 see Authors.txt
  *
  * This file is part of MPC-HC.
  *
@@ -231,7 +231,7 @@ void CPPageSubStyle::OnBnClickedButton1()
     LOGFONT lf;
     lf <<= m_stss;
 
-    CFontDialog dlg(&lf, CF_SCREENFONTS | CF_INITTOLOGFONTSTRUCT | CF_FORCEFONTEXIST | CF_SCALABLEONLY | CF_EFFECTS);
+    CFontDialog dlg(&lf, CF_SCREENFONTS | CF_INITTOLOGFONTSTRUCT | CF_FORCEFONTEXIST | CF_SCALABLEONLY);
     if (dlg.DoModal() == IDOK) {
         CString str(lf.lfFaceName);
         if (str.GetLength() > 16) {
