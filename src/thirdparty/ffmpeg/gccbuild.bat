@@ -1,5 +1,5 @@
 @ECHO OFF
-REM (C) 2009-2012 see Authors.txt
+REM (C) 2009-2013 see Authors.txt
 REM
 REM This file is part of MPC-HC.
 REM
@@ -43,32 +43,36 @@ SET ARG=%ARG:/=%
 SET ARG=%ARG:-=%
 SET ARGB=0
 SET ARGBC=0
+SET ARGCOMP=0
 SET ARGPL=0
 SET INPUT=0
 
-IF /I "%ARG%" == "?"          GOTO ShowHelp
+IF /I "%ARG%" == "?"        GOTO ShowHelp
 
 FOR %%G IN (%ARG%) DO (
-  IF /I "%%G" == "help"       GOTO ShowHelp
-  IF /I "%%G" == "Build"      SET "BUILDTYPE=Build"   & SET /A ARGB+=1
-  IF /I "%%G" == "Clean"      SET "BUILDTYPE=Clean"   & SET /A ARGB+=1
-  IF /I "%%G" == "Rebuild"    SET "BUILDTYPE=Rebuild" & SET /A ARGB+=1
-  IF /I "%%G" == "Both"       SET "ARCH=Both"         & SET /A ARGPL+=1
-  IF /I "%%G" == "Win32"      SET "ARCH=x86"          & SET /A ARGPL+=1
-  IF /I "%%G" == "x86"        SET "ARCH=x86"          & SET /A ARGPL+=1
-  IF /I "%%G" == "x64"        SET "ARCH=x64"          & SET /A ARGPL+=1
-  IF /I "%%G" == "Debug"      SET "DEBUG=DEBUG=yes"   & SET /A ARGBC+=1
-  IF /I "%%G" == "Release"    SET "DEBUG= "           & SET /A ARGBC+=1
+  IF /I "%%G" == "help"     GOTO ShowHelp
+  IF /I "%%G" == "Build"    SET "BUILDTYPE=Build"   & SET /A ARGB+=1
+  IF /I "%%G" == "Clean"    SET "BUILDTYPE=Clean"   & SET /A ARGB+=1
+  IF /I "%%G" == "Rebuild"  SET "BUILDTYPE=Rebuild" & SET /A ARGB+=1
+  IF /I "%%G" == "Both"     SET "ARCH=Both"         & SET /A ARGPL+=1
+  IF /I "%%G" == "Win32"    SET "ARCH=x86"          & SET /A ARGPL+=1
+  IF /I "%%G" == "x86"      SET "ARCH=x86"          & SET /A ARGPL+=1
+  IF /I "%%G" == "x64"      SET "ARCH=x64"          & SET /A ARGPL+=1
+  IF /I "%%G" == "Debug"    SET "DEBUG=DEBUG=yes"   & SET /A ARGBC+=1
+  IF /I "%%G" == "Release"  SET "DEBUG= "           & SET /A ARGBC+=1
+  IF /I "%%G" == "VS2010"   SET "COMPILER=VS2010"   & SET /A ARGCOMP+=1
+  IF /I "%%G" == "VS2012"   SET "COMPILER=VS2012"   & SET /A ARGCOMP+=1
 )
 
 FOR %%X IN (%*) DO SET /A INPUT+=1
-SET /A VALID=%ARGB%+%ARGPL%+%ARGBC%
+SET /A VALID=%ARGB%+%ARGPL%+%ARGBC%+%ARGCOMP%
 
 IF %VALID% NEQ %INPUT% GOTO UnsupportedSwitch
 
-IF %ARGB%  GTR 1 (GOTO UnsupportedSwitch) ELSE IF %ARGB% == 0  (SET "BUILDTYPE=Build")
-IF %ARGPL% GTR 1 (GOTO UnsupportedSwitch) ELSE IF %ARGPL% == 0 (SET "ARCH=Both")
-IF %ARGBC% GTR 1 (GOTO UnsupportedSwitch) ELSE IF %ARGBC% == 0 (SET "DEBUG= ")
+IF %ARGB%    GTR 1 (GOTO UnsupportedSwitch) ELSE IF %ARGB% == 0    (SET "BUILDTYPE=Build")
+IF %ARGPL%   GTR 1 (GOTO UnsupportedSwitch) ELSE IF %ARGPL% == 0   (SET "ARCH=Both")
+IF %ARGBC%   GTR 1 (GOTO UnsupportedSwitch) ELSE IF %ARGBC% == 0   (SET "DEBUG= ")
+IF %ARGCOMP% GTR 1 (GOTO UnsupportedSwitch) ELSE IF %ARGCOMP% == 0 (SET "COMPILER=VS2010")
 
 IF /I "%ARCH%" == "Both" (
   SET "ARCH=x86" & CALL :Main
@@ -87,22 +91,22 @@ SET START_TIME=%TIME%
 SET START_DATE=%DATE%
 
 IF /I "%BUILDTYPE%" == "Rebuild" (
-  SET "BUILDTYPE=Clean" & CALL :SubMake %x64% %DEBUG% clean
+  SET "BUILDTYPE=Clean" & CALL :SubMake %x64% %DEBUG% %COMPILER%=yes clean
   CALL :SubCopyLibs
-  SET "BUILDTYPE=Build" & CALL :SubMake %x64% %DEBUG%
+  SET "BUILDTYPE=Build" & CALL :SubMake %x64% %DEBUG% %COMPILER%=yes
   SET "BUILDTYPE=Rebuild"
   EXIT /B
 )
 
-IF /I "%BUILDTYPE%" == "Clean" (CALL :SubMake %x64% %DEBUG% clean & EXIT /B)
+IF /I "%BUILDTYPE%" == "Clean" (CALL :SubMake %x64% %DEBUG% %COMPILER%=yes clean & EXIT /B)
 
 CALL :SubCopyLibs
-CALL :SubMake %x64% %DEBUG%
+CALL :SubMake %x64% %DEBUG% %COMPILER%=yes
 EXIT /B
 
 
 :End
-TITLE Compiling FFmpeg [FINISHED]
+TITLE Compiling FFmpeg %COMPILER% [FINISHED]
 
 SET END_TIME=%TIME%
 CALL :SubGetDuration
@@ -158,13 +162,13 @@ EXIT /B 1
 TITLE %~nx0 Help
 ECHO.
 ECHO Usage:
-ECHO %~nx0 [Clean^|Build^|Rebuild] [x86^|x64^|Both] [Debug^|Release]
+ECHO %~nx0 [Clean^|Build^|Rebuild] [x86^|x64^|Both] [Debug^|Release] [VS2010^|VS2012]
 ECHO.
 ECHO Notes: You can also prefix the commands with "-", "--" or "/".
 ECHO        The arguments are not case sensitive and can be ommitted.
 ECHO. & ECHO.
 ECHO Executing %~nx0 without any arguments will use the default ones:
-ECHO "%~nx0 Build Both Release"
+ECHO "%~nx0 Build Both Release VS2010"
 ECHO.
 POPD
 ENDLOCAL

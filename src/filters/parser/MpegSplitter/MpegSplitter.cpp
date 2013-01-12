@@ -1,6 +1,6 @@
 /*
  * (C) 2003-2006 Gabest
- * (C) 2006-2012 see Authors.txt
+ * (C) 2006-2013 see Authors.txt
  *
  * This file is part of MPC-HC.
  *
@@ -812,22 +812,19 @@ HRESULT CMpegSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
     }
 
     CString lang = _T("");
-    CAtlList<CString> lang_list_audio;
-    CAtlList<CString> lang_list_subpic;
-    int Idx_audio  = 99;
-    int Idx_subpic = 99;
+    CAtlArray<CString> lang_list_audio;
+    CAtlArray<CString> lang_list_subpic;
+    int Idx_audio  = 0;
+    int Idx_subpic = 0;
 
     if (!m_csAudioLanguageOrder.IsEmpty()) {
         int tPos = 0;
         lang = m_csAudioLanguageOrder.Tokenize(_T(",; "), tPos);
         while (tPos != -1) {
             if (!lang.IsEmpty()) {
-                lang_list_audio.AddTail(lang);
+                lang_list_audio.Add(lang);
             }
             lang = m_csAudioLanguageOrder.Tokenize(_T(",; "), tPos);
-        }
-        if (!lang.IsEmpty()) {
-            lang_list_audio.AddTail(lang);
         }
     }
 
@@ -836,12 +833,9 @@ HRESULT CMpegSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
         lang = m_csSubtitlesLanguageOrder.Tokenize(_T(",; "), tPos);
         while (tPos != -1) {
             if (!lang.IsEmpty()) {
-                lang_list_subpic.AddTail(lang);
+                lang_list_subpic.Add(lang);
             }
             lang = m_csSubtitlesLanguageOrder.Tokenize(_T(",; "), tPos);
-        }
-        if (!lang.IsEmpty()) {
-            lang_list_subpic.AddTail(lang);
         }
     }
 
@@ -881,45 +875,49 @@ HRESULT CMpegSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
                     str.Format(L"%s (%04x,%02x,%02x)", name, s.pid, s.pesid, s.ps1id);    // TODO: make this nicer
                 }
             }
-            CString str_tmp = str;
-            str_tmp.MakeLower();
             if (i == CMpegSplitterFile::audio) {
-                if (lang_list_audio.GetCount() > 0) {
-                    int idx = 0;
-                    POSITION pos = lang_list_audio.GetHeadPosition();
-                    while (pos) {
-                        lang = lang_list_audio.GetNext(pos).MakeLower();
-                        if (-1 != str_tmp.Find(lang)) {
-                            if (idx < Idx_audio) {
-                                cs_audioProgram = str;
-                                Idx_audio = idx;
-                                break;
-                            }
-                        }
-                        idx++;
-                    }
+                CString str_tmp = str.Mid(8).MakeLower();
+                if (Idx_audio == 0) {
+                    Idx_audio = 1;
+                } else {
+                    Idx_audio++;
                 }
-                if (!Idx_audio && !cs_audioProgram.IsEmpty()) {
+                for (size_t j = 0; j < lang_list_audio.GetCount(); j++) {
+                    int num = _tstoi(lang_list_audio[j]);
+                    if (num > 0) { // this is track number
+                        if (Idx_audio != num) {
+                            continue;  // not matched
+                        }
+                    } else { // this is lang string
+                        int len = lang_list_audio[j].GetLength();
+                        if (str_tmp.Left(len) != lang_list_audio[j]) {
+                            continue; // not matched
+                        }
+                    }
+                    cs_audioProgram = str;
                     break;
                 }
             }
             if (i == CMpegSplitterFile::subpic) {
-                if (lang_list_subpic.GetCount() > 0) {
-                    int idx = 0;
-                    POSITION pos = lang_list_subpic.GetHeadPosition();
-                    while (pos) {
-                        lang = lang_list_subpic.GetNext(pos).MakeLower();
-                        if (-1 != str_tmp.Find(lang)) {
-                            if (idx < Idx_subpic) {
-                                cs_subpicProgram = str;
-                                Idx_subpic = idx;
-                                break;
-                            }
-                        }
-                        idx++;
-                    }
+                CString str_tmp = str.Mid(11).MakeLower();
+                if (Idx_subpic == 0) {
+                    Idx_subpic = 1;
+                } else {
+                    Idx_subpic++;
                 }
-                if (!Idx_subpic && !cs_subpicProgram.IsEmpty()) {
+                for (size_t j = 0; j < lang_list_subpic.GetCount(); j++) {
+                    int num = _tstoi(lang_list_subpic[j]);
+                    if (num > 0) { // this is track number
+                        if (Idx_subpic != num) {
+                            continue;  // not matched
+                        }
+                    } else { // this is lang string
+                        int len = lang_list_subpic[j].GetLength();
+                        if (str_tmp.Left(len) != lang_list_subpic[j]) {
+                            continue; // not matched
+                        }
+                    }
+                    cs_subpicProgram = str;
                     break;
                 }
             }

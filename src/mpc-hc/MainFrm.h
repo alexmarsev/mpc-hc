@@ -1,6 +1,6 @@
 /*
  * (C) 2003-2006 Gabest
- * (C) 2006-2012 see Authors.txt
+ * (C) 2006-2013 see Authors.txt
  *
  * This file is part of MPC-HC.
  *
@@ -127,6 +127,15 @@ public:
     HWND  Hwnd;
 };
 
+struct SubtitleInput {
+    CComQIPtr<ISubStream> subStream;
+    CComPtr<IBaseFilter> sourceFilter;
+
+    SubtitleInput() {};
+    SubtitleInput(CComQIPtr<ISubStream> subStream) : subStream(subStream) {};
+    SubtitleInput(CComQIPtr<ISubStream> subStream, CComPtr<IBaseFilter> sourceFilter)
+        : subStream(subStream), sourceFilter(sourceFilter) {};
+};
 
 interface ISubClock;
 
@@ -187,10 +196,13 @@ class CMainFrame : public CFrameWnd, public CDropTarget
     // subtitles
 
     CCritSec m_csSubLock;
-    CInterfaceList<ISubStream> m_pSubStreams;
+
+    CList<SubtitleInput> m_pSubStreams;
     POSITION m_posFirstExtSub;
     int m_iSubtitleSel; // if (m_iSubtitleSel&(1<<31)): disabled
     DWORD_PTR m_nSubtitleId;
+
+    int GetSubtitleInput(int i, SubtitleInput& subElement);
 
     friend class CTextPassThruFilter;
 
@@ -797,11 +809,9 @@ public:
     afx_msg void OnUpdatePlayFilters(CCmdUI* pCmdUI);
     afx_msg void OnPlayShaders(UINT nID);
     afx_msg void OnPlayAudio(UINT nID);
-    afx_msg void OnUpdatePlayAudio(CCmdUI* pCmdUI);
     afx_msg void OnPlaySubtitles(UINT nID);
-    afx_msg void OnUpdatePlaySubtitles(CCmdUI* pCmdUI);
-    afx_msg void OnPlayLanguage(UINT nID);
-    afx_msg void OnUpdatePlayLanguage(CCmdUI* pCmdUI);
+    afx_msg void OnPlayFiltersStreams(UINT nID);
+    afx_msg void OnUpdatePlayFiltersStreams(CCmdUI* pCmdUI);
     afx_msg void OnPlayVolume(UINT nID);
     afx_msg void OnPlayVolumeBoost(UINT nID);
     afx_msg void OnUpdatePlayVolumeBoost(CCmdUI* pCmdUI);

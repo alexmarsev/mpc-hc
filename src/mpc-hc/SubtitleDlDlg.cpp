@@ -1,6 +1,6 @@
 /*
  * (C) 2003-2006 Gabest
- * (C) 2006-2012 see Authors.txt
+ * (C) 2006-2013 see Authors.txt
  *
  * This file is part of MPC-HC.
  *
@@ -279,10 +279,10 @@ void CSubtitleDlDlg::OnOK()
         if (OpenUrl(is, CString(url), str)) {
             CAutoPtr<CRenderedTextSubtitle> pRTS(DEBUG_NEW CRenderedTextSubtitle(&pMF->m_csSubLock, &s.subdefstyle, s.fUseDefaultSubtitlesStyle));
             if (pRTS && pRTS->Open((BYTE*)(LPCSTR)str, str.GetLength(), DEFAULT_CHARSET, CString(sub.name)) && pRTS->GetStreamCount() > 0) {
-                CComPtr<ISubStream> pSubStream = pRTS.Detach();
-                pMF->m_pSubStreams.AddTail(pSubStream);
+                SubtitleInput subElement(pRTS.Detach());
+                pMF->m_pSubStreams.AddTail(subElement);
                 if (!pSubStreamToSet) {
-                    pSubStreamToSet = pSubStream;
+                    pSubStreamToSet = subElement.subStream;
                 }
             }
         }

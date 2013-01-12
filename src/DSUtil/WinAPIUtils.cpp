@@ -1,5 +1,5 @@
 /*
- * (C) 2011-2012 see Authors.txt
+ * (C) 2011-2013 see Authors.txt
  *
  * This file is part of MPC-HC.
  *
@@ -158,7 +158,7 @@ bool ExportRegistryKey(CStdioFile& file, HKEY hKeyRoot, CString keyName)
     for (DWORD indexSubKey = 0; indexSubKey < subKeysCount; indexSubKey++) {
         subKeyLen = maxSubKeyLen;
 
-        RegEnumKeyEx(hKey, indexSubKey, subKeyName.GetBuffer(maxSubKeyLen), &subKeyLen, NULL, NULL, NULL, NULL);
+        errorCode = RegEnumKeyEx(hKey, indexSubKey, subKeyName.GetBuffer(maxSubKeyLen), &subKeyLen, NULL, NULL, NULL, NULL);
         if (errorCode != ERROR_SUCCESS) {
             SetLastError(errorCode);
             return false;

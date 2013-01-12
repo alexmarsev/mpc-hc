@@ -1,5 +1,5 @@
 /*
- * (C) 2006-2012 see Authors.txt
+ * (C) 2009-2013 see Authors.txt
  *
  * This file is part of MPC-HC.
  *
@@ -524,7 +524,7 @@ HRESULT CDVBSub::ParseClut(CGolombBuffer& gb, WORD wSegLength)
     int nEnd = gb.GetPos() + wSegLength;
 
     if (m_pCurrentPage && wSegLength > 2) {
-        BYTE id = id = gb.ReadByte();
+        BYTE id = gb.ReadByte();
         DVB_CLUT* pClut = FindClut(m_pCurrentPage, id);
 
         bool bIsNewClut = (pClut == NULL);
