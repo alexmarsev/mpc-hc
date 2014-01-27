@@ -648,6 +648,16 @@ void CMainFrameControls::UpdateToolbarsVisibility()
 
     if (bRecalcLayout) {
         m_pMainFrame->RecalcLayout();
+        for (const auto& pair : m_toolbars) {
+            if (pair.second->IsWindowVisible()) {
+                pair.second->UpdateWindow();
+            }
+        }
+        for (const auto& pair : m_panels) {
+            if (pair.second->IsWindowVisible()) {
+                pair.second->UpdateWindow();
+            }
+        }
     }
 
     st.bLastCanAutoHideToolbars = bCanAutoHide;
