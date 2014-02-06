@@ -50,6 +50,11 @@ public:
 
     bool Dragging();
 
+    enum class Cursor { NONE, ARROW, HAND };
+
+    CPoint GetVideoPoint(const CPoint& clientPoint) const;
+    CPoint GetClientPoint(const CPoint& videoPoint) const;
+
 private:
     CMouse(const CMouse&);
     const bool m_bD3DFS;
@@ -59,7 +64,6 @@ private:
     DWORD m_dwMouseHiderStartTick;
     bool m_bTrackingMouseLeave;
     enum class Drag { NO_DRAG, BEGIN_DRAG, DRAGGED } m_drag;
-    enum class Cursor { NONE, ARROW, HAND };
     std::map<Cursor, HCURSOR> m_cursors;
     Cursor m_cursor;
     CPoint m_beginDragPoint;
@@ -81,7 +85,6 @@ private:
     void StartMouseLeaveTracker();
     void StopMouseLeaveTracker();
 
-    CPoint GetVideoPoint(const CPoint& point) const;
     bool IsOnFullscreenWindow() const;
     bool OnButton(UINT id, const CPoint& point, bool bOnFullscreen);
     bool OnButton(UINT id, const CPoint& point);

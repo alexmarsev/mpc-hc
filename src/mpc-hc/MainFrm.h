@@ -178,6 +178,10 @@ public:
         SEEKBAR_TOOLTIP,
         SEEKBAR_HALT_THUMB_DRAG,
         TASKBAR_LONG_LOAD_OR_CLOSE,
+        OSD_HIDE_TOPLEFT,
+        OSD_HIDE_TOPRIGHT,
+        OSD_HIDE_SEEKBAR,
+        OSD_MADVR_REDRAW,
     };
     OneTimeTimerPool<TimerOneTimeSubscriber> m_timerOneTime;
 
@@ -947,7 +951,7 @@ public:
     CMPC_Lcd m_Lcd;
 
     // ==== Added by CASIMIR666
-    CWnd*           m_pVideoWnd;            // Current Video (main display screen or 2nd)
+    CMouseWnd*      m_pVideoWnd;            // Current Video (main display screen or 2nd)
     CFullscreenWnd* m_pFullscreenWnd;
     CVMROSD     m_OSD;
     bool        m_bRemainingTime;
@@ -1056,6 +1060,8 @@ public:
 
     // TODO: refactor it outside of MainFrm
     GUID GetTimeFormat();
+
+    bool PlayingAudioOnly() const;
 
     CAtlList<CHdmvClipInfo::PlaylistItem> m_MPLSPlaylist;
     bool m_bIsBDPlay;

@@ -213,8 +213,10 @@ public:
 
     int ScaleFloorX(int x) const { return x * m_dpix / 96; }
     int ScaleFloorY(int y) const { return y * m_dpiy / 96; }
+    CSize ScaleFloorXY(int x, int y) const { return CSize(ScaleFloorX(x), ScaleFloorY(y)); }
     int ScaleX(int x) const { return MulDiv(x, m_dpix, 96); }
     int ScaleY(int y) const { return MulDiv(y, m_dpiy, 96); }
+    CSize ScaleXY(int x, int y) const { return CSize(ScaleX(x), ScaleY(y)); }
     int TransposeScaledX(int x) const { return MulDiv(x, m_dpiy, m_dpix); }
     int TransposeScaledY(int y) const { return MulDiv(y, m_dpix, m_dpiy); }
 

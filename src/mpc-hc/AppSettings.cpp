@@ -761,8 +761,16 @@ void CAppSettings::SaveSettings()
 
     // osd
     pApp->WriteProfileInt(IDS_R_SETTINGS, IDS_RS_SHOWOSD, (int)osd.bEnabled);
-    pApp->WriteProfileInt(IDS_R_SETTINGS, IDS_RS_MPC_OSD_SIZE, osd.fontSize);
-    pApp->WriteProfileString(IDS_R_SETTINGS, IDS_RS_MPC_OSD_FONT, osd.fontName);
+    pApp->WriteProfileInt(IDS_R_SETTINGS, IDS_RS_OSD_SIZE, osd.fontSize);
+    pApp->WriteProfileString(IDS_R_SETTINGS, IDS_RS_OSD_FONT, osd.fontName);
+    pApp->WriteProfileInt(IDS_R_SETTINGS, IDS_RS_OSD_COLOR_BACKGROUND, osd.colorBackground);
+    pApp->WriteProfileInt(IDS_R_SETTINGS, IDS_RS_OSD_COLOR_BORDER, osd.colorBorder);
+    pApp->WriteProfileInt(IDS_R_SETTINGS, IDS_RS_OSD_COLOR_TEXT, osd.colorText);
+    pApp->WriteProfileInt(IDS_R_SETTINGS, IDS_RS_OSD_COLOR_CHANNEL, osd.colorChannel);
+    pApp->WriteProfileInt(IDS_R_SETTINGS, IDS_RS_OSD_COLOR_CHAPTER, osd.colorChapter);
+    pApp->WriteProfileInt(IDS_R_SETTINGS, IDS_RS_OSD_COLOR_THUMB, osd.colorThumb);
+    pApp->WriteProfileInt(IDS_R_SETTINGS, IDS_RS_OSD_OPACITY, (int)(osd.fAlpha * 255 + 0.5f));
+    pApp->WriteProfileInt(IDS_R_SETTINGS, IDS_RS_OSD_ANIMATION, (int)osd.bAnimation);
 
     pApp->WriteProfileInt(IDS_R_SETTINGS, IDS_RS_LCD_SUPPORT, (int)fLCDSupport);
 
@@ -1176,12 +1184,24 @@ void CAppSettings::LoadSettings()
     if (SysVersion::IsVistaOrLater()) {
         LOGFONT lf;
         GetMessageFont(&lf);
-        osd.fontName = pApp->GetProfileString(IDS_R_SETTINGS, IDS_RS_MPC_OSD_FONT, lf.lfFaceName);
-        osd.fontSize = pApp->GetProfileInt(IDS_R_SETTINGS, IDS_RS_MPC_OSD_SIZE, 18);
+        osd.fontName = pApp->GetProfileString(IDS_R_SETTINGS, IDS_RS_OSD_FONT, lf.lfFaceName);
+        osd.fontSize = pApp->GetProfileInt(IDS_R_SETTINGS, IDS_RS_OSD_SIZE, 18);
     } else {
-        osd.fontName = pApp->GetProfileString(IDS_R_SETTINGS, IDS_RS_MPC_OSD_FONT, _T("Arial"));
-        osd.fontSize = pApp->GetProfileInt(IDS_R_SETTINGS, IDS_RS_MPC_OSD_SIZE, 20);
+        osd.fontName = pApp->GetProfileString(IDS_R_SETTINGS, IDS_RS_OSD_FONT, _T("Arial"));
+        osd.fontSize = pApp->GetProfileInt(IDS_R_SETTINGS, IDS_RS_OSD_SIZE, 20);
     }
+    osd.colorBackground = pApp->GetProfileInt(IDS_R_SETTINGS, IDS_RS_OSD_COLOR_BACKGROUND, RGB(32, 40, 48));
+    osd.colorBorder = pApp->GetProfileInt(IDS_R_SETTINGS, IDS_RS_OSD_COLOR_BORDER, RGB(48, 56, 62));
+    osd.colorText = pApp->GetProfileInt(IDS_R_SETTINGS, IDS_RS_OSD_COLOR_TEXT, RGB(234, 234, 234));
+    osd.colorChannel = pApp->GetProfileInt(IDS_R_SETTINGS, IDS_RS_OSD_COLOR_CHANNEL, RGB(64, 72, 80));
+    osd.colorChapter = pApp->GetProfileInt(IDS_R_SETTINGS, IDS_RS_OSD_COLOR_CHAPTER, RGB(192, 200, 208));
+    osd.colorThumb = pApp->GetProfileInt(IDS_R_SETTINGS, IDS_RS_OSD_COLOR_THUMB, RGB(192, 200, 208));
+    osd.fAlpha = (float)pApp->GetProfileInt(IDS_R_SETTINGS, IDS_RS_OSD_OPACITY, 220) / 255;
+    if (osd.fAlpha < 0 || osd.fAlpha > 1) {
+        ASSERT(FALSE);
+        osd.fAlpha = 1.0f;
+    }
+    osd.bAnimation = !!pApp->GetProfileInt(IDS_R_SETTINGS, IDS_RS_OSD_ANIMATION, TRUE);
 
     // Associated types with icon or not...
     fAssociatedWithIcons = !!pApp->GetProfileInt(IDS_R_SETTINGS, IDS_RS_ASSOCIATED_WITH_ICON, TRUE);

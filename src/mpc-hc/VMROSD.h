@@ -26,7 +26,6 @@
 #include <vmr9.h>
 #include "madVRAllocatorPresenter.h"
 
-
 enum OSD_COLORS {
     OSD_TRANSPARENT,
     OSD_BACKGROUND,
@@ -139,3 +138,142 @@ private:
 
     static void CALLBACK TimerFunc(HWND hWnd, UINT nMsg, UINT_PTR nIDEvent, DWORD dwTime);
 };
+
+#include "MouseTouch.h"
+#include "PlaybackState.h"
+#include "PlayerSeekBar.h"
+
+#include "DX9AllocatorPresenter.h"
+
+enum class OsdPos
+{
+    TOPLEFT,
+    TOPRIGHT,
+};
+
+class OsdMessageProvider
+{
+public:
+    typedef std::map<REFERENCE_TIME, CString> ProgressMessageReturn;
+    typedef std::function<ProgressMessageReturn(PlaybackState::Pos, REFERENCE_TIME)> ProgressMessage;
+
+    virtual ~OsdMessageProvider() {}
+    virtual void DisplayMessage(OsdPos pos, const CString& msg, int duration) = 0;
+    virtual void DisplayMessage(OsdPos pos, ProgressMessage msg, int duration) = 0;
+    virtual void HideMessage(OsdPos pos) = 0;
+    virtual void DisplayStickyMessage(OsdPos pos, const CString& msg) = 0;
+    virtual void DisplayStickyMessage(OsdPos pos, ProgressMessage msg) = 0;
+    virtual void HideStickyMessage(OsdPos pos) = 0;
+};
+
+class OsdSeekbarProvider
+{
+public:
+    virtual ~OsdSeekbarProvider() = default;
+    virtual bool SeekbarEnabled() const = 0;
+};
+
+enum class OsdInputEvent
+{
+    MOUSE_DOWN,
+    MOUSE_UP,
+    MOUSE_MOVE,
+    MOUSE_LEAVE,
+};
+
+class OsdControlsProvider
+{
+public:
+    virtual ~OsdControlsProvider() = default;
+    virtual bool PointOnOsdControl(const CPoint& videoPoint) = 0;
+    virtual bool ReceiveInputEvent(OsdInputEvent event, const CPoint& videoPoint) = 0;
+    virtual CMouse::Cursor GetOsdMouseCursor() const = 0;
+};
+
+class OsdService
+{
+public:
+    ~OsdService() { ASSERT(!m_prov); }
+
+    void Start(IInternalOsdService* pInternalOsdService);
+    void Start(IMadVROsdServices* pMadvrOsdService, IMadVRSeekbarControl* pMadvrSeekbarService, IMadVRSettings* pMadvrSettingsService);
+    void Start(IMadVRTextOsd* pMadvrTextService, IMadVRSettings* pMadvrSettingsService);
+    bool Started() const { return !!m_prov; }
+    void Stop();
+
+    void DisplayMessage(OsdPos pos, LPCTSTR msg, int duration);
+    void DisplayMessage(OsdPos pos, const CString& msg, int duration);
+    void DisplayMessage(OsdPos pos, OsdMessageProvider::ProgressMessage msg, int duration);
+
+    static const OsdPos DefaultPosition = OsdPos::TOPLEFT;
+    inline void DisplayMessage(LPCTSTR msg, int duration) {
+        DisplayMessage(DefaultPosition, msg, duration);
+    }
+    inline void DisplayMessage(const CString& msg, int duration) {
+        DisplayMessage(DefaultPosition, msg, duration);
+    }
+    inline void DisplayMessage(OsdMessageProvider::ProgressMessage msg, int duration) {
+        DisplayMessage(DefaultPosition, msg, duration);
+    }
+
+    static const int DefaultDuration = 5000;
+    inline void DisplayMessage(OsdPos pos, LPCTSTR msg) {
+        DisplayMessage(pos, msg, DefaultDuration);
+    }
+    inline void DisplayMessage(OsdPos pos, const CString& msg) {
+        DisplayMessage(pos, msg, DefaultDuration);
+    }
+    inline void DisplayMessage(OsdPos pos, OsdMessageProvider::ProgressMessage msg) {
+        DisplayMessage(pos, msg, DefaultDuration);
+    }
+
+    inline void DisplayMessage(LPCTSTR msg) {
+        DisplayMessage(DefaultPosition, msg, DefaultDuration);
+    }
+    inline void DisplayMessage(const CString& msg) {
+        DisplayMessage(DefaultPosition, msg, DefaultDuration);
+    }
+    inline void DisplayMessage(OsdMessageProvider::ProgressMessage msg) {
+        DisplayMessage(DefaultPosition, msg, DefaultDuration);
+    }
+
+    void HideMessage(OsdPos pos);
+
+    void DisplayStickyMessage(OsdPos pos, LPCTSTR msg);
+    void DisplayStickyMessage(OsdPos pos, const CString& msg);
+    void DisplayStickyMessage(OsdPos pos, OsdMessageProvider::ProgressMessage msg);
+
+    void HideStickyMessage(OsdPos pos);
+
+    bool SeekbarEnabled() const;
+
+    bool PointOnOsdControl(const CPoint& videoPoint);
+    bool ReceiveInputEvent(OsdInputEvent event, const CPoint& videoPoint);
+    CMouse::Cursor GetOsdMouseCursor() const;
+
+protected:
+    std::shared_ptr<OsdMessageProvider> m_prov;
+};
+
+namespace OsdProgressMessage
+{
+    class Position
+    {
+    public:
+        OsdMessageProvider::ProgressMessageReturn operator()(PlaybackState::Pos pos, REFERENCE_TIME rtSpan);
+
+    protected:
+        enum class FirstState { Unset, Normal, Remaining, Passed} m_eFirst = FirstState::Unset;
+        REFERENCE_TIME m_rtFirst = 0;
+    };
+
+    class PositionWithStaticText : protected Position
+    {
+    public:
+        explicit PositionWithStaticText(const CString& text) : m_text(text) {}
+        OsdMessageProvider::ProgressMessageReturn operator()(PlaybackState::Pos pos, REFERENCE_TIME rtSpan);
+
+    protected:
+        const CString m_text;
+    };
+}

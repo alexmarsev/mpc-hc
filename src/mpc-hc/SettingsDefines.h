@@ -1,5 +1,5 @@
 /*
- * (C) 2009-2013 see Authors.txt
+ * (C) 2009-2014 see Authors.txt
  *
  * This file is part of MPC-HC.
  *
@@ -44,7 +44,6 @@
 #define IDS_RS_FILEPOS                      _T("RememberFilePos")
 #define IDS_RS_LASTFULLSCREEN               _T("LastFullScreen")
 #define IDS_RS_EVR_BUFFERS                  _T("EVRBuffers")
-#define IDS_RS_SHOWOSD                      _T("ShowOSD")
 #define IDS_RS_LANGUAGE                     _T("InterfaceLanguage")
 #define IDS_RS_GLOBALMEDIA                  _T("UseGlobalMedia")
 #define IDS_RS_DXVAFILTERS                  _T("DXVAFilters")
@@ -65,6 +64,19 @@
 #define IDS_RS_D3DFULLSCREEN                _T("D3DFullScreen")
 //#define IDS_RS_MONITOR_AUTOREFRESHRATE      _T("MonitorAutoRefreshRate")
 #define IDS_RS_SPEEDSTEP                    _T("SpeedStep")
+
+// osd
+#define IDS_RS_SHOWOSD                      _T("ShowOSD")
+#define IDS_RS_OSD_SIZE                     _T("OSDSize")
+#define IDS_RS_OSD_FONT                     _T("OSDFont")
+#define IDS_RS_OSD_COLOR_BACKGROUND         _T("OSDColorBackground")
+#define IDS_RS_OSD_COLOR_TEXT               _T("OSDColorText")
+#define IDS_RS_OSD_COLOR_BORDER             _T("OSDColorBorder")
+#define IDS_RS_OSD_COLOR_CHANNEL            _T("OSDColorSeekbarChannel")
+#define IDS_RS_OSD_COLOR_CHAPTER            _T("OSDColorSeekbarChapter")
+#define IDS_RS_OSD_COLOR_THUMB              _T("OSDColorSeekbarThumb")
+#define IDS_RS_OSD_OPACITY                  _T("OSDOpacity")
+#define IDS_RS_OSD_ANIMATION                _T("OSDAnimation")
 
 // Audio
 #define IDS_RS_VOLUME                       _T("Volume")
@@ -199,8 +211,6 @@
 #define IDS_RS_SEARCH_IN_FOLDER             _T("UseSearchInFolder")
 #define IDS_RS_USE_TIME_TOOLTIP             _T("UseTimeTooltip")
 #define IDS_RS_TIME_TOOLTIP_POSITION        _T("TimeTooltipPosition")
-#define IDS_RS_MPC_OSD_SIZE                 _T("OSDSize")
-#define IDS_RS_MPC_OSD_FONT                 _T("OSDFont")
 #define IDS_RS_LAST_OPEN_DIR                _T("LastOpenDir")
 #define IDS_RS_ASSOCIATED_WITH_ICON         _T("AssociatedWithIcon")
 #define IDS_RS_ICON_LIB_VERSION             _T("IconLibVersion")

@@ -169,9 +169,14 @@ void CMouse::StopMouseLeaveTracker()
     m_bTrackingMouseLeave = false;
 }
 
-CPoint CMouse::GetVideoPoint(const CPoint& point) const
+CPoint CMouse::GetVideoPoint(const CPoint& clientPoint) const
 {
-    return m_bD3DFS ? point : point - m_pMainFrame->m_wndView.GetVideoRect().TopLeft();
+    return clientPoint - m_pMainFrame->GetPlaybackState()->GetVrWindowData().windowRect.TopLeft();
+}
+
+CPoint CMouse::GetClientPoint(const CPoint& videoPoint) const
+{
+    return videoPoint + m_pMainFrame->GetPlaybackState()->GetVrWindowData().windowRect.TopLeft();
 }
 
 bool CMouse::IsOnFullscreenWindow() const

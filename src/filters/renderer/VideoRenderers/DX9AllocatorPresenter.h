@@ -1,6 +1,6 @@
 /*
  * (C) 2003-2006 Gabest
- * (C) 2006-2013 see Authors.txt
+ * (C) 2006-2014 see Authors.txt
  *
  * This file is part of MPC-HC.
  *
@@ -22,6 +22,9 @@
 #pragma once
 
 #include "DX9RenderingEngine.h"
+#include "mvrInterfaces.h"
+
+#include <map>
 
 #define VMRBITMAP_UPDATE    0x80000000
 #define NB_JITTER           126
@@ -31,12 +34,20 @@ extern bool g_bExternalSubtitleTime;
 
 class CFocusThread;
 
+interface __declspec(uuid("06ABF692-8D3A-4F2B-83E4-FB570EA27AD3"))
+IInternalOsdService :
+public IUnknown {
+    STDMETHOD(SetRenderCallback)(LPCSTR name, IOsdRenderCallback * callback) PURE;
+    STDMETHOD(GetOutputLevels)(BYTE & black, BYTE & white) PURE;
+};
+
 namespace DSObjects
 {
 
     class CDX9AllocatorPresenter
         : public CDX9RenderingEngine
         , public ID3DFullscreenControl
+        , public IInternalOsdService
     {
     public:
         CCritSec m_VMR9AlphaBitmapLock;
@@ -287,6 +298,8 @@ namespace DSObjects
         CString                 m_Decoder;
 
         CFocusThread*           m_FocusThread;
+
+        std::map<CStringA, CComPtr<IOsdRenderCallback>> m_renderCallbacks;
     public:
         CDX9AllocatorPresenter(HWND hWnd, bool bFullscreen, HRESULT& hr, bool bIsEVR, CString& _Error);
         ~CDX9AllocatorPresenter();
@@ -303,5 +316,9 @@ namespace DSObjects
         // ID3DFullscreenControl
         STDMETHODIMP SetD3DFullscreen(bool fEnabled);
         STDMETHODIMP GetD3DFullscreen(bool* pfEnabled);
+
+        // IInternalOsdService
+        STDMETHODIMP SetRenderCallback(LPCSTR name, IOsdRenderCallback* pCallback);
+        STDMETHODIMP GetOutputLevels(BYTE& black, BYTE& white);
     };
 }

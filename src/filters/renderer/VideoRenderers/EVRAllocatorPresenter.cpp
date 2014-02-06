@@ -404,6 +404,8 @@ STDMETHODIMP CEVRAllocatorPresenter::NonDelegatingQueryInterface(REFIID riid, vo
         hr = m_pD3DManager->QueryInterface(__uuidof(IDirect3DDeviceManager9), (void**) ppv);
     } else if (riid == __uuidof(ID3DFullscreenControl)) {
         hr = GetInterface((ID3DFullscreenControl*)this, ppv);
+    } else if (riid == __uuidof(IInternalOsdService)) {
+        hr = GetInterface((IInternalOsdService*)this, ppv);
     } else {
         hr = __super::NonDelegatingQueryInterface(riid, ppv);
     }
@@ -1185,6 +1187,8 @@ bool CEVRAllocatorPresenter::GetImageFromMixer()
             m_pD3DDev->ColorFill(m_pVideoSurface[dwSurface], &rcTearing, D3DCOLOR_ARGB(255, 255, 0, 0));
             m_nTearingPos = (m_nTearingPos + 7) % m_NativeVideoSize.cx;
         }
+
+        m_videoSurfaceInfo[dwSurface].rtStart = g_tSegmentStart + nsSampleTime;
 
         TRACE_EVR("EVR: Get from Mixer : %d  (%I64d) (%I64d)\n", dwSurface, nsSampleTime, m_rtTimePerFrame ? nsSampleTime / m_rtTimePerFrame : 0);
 

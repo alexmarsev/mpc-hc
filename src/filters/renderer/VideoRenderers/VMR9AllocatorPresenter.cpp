@@ -55,6 +55,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::NonDelegatingQueryInterface(REFIID riid, v
         QI(IVMRImagePresenter9)
         QI(IVMRWindowlessControl9)
         QI(ID3DFullscreenControl)
+        QI(IInternalOsdService)
         __super::NonDelegatingQueryInterface(riid, ppv);
 }
 
@@ -472,7 +473,14 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 
             m_nTearingPos = (m_nTearingPos + 7) % m_NativeVideoSize.cx;
         }
+
+        if (lpPresInfo->rtEnd <= lpPresInfo->rtStart) {
+            m_videoSurfaceInfo[m_nCurSurface].rtStart = g_tSegmentStart;
+        } else {
+            m_videoSurfaceInfo[m_nCurSurface].rtStart = g_tSegmentStart + lpPresInfo->rtStart;
+        }
     }
+
 
     Paint(true);
 

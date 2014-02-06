@@ -563,6 +563,14 @@ public:
         bool bEnabled = false;
         CString fontName;
         int fontSize = 0;
+        COLORREF colorBackground = 0;
+        COLORREF colorBorder = 0;
+        COLORREF colorText = 0;
+        COLORREF colorChannel = 0;
+        COLORREF colorChapter = 0;
+        COLORREF colorThumb = 0;
+        float fAlpha = 1.0f;
+        bool bAnimation = false;
     } osd;
 
     // Miscellaneous

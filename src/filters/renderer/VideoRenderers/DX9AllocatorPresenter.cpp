@@ -210,6 +210,10 @@ CDX9AllocatorPresenter::CDX9AllocatorPresenter(HWND hWnd, bool bFullscreen, HRES
 
 CDX9AllocatorPresenter::~CDX9AllocatorPresenter()
 {
+    for (const auto& callbackPair : m_renderCallbacks) {
+        callbackPair.second->SetDevice(nullptr);
+    }
+
     if (m_bDesktopCompositionDisabled) {
         m_bDesktopCompositionDisabled = false;
         if (m_pDwmEnableComposition) {
@@ -540,6 +544,10 @@ HRESULT CDX9AllocatorPresenter::CreateDevice(CString& _Error)
     ZeroMemory(m_ClockChangeHistory, sizeof(m_ClockChangeHistory));
     m_ClockTimeChangeHistoryPos = 0;
 
+    for (const auto& callbackPair : m_renderCallbacks) {
+        callbackPair.second->SetDevice(nullptr);
+    }
+
     m_pD3DDev = nullptr;
     m_pD3DDevEx = nullptr;
     m_pDirectDraw = nullptr;
@@ -782,6 +790,10 @@ HRESULT CDX9AllocatorPresenter::CreateDevice(CString& _Error)
 
     // Initialize the rendering engine
     InitRenderingEngine();
+
+    for (const auto& callbackPair : m_renderCallbacks) {
+        callbackPair.second->SetDevice(m_pD3DDev);
+    }
 
     CComPtr<ISubPicProvider> pSubPicProvider;
     if (m_pSubPicQueue) {
@@ -1344,6 +1356,11 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
     CRect rSrcPri(CPoint(0, 0), m_WindowRect.Size());
     CRect rDstPri(rSrcPri);
 
+    for (const auto& callbackPair : m_renderCallbacks) {
+        callbackPair.second->ClearBackground(callbackPair.first, m_videoSurfaceInfo[m_nCurSurface].rtStart,
+                                             rDstPri, rDstVid);
+    }
+
     // Render the current video frame
     hr = RenderVideo(pBackBuffer, rSrcVid, rDstVid);
 
@@ -1409,6 +1426,11 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 
     if (m_pOSDTexture) {
         AlphaBlt(rSrcPri, rDstPri, m_pOSDTexture);
+    }
+
+    for (const auto& callbackPair : m_renderCallbacks) {
+        callbackPair.second->RenderOsd(callbackPair.first, m_videoSurfaceInfo[m_nCurSurface].rtStart,
+                                       rDstPri, rDstVid);
     }
 
     m_pD3DDev->EndScene();
@@ -2187,5 +2209,37 @@ STDMETHODIMP CDX9AllocatorPresenter::GetD3DFullscreen(bool* pfEnabled)
 {
     CheckPointer(pfEnabled, E_POINTER);
     *pfEnabled = m_bIsFullscreen;
+    return S_OK;
+}
+
+STDMETHODIMP CDX9AllocatorPresenter::SetRenderCallback(LPCSTR name, IOsdRenderCallback* pCallback)
+{
+    CheckPointer(name, E_POINTER);
+
+    CAutoLock cRenderLock(&m_RenderLock);
+
+    auto old = m_renderCallbacks.find(name);
+    if (old != m_renderCallbacks.end()) {
+        old->second->SetDevice(nullptr);
+        m_renderCallbacks.erase(old);
+    }
+
+    if (pCallback) {
+        m_renderCallbacks[name] = pCallback;
+        pCallback->SetDevice(m_pD3DDev);
+    }
+
+    return S_OK;
+}
+
+STDMETHODIMP CDX9AllocatorPresenter::GetOutputLevels(BYTE& black, BYTE& white)
+{
+    if (GetRenderersSettings().m_AdvRendSets.iEVROutputRange) {
+        black = 16;
+        white = 235;
+    } else {
+        black = 0;
+        white = 255;
+    }
     return S_OK;
 }

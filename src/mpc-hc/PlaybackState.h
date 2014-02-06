@@ -44,6 +44,7 @@ public:
     void SetPos(const Pos& pos);
     bool HasDuration() const;
     bool HasChapterBag() const;
+    static CString GetPosString(const PlaybackState::Pos& pos);
 
     // currently represents IAMMediaContent interface
     // (or, more precisely, sub-portion of it)
@@ -61,9 +62,27 @@ public:
     MediaFileMetadata GetFileMetadata() const;
     void SetFileMetadata(const MediaFileMetadata& metadata);
 
+    struct GraphState {
+        FILTER_STATE state = State_Stopped;
+        bool bAsync = false;
+    };
+
+    GraphState GetGraphState() const;
+    void SetGraphStateSource(IMediaControl* pMediaControl);
+
+    struct VrWindowData {
+        CRect windowRect = { 0, 0, 0, 0 };
+        CRect videoRect = { 0, 0, 0, 0 };
+    };
+
+    VrWindowData GetVrWindowData() const;
+    void SetVrWindowData(const VrWindowData& vrWindowData);
+
 protected:
     EventClient m_eventc;
     mutable SharedMutex m_mutex;
     Pos m_pos;
     MediaFileMetadata m_fileMetadata;
+    CComPtr<IMediaControl> m_pMediaControl;
+    VrWindowData m_vrWindowData;
 };

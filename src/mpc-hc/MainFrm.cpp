@@ -9886,6 +9886,11 @@ void CMainFrame::MoveVideoWindow(bool fShowStats/* = false*/, bool bSetStoppedVi
 
         m_wndView.SetVideoRect(&windowRect);
         m_OSD.SetSize(windowRect, videoRect);
+
+        PlaybackState::VrWindowData windowData = m_ps->GetVrWindowData();
+        windowData.windowRect = windowRect;
+        windowData.videoRect = videoRect;
+        m_ps->SetVrWindowData(windowData);
     } else {
         m_wndView.SetVideoRect();
     }
@@ -16209,6 +16214,12 @@ GUID CMainFrame::GetTimeFormat()
         ret = TIME_FORMAT_NONE;
     }
     return ret;
+}
+
+bool CMainFrame::PlayingAudioOnly() const
+{
+    ASSERT(GetLoadState() == MLS::LOADED);
+    return m_fAudioOnly;
 }
 
 void CMainFrame::UpdateDXVAStatus()

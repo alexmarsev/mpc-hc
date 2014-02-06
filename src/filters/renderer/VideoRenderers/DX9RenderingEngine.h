@@ -1,5 +1,5 @@
 /*
- * (C) 2006-2013 see Authors.txt
+ * (C) 2006-2014 see Authors.txt
  *
  * This file is part of MPC-HC.
  *
@@ -63,6 +63,11 @@ namespace DSObjects
         D3DFORMAT                   m_SurfaceType;
         CComPtr<IDirect3DTexture9>  m_pVideoTexture[MAX_VIDEO_SURFACES];
         CComPtr<IDirect3DSurface9>  m_pVideoSurface[MAX_VIDEO_SURFACES];
+
+        struct VideoSurfaceInfo {
+            REFERENCE_TIME rtStart = 0;
+        };
+        VideoSurfaceInfo            m_videoSurfaceInfo[MAX_VIDEO_SURFACES];
 
         bool                        m_bFullFloatingPointProcessing;
         bool                        m_bHalfFloatingPointProcessing;
