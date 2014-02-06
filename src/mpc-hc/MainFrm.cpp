@@ -513,6 +513,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_UPDATE_COMMAND_UI(ID_VIEW_NAVIGATION, OnUpdateViewNavigation)
 
     ON_WM_WTSSESSION_CHANGE()
+
+    ON_MESSAGE(WM_MADVR_EXCLUSIVE_MODE_CALLBACK, OnMadvrExclusiveModeCallback)
 END_MESSAGE_MAP()
 
 #ifdef _DEBUG
@@ -3261,6 +3263,9 @@ LRESULT CMainFrame::OnFilePostOpenmedia(WPARAM wParam, LPARAM lParam)
             m_osd.Start(m_pIOSS);
         } else if (CComQIPtr<IMadVROsdServices> pMVROS = m_pCAP) {
             m_osd.Start(pMVROS, CComQIPtr<IMadVRSeekbarControl>(m_pCAP), m_pMVRS);
+            if (CComQIPtr<IMadVRExclusiveModeCallback> pMVREMC = m_pCAP) {
+                VERIFY(SUCCEEDED(pMVREMC->Register(MadvrExclusiveModeCallback, m_hWnd)));
+            }
         } else if (CComQIPtr<IMadVRTextOsd> pMVRTO = m_pCAP) {
             m_osd.Start(pMVRTO, m_pMVRS);
         }
@@ -14498,6 +14503,9 @@ void CMainFrame::CloseMedia(bool bNextIsQueued/* = false*/)
     }
 
     // stop osd service
+    if (CComQIPtr<IMadVRExclusiveModeCallback> pMVREMC = m_pCAP) {
+        VERIFY(SUCCEEDED(pMVREMC->Unregister(MadvrExclusiveModeCallback, m_hWnd)));
+    }
     m_osd.Stop();
 
     // delay showing auto-hidden controls if new media is queued
@@ -15929,6 +15937,33 @@ void CMainFrame::UpdateAudioSwitcher()
         pASF->SetAudioTimeShift(s.fAudioTimeShift ? 10000i64 * s.iAudioTimeShift : 0);
         pASF->SetNormalizeBoost2(s.fAudioNormalize, s.nAudioMaxNormFactor, s.fAudioNormalizeRecover, s.nAudioBoost);
     }
+}
+
+void __stdcall CMainFrame::MadvrExclusiveModeCallback(void* pContext, int event)
+{
+    if (event == ExclusiveModeWasJustEntered || event == ExclusiveModeWasJustLeft) {
+        ::PostMessage((HWND)pContext, WM_MADVR_EXCLUSIVE_MODE_CALLBACK, event, 0);
+    }
+}
+
+LRESULT CMainFrame::OnMadvrExclusiveModeCallback(WPARAM wParam, LPARAM lParam)
+{
+    UNREFERENCED_PARAMETER(lParam);
+    if (GetLoadState() == MLS::LOADED) {
+        if (CComQIPtr<IMadVRTextOsd> pMVRTO = m_pCAP) {
+            VERIFY(SUCCEEDED(pMVRTO->OsdClearMessage()));
+        } else {
+            ASSERT(FALSE);
+        }
+        if (wParam == ExclusiveModeWasJustEntered) {
+            m_osd.DisplayMessage(OsdPos::TOPRIGHT, _T("Exclusive"), 1500);
+        } else if (wParam == ExclusiveModeWasJustLeft) {
+            m_osd.DisplayMessage(OsdPos::TOPRIGHT, _T("Windowed"), 1500);
+        } else {
+            ASSERT(FALSE);
+        }
+    }
+    return 0;
 }
 
 void CMainFrame::UpdateControlState(UpdateControlTarget target)

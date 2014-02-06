@@ -1043,6 +1043,9 @@ protected:
     // TODO: get rid of this variable, it's just a crutch
     bool m_bInPostOpen = false;
 
+    static void __stdcall MadvrExclusiveModeCallback(void* pContext, int event);
+    LRESULT OnMadvrExclusiveModeCallback(WPARAM wParam, LPARAM lParam);
+
 public:
     afx_msg UINT OnPowerBroadcast(UINT nPowerEvent, LPARAM nEventData);
     afx_msg void OnSessionChange(UINT nSessionState, UINT nId);
