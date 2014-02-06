@@ -32,6 +32,7 @@ CMouse::CMouse(CMainFrame* pMainFrm, bool bD3DFS/* = false*/)
     , m_bLeftDoubleStarted(false)
     , m_leftDoubleStartTime(0)
     , m_popupMenuUninitTime(0)
+    , m_bDraggingOsd(false)
 {
     m_cursors[Cursor::NONE] = nullptr;
     m_cursors[Cursor::ARROW] = LoadCursor(nullptr, IDC_ARROW);
@@ -43,9 +44,13 @@ CMouse::CMouse(CMainFrame* pMainFrm, bool bD3DFS/* = false*/)
     evs.insert(MpcEvent::SWITCHED_TO_FULLSCREEN);
     evs.insert(MpcEvent::SWITCHING_TO_FULLSCREEN_D3D);
     evs.insert(MpcEvent::SWITCHED_TO_FULLSCREEN_D3D);
-    evs.insert(MpcEvent::MEDIA_LOADED);
+    evs.insert(MpcEvent::SWITCHING_FROM_FULLSCREEN);
+    evs.insert(MpcEvent::SWITCHING_FROM_FULLSCREEN_D3D);
+    evs.insert(MpcEvent::SWITCHED_FROM_FULLSCREEN);
+    evs.insert(MpcEvent::SWITCHED_FROM_FULLSCREEN_D3D);
     evs.insert(MpcEvent::CONTEXT_MENU_POPUP_UNINITIALIZED);
     evs.insert(MpcEvent::SYSTEM_MENU_POPUP_INITIALIZED);
+    evs.insert(MpcEvent::VR_WINDOW_DATA_CHANGED);
     GetEventd().Connect(m_eventc, evs, std::bind(&CMouse::EventCallback, this, std::placeholders::_1));
 }
 
@@ -204,19 +209,36 @@ void CMouse::EventCallback(MpcEvent ev)
 {
     CPoint screenPoint;
     VERIFY(GetCursorPos(&screenPoint));
+
+    auto extraSetCursor = [&]() {
+        const HWND hCapture = GetCapture();
+        if ((!hCapture || hCapture == GetWnd()) && CursorOnWindow(screenPoint, GetWnd())) {
+            CPoint clientPoint;
+            GetWnd().ScreenToClient(&clientPoint);
+            m_pMainFrame->m_osd.ReceiveInputEvent(OsdInputEvent::MOUSE_MOVE, GetVideoPoint(clientPoint));
+            SetCursor(GetMouseFlags(), screenPoint, clientPoint);
+        }
+    };
+
     switch (ev) {
-        case MpcEvent::SWITCHED_TO_FULLSCREEN:
-        case MpcEvent::SWITCHED_TO_FULLSCREEN_D3D:
-            m_switchingToFullscreen.first = false;
-            break;
         case MpcEvent::SWITCHING_TO_FULLSCREEN:
         case MpcEvent::SWITCHING_TO_FULLSCREEN_D3D:
+            CancelOsdDrag();
             m_switchingToFullscreen = std::make_pair(true, screenPoint);
-        // no break
-        case MpcEvent::MEDIA_LOADED:
-            if (CursorOnWindow(screenPoint, GetWnd())) {
-                SetCursor(screenPoint);
-            }
+            break;
+        case MpcEvent::SWITCHED_TO_FULLSCREEN:
+        case MpcEvent::SWITCHED_TO_FULLSCREEN_D3D:
+            extraSetCursor();
+            m_switchingToFullscreen.first = false;
+            break;
+        case MpcEvent::SWITCHING_FROM_FULLSCREEN:
+        case MpcEvent::SWITCHING_FROM_FULLSCREEN_D3D:
+            CancelOsdDrag();
+            break;
+        case MpcEvent::SWITCHED_FROM_FULLSCREEN:
+        case MpcEvent::SWITCHED_FROM_FULLSCREEN_D3D:
+        case MpcEvent::VR_WINDOW_DATA_CHANGED:
+            extraSetCursor();
             break;
         case MpcEvent::CONTEXT_MENU_POPUP_UNINITIALIZED:
             m_popupMenuUninitTime = GetMessageTime();
@@ -231,65 +253,25 @@ void CMouse::EventCallback(MpcEvent ev)
     }
 }
 
-// madVR compatibility layer for exclusive mode seekbar
-bool CMouse::UsingMVR() const
-{
-    return !!m_pMainFrame->m_pMVRS;
-}
-void CMouse::MVRMove(UINT nFlags, const CPoint& point)
-{
-    if (UsingMVR()) {
-        CPoint mappedPoint(point);
-        MapWindowPoints(GetWnd(), m_pMainFrame->m_hWnd, &mappedPoint, 1);
-        WPARAM wp = nFlags;
-        LPARAM lp = MAKELPARAM(mappedPoint.x, mappedPoint.y);
-        m_pMainFrame->SendMessage(WM_MOUSEMOVE, wp, lp);
-    }
-}
-bool CMouse::MVRDown(UINT nFlags, const CPoint& point)
-{
-    bool ret = false;
-    if (UsingMVR()) {
-        CPoint mappedPoint(point);
-        MapWindowPoints(GetWnd(), m_pMainFrame->m_hWnd, &mappedPoint, 1);
-        WPARAM wp = nFlags;
-        LPARAM lp = MAKELPARAM(mappedPoint.x, mappedPoint.y);
-        ret = (m_pMainFrame->SendMessage(WM_LBUTTONDOWN, wp, lp) != 42);
-    }
-    return ret;
-}
-bool CMouse::MVRUp(UINT nFlags, const CPoint& point)
-{
-    bool ret = false;
-    if (UsingMVR()) {
-        CPoint mappedPoint(point);
-        MapWindowPoints(GetWnd(), m_pMainFrame->m_hWnd, &mappedPoint, 1);
-        WPARAM wp = nFlags;
-        LPARAM lp = MAKELPARAM(mappedPoint.x, mappedPoint.y);
-        ret = (m_pMainFrame->SendMessage(WM_LBUTTONUP, wp, lp) != 42);
-    }
-    return ret;
-}
-
 // Left button
 void CMouse::InternalOnLButtonDown(UINT nFlags, const CPoint& point)
 {
     GetWnd().SetFocus();
     m_bLeftDown = false;
     SetCursor(nFlags, point);
-    if (MVRDown(nFlags, point)) {
-        return;
-    }
     bool bIsOnFS = IsOnFullscreenWindow();
     if ((!m_bD3DFS || !bIsOnFS) && (abs(GetMessageTime() - m_popupMenuUninitTime) < 2)) {
         return;
     }
-    if (m_pMainFrame->GetLoadState() == MLS::LOADED && m_pMainFrame->GetPlaybackMode() == PM_DVD &&
-            (m_pMainFrame->IsD3DFullScreenMode() ^ m_bD3DFS) == 0 &&
-            (m_pMainFrame->m_pDVDC->ActivateAtPosition(GetVideoPoint(point)) == S_OK)) {
+    const CPoint videoPoint = GetVideoPoint(point);
+    if (m_pMainFrame->m_osd.ReceiveInputEvent(OsdInputEvent::MOUSE_DOWN, videoPoint)) {
+        GetWnd().SetCapture();
+        m_bDraggingOsd = true;
         return;
     }
-    if (m_bD3DFS && bIsOnFS && m_pMainFrame->m_OSD.OnLButtonDown(nFlags, point)) {
+    if (m_pMainFrame->GetLoadState() == MLS::LOADED && m_pMainFrame->GetPlaybackMode() == PM_DVD &&
+            (m_pMainFrame->IsD3DFullScreenMode() == m_bD3DFS) &&
+            (m_pMainFrame->m_pDVDC->ActivateAtPosition(videoPoint) == S_OK)) {
         return;
     }
     m_bLeftDown = true;
@@ -327,12 +309,17 @@ void CMouse::InternalOnLButtonDown(UINT nFlags, const CPoint& point)
 }
 void CMouse::InternalOnLButtonUp(UINT nFlags, const CPoint& point)
 {
+    bool bOsdUp = false;
+    const CPoint videoPoint = GetVideoPoint(point);
+    if (m_pMainFrame->m_osd.ReceiveInputEvent(OsdInputEvent::MOUSE_UP, videoPoint) || m_bDraggingOsd) {
+        m_bDraggingOsd = false;
+        bOsdUp = true;
+        ReleaseCapture();
+    }
+
     ReleaseCapture();
-    if (!MVRUp(nFlags, point)) {
-        bool bIsOnFS = IsOnFullscreenWindow();
-        if (!(m_bD3DFS && bIsOnFS && m_pMainFrame->m_OSD.OnLButtonUp(nFlags, point)) && m_bLeftDown) {
-            OnButton(wmcmd::LUP, point, bIsOnFS);
-        }
+    if (!bOsdUp && m_bLeftDown) {
+        OnButton(wmcmd::LUP, point, IsOnFullscreenWindow());
     }
     m_drag = Drag::NO_DRAG;
     m_bLeftDown = false;
@@ -404,14 +391,15 @@ bool CMouse::SelectCursor(const CPoint& screenPoint, const CPoint& clientPoint, 
 {
     const auto& s = AfxGetAppSettings();
 
-    if (m_bD3DFS && m_pMainFrame->m_OSD.OnMouseMove(nFlags, clientPoint)) {
+    const Cursor osdCursor = m_pMainFrame->m_osd.GetOsdMouseCursor();
+    if (osdCursor != Cursor::NONE) {
         StopMouseHider();
-        m_cursor = Cursor::HAND;
+        m_cursor = osdCursor;
         return true;
     }
 
     if (m_pMainFrame->GetLoadState() == MLS::LOADED && m_pMainFrame->GetPlaybackMode() == PM_DVD &&
-            (m_pMainFrame->IsD3DFullScreenMode() ^ m_bD3DFS) == 0 &&
+            (m_pMainFrame->IsD3DFullScreenMode() == m_bD3DFS) &&
             (m_pMainFrame->m_pDVDC->SelectAtPosition(GetVideoPoint(clientPoint)) == S_OK)) {
         StopMouseHider();
         m_cursor = Cursor::HAND;
@@ -491,6 +479,14 @@ bool CMouse::TestDrag(const CPoint& screenPoint)
     return ret;
 }
 
+void CMouse::CancelOsdDrag()
+{
+    if (m_bDraggingOsd) {
+        ReleaseCapture();
+    }
+    ASSERT(!m_bDraggingOsd);
+}
+
 BOOL CMouse::InternalOnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 {
     return nHitTest == HTCLIENT;
@@ -505,8 +501,14 @@ void CMouse::InternalOnMouseMove(UINT nFlags, const CPoint& point)
         if (!m_bTrackingMouseLeave) {
             StartMouseLeaveTracker();
         }
+        if (m_pMainFrame->GetLoadState() == MLS::LOADED) {
+            if (!m_pMainFrame->m_osd.ReceiveInputEvent(OsdInputEvent::MOUSE_MOVE, GetVideoPoint(point))) {
+                if (m_bDraggingOsd) {
+                    ReleaseCapture();
+                }
+            }
+        }
         SetCursor(nFlags, screenPoint, point);
-        MVRMove(nFlags, point);
     }
 
     m_pMainFrame->UpdateControlState(CMainFrame::UPDATE_CONTROLS_VISIBILITY);
@@ -517,8 +519,18 @@ void CMouse::InternalOnMouseLeave()
     StopMouseHider();
     m_bTrackingMouseLeave = false;
     m_cursor = Cursor::ARROW;
-    if (m_bD3DFS) {
-        m_pMainFrame->m_OSD.OnMouseLeave();
+    m_pMainFrame->m_osd.ReceiveInputEvent(OsdInputEvent::MOUSE_LEAVE, { 0, 0 });
+}
+
+void CMouse::InternalOnCaptureChanged(CWnd* pWnd)
+{
+    UNREFERENCED_PARAMETER(pWnd);
+    if (m_bDraggingOsd) {
+        CPoint point;
+        VERIFY(GetCursorPos(&point));
+        GetWnd().ScreenToClient(&point);
+        m_pMainFrame->m_osd.ReceiveInputEvent(OsdInputEvent::MOUSE_UP, GetVideoPoint(point));
+        m_bDraggingOsd = false;
     }
 }
 
@@ -550,6 +562,7 @@ BEGIN_MESSAGE_MAP(CMouseWnd, CWnd)
     ON_WM_SETCURSOR()
     ON_WM_MOUSEMOVE()
     ON_WM_MOUSELEAVE()
+    ON_WM_CAPTURECHANGED()
     ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
@@ -632,6 +645,12 @@ void CMouseWnd::OnMouseLeave()
 {
     CMouse::InternalOnMouseLeave();
     CWnd::OnMouseLeave();
+}
+
+void CMouseWnd::OnCaptureChanged(CWnd* pWnd)
+{
+    CMouse::InternalOnCaptureChanged(pWnd);
+    CWnd::OnCaptureChanged(pWnd);
 }
 
 void CMouseWnd::OnDestroy()

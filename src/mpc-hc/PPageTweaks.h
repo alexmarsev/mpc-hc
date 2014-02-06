@@ -1,6 +1,6 @@
 /*
  * (C) 2003-2006 Gabest
- * (C) 2006-2013 see Authors.txt
+ * (C) 2006-2014 see Authors.txt
  *
  * This file is part of MPC-HC.
  *
@@ -21,8 +21,13 @@
 
 #pragma once
 
+#include "AppSettings.h"
+#include "ColorButton.h"
+#include "EventDispatcher.h"
 #include "PPageBase.h"
 
+#include <array>
+#include <utility>
 
 // CPPageTweaks dialog
 
@@ -50,18 +55,25 @@ public:
     CComboBox m_FontSize;
     CComboBox m_FontType;
     CComboBox m_FastSeekMethod;
-    int m_nOSDSize;
-    CString m_strOSDFont;
 
     BOOL m_fFastSeek;
     BOOL m_fShowChapters;
 
     BOOL m_fLCDSupport;
 
+    EventClient m_eventc;
+    CAppSettings::Osd m_osdUndo;
+    std::array<std::pair<CString, COLORREF*>, 6> m_colors;
+    CComboBox m_osdColorBox;
+    CColorButton m_osdColorButton;
+    CSliderCtrl m_osdTransparencySlider;
+    BOOL m_bOsdEnableAnimation;
+
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
     virtual BOOL OnInitDialog();
     virtual BOOL OnApply();
+    virtual void OnReset();
 
     DECLARE_MESSAGE_MAP()
 
@@ -70,5 +82,8 @@ public:
     afx_msg void OnUpdateFastSeek(CCmdUI* pCmdUI);
     afx_msg void OnBnClickedButton1();
     afx_msg void OnUseTimeTooltipClicked();
-    afx_msg void OnChngOSDCombo();
+    afx_msg void OnOsdColorSelection();
+    afx_msg void OnSetOsdColor();
+    afx_msg void OnReinitializeOsd();
+    afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 };

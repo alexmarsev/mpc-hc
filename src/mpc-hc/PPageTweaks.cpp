@@ -34,7 +34,6 @@ CPPageTweaks::CPPageTweaks()
     , m_nJumpDistS(0)
     , m_nJumpDistM(0)
     , m_nJumpDistL(0)
-    , m_nOSDSize(0)
     , m_fNotifySkype(TRUE)
     , m_fPreventMinimize(FALSE)
     , m_fUseWin7TaskBar(TRUE)
@@ -44,7 +43,11 @@ CPPageTweaks::CPPageTweaks()
     , m_fShowChapters(TRUE)
     , m_fUseTimeTooltip(TRUE)
     , m_bHideWindowedMousePointer(TRUE)
+    , m_bOsdEnableAnimation(TRUE)
 {
+    GetEventd().Connect(m_eventc, {
+        MpcEvent::OSD_REINITIALIZE_PAINTER,
+    });
 }
 
 CPPageTweaks::~CPPageTweaks()
@@ -66,10 +69,14 @@ void CPPageTweaks::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_COMBO1, m_FontType);
     DDX_Control(pDX, IDC_COMBO2, m_FontSize);
     DDX_Control(pDX, IDC_COMBO4, m_FastSeekMethod);
+    DDX_Control(pDX, IDC_COMBO5, m_osdColorBox);
+    DDX_Control(pDX, IDC_BUTTON2, m_osdColorButton);
+    DDX_Control(pDX, IDC_SLIDER1, m_osdTransparencySlider);
     DDX_Check(pDX, IDC_CHECK1, m_fFastSeek);
     DDX_Check(pDX, IDC_CHECK2, m_fShowChapters);
     DDX_Check(pDX, IDC_CHECK_LCD, m_fLCDSupport);
     DDX_Check(pDX, IDC_CHECK3, m_bHideWindowedMousePointer);
+    DDX_Check(pDX, IDC_CHECK5, m_bOsdEnableAnimation);
 }
 
 int CALLBACK EnumFontProc(ENUMLOGFONT FAR* lf, NEWTEXTMETRIC FAR* tm, int FontType, LPARAM dwData)
@@ -87,7 +94,7 @@ BOOL CPPageTweaks::OnInitDialog()
 
     SetHandCursor(m_hWnd, IDC_COMBO1);
 
-    const CAppSettings& s = AfxGetAppSettings();
+    CAppSettings& s = AfxGetAppSettings();
 
     m_nJumpDistS = s.nJumpDistS;
     m_nJumpDistM = s.nJumpDistM;
@@ -109,8 +116,7 @@ BOOL CPPageTweaks::OnInitDialog()
     m_TimeTooltipPosition.SetCurSel(s.nTimeTooltipPosition);
     m_TimeTooltipPosition.EnableWindow(m_fUseTimeTooltip);
 
-    m_nOSDSize = s.osd.fontSize;
-    m_strOSDFont = s.osd.fontName;
+    m_osdUndo = s.osd;
 
     m_fFastSeek = s.bFastSeek;
     m_FastSeekMethod.AddString(ResStr(IDS_FASTSEEK_LATEST));
@@ -122,6 +128,25 @@ BOOL CPPageTweaks::OnInitDialog()
     m_bHideWindowedMousePointer = s.bHideWindowedMousePointer;
 
     m_fLCDSupport = s.fLCDSupport;
+
+    m_colors[0] = std::make_pair(CString("Background"), &s.osd.colorBackground);
+    m_colors[1] = std::make_pair(CString("Border"), &s.osd.colorBorder);
+    m_colors[2] = std::make_pair(CString("Text"), &s.osd.colorText);
+    m_colors[3] = std::make_pair(CString("OSD seekbar channel"), &s.osd.colorChannel);
+    m_colors[4] = std::make_pair(CString("OSD seekbar mark"), &s.osd.colorChapter);
+    m_colors[5] = std::make_pair(CString("OSD seekbar thumb"), &s.osd.colorThumb);
+
+    for (size_t i = 0; i < m_colors.size(); i++) {
+        int idx = m_osdColorBox.AddString(m_colors[i].first);
+        m_osdColorBox.SetItemData(idx, i);
+    }
+    m_osdColorBox.SetCurSel(0);
+    OnOsdColorSelection();
+
+    m_bOsdEnableAnimation = s.osd.bAnimation;
+
+    m_osdTransparencySlider.SetRange(0, 255);
+    m_osdTransparencySlider.SetPos(static_cast<int>(255 * (1.0f - s.osd.fAlpha) + 0.5f));
 
     m_FontType.Clear();
     m_FontSize.Clear();
@@ -135,8 +160,7 @@ BOOL CPPageTweaks::OnInitDialog()
         }
         m_FontType.AddString(fntl[i]);
     }
-    CorrectComboListWidth(m_FontType);
-    int iSel = m_FontType.FindStringExact(0, m_strOSDFont);
+    int iSel = m_FontType.FindStringExact(0, s.osd.fontName);
     if (iSel == CB_ERR) {
         iSel = 0;
     }
@@ -146,7 +170,7 @@ BOOL CPPageTweaks::OnInitDialog()
     for (int i = 10; i < 26; ++i) {
         str.Format(_T("%d"), i);
         m_FontSize.AddString(str);
-        if (m_nOSDSize == i) {
+        if (s.osd.fontSize == i) {
             iSel = i;
         }
     }
@@ -176,8 +200,6 @@ BOOL CPPageTweaks::OnApply()
     s.fUseSearchInFolder = !!m_fUseSearchInFolder;
     s.fUseTimeTooltip = !!m_fUseTimeTooltip;
     s.nTimeTooltipPosition = m_TimeTooltipPosition.GetCurSel();
-    s.osd.fontSize = m_nOSDSize;
-    m_FontType.GetLBText(m_FontType.GetCurSel(), s.osd.fontName);
 
     s.bFastSeek = !!m_fFastSeek;
     s.eFastSeekMethod = static_cast<decltype(s.eFastSeekMethod)>(m_FastSeekMethod.GetCurSel());
@@ -187,6 +209,8 @@ BOOL CPPageTweaks::OnApply()
     s.fShowChapters = !!m_fShowChapters;
 
     s.fLCDSupport = !!m_fLCDSupport;
+
+    s.osd.bAnimation = !!m_bOsdEnableAnimation;
 
     // There is no main frame when the option dialog is displayed stand-alone
     if (CMainFrame* pMainFrame = AfxGetMainFrame()) {
@@ -198,13 +222,23 @@ BOOL CPPageTweaks::OnApply()
     return __super::OnApply();
 }
 
+void CPPageTweaks::OnReset()
+{
+    AfxGetAppSettings().osd = m_osdUndo;
+    m_eventc.FireEvent(MpcEvent::OSD_REINITIALIZE_PAINTER);
+    __super::OnReset();
+}
+
 BEGIN_MESSAGE_MAP(CPPageTweaks, CPPageBase)
     ON_UPDATE_COMMAND_UI(IDC_COMBO4, OnUpdateFastSeek)
     ON_BN_CLICKED(IDC_BUTTON1, OnBnClickedButton1)
     ON_BN_CLICKED(IDC_CHECK8, OnUseTimeTooltipClicked)
-    ON_CBN_SELCHANGE(IDC_COMBO1, OnChngOSDCombo)
-    ON_CBN_SELCHANGE(IDC_COMBO2, OnChngOSDCombo)
+    ON_BN_CLICKED(IDC_BUTTON2, OnSetOsdColor)
+    ON_CBN_SELCHANGE(IDC_COMBO5, OnOsdColorSelection)
+    ON_CBN_SELCHANGE(IDC_COMBO1, OnReinitializeOsd)
+    ON_CBN_SELCHANGE(IDC_COMBO2, OnReinitializeOsd)
     ON_NOTIFY_EX_RANGE(TTN_NEEDTEXT, 0, 0xFFFF, OnToolTipNotify)
+    ON_WM_HSCROLL()
 END_MESSAGE_MAP()
 
 
@@ -225,12 +259,36 @@ void CPPageTweaks::OnBnClickedButton1()
     SetModified();
 }
 
-void CPPageTweaks::OnChngOSDCombo()
+void CPPageTweaks::OnOsdColorSelection()
 {
-    CString str;
-    m_nOSDSize = m_FontSize.GetCurSel() + 10;
-    m_FontType.GetLBText(m_FontType.GetCurSel(), str);
-    ((CMainFrame*)AfxGetMainWnd())->m_OSD.DisplayMessage(OSD_TOPLEFT, _T("Test"), 2000, m_nOSDSize, str);
+    m_osdColorButton.SetColor(*m_colors[m_osdColorBox.GetItemData(m_osdColorBox.GetCurSel())].second);
+}
+
+void CPPageTweaks::OnSetOsdColor()
+{
+    const size_t colorIdx = m_osdColorBox.GetItemData(m_osdColorBox.GetCurSel());
+    COLORREF* pColor = m_colors[colorIdx].second;
+    CColorDialog dlg(*pColor);
+    dlg.m_cc.Flags |= CC_FULLOPEN;
+    if (dlg.DoModal() == IDOK) {
+        *pColor = dlg.m_cc.rgbResult;
+        m_osdColorButton.SetColor(dlg.m_cc.rgbResult);
+        if (colorIdx < 3) {
+            OnReinitializeOsd();
+        }
+    }
+}
+
+void CPPageTweaks::OnReinitializeOsd()
+{
+    auto& s = AfxGetAppSettings();
+    s.osd.fontSize = m_FontSize.GetCurSel() + 10;
+    m_FontType.GetLBText(m_FontType.GetCurSel(), s.osd.fontName);
+    s.osd.fAlpha = (255 - m_osdTransparencySlider.GetPos()) / 255.0f;
+    m_eventc.FireEvent(MpcEvent::OSD_REINITIALIZE_PAINTER);
+    if (CMainFrame* pMainFrame = AfxGetMainFrame()) {
+        pMainFrame->m_osd.DisplayMessage(_T("Test Message"));
+    }
     SetModified();
 }
 
@@ -272,5 +330,14 @@ BOOL CPPageTweaks::OnToolTipNotify(UINT id, NMHDR* pNMH, LRESULT* pResult)
     }
 
     return FALSE;
+}
+
+void CPPageTweaks::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+    if (*pScrollBar == m_osdTransparencySlider) {
+        OnReinitializeOsd();
+    }
+
+    __super::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 

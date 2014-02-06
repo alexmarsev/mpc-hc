@@ -237,6 +237,9 @@ private:
     CComPtr<IMFVideoProcessor> m_pMFVP;
     CComPtr<IVMRWindowlessControl9> m_pVMRWC;
 
+    CComPtr<IInternalOsdService> m_pIOSS;
+    CComPtr<IVMRMixerBitmap9> m_pVMRB;
+    CComPtr<IMFVideoMixerBitmap> m_pMFB;
     CComPtr<ISubPicAllocatorPresenter> m_pCAP;
     CComPtr<ISubPicAllocatorPresenter2> m_pCAP2;
 
@@ -953,7 +956,7 @@ public:
     // ==== Added by CASIMIR666
     CMouseWnd*      m_pVideoWnd;            // Current Video (main display screen or 2nd)
     CFullscreenWnd* m_pFullscreenWnd;
-    CVMROSD     m_OSD;
+    OsdService      m_osd;
     bool        m_bRemainingTime;
     int         m_nCurSubtitle;
     long        m_lSubtitleShift;

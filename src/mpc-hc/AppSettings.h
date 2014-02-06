@@ -559,7 +559,7 @@ public:
     int             nTimeTooltipPosition;
     bool            bHideWindowedMousePointer;
 
-    struct {
+    struct Osd {
         bool bEnabled = false;
         CString fontName;
         int fontSize = 0;

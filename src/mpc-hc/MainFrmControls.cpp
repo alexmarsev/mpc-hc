@@ -332,15 +332,8 @@ void CMainFrameControls::UpdateToolbarsVisibility()
 
     bool bRecalcLayout = false;
 
-    bool bExclSeekbar = false;
-    if (m_pMainFrame->m_fFullScreen && m_pMainFrame->m_pMVRS) {
-        BOOL bOptExcl = FALSE, bOptExclSeekbar = FALSE;
-        VERIFY(m_pMainFrame->m_pMVRS->SettingsGetBoolean(L"enableExclusive", &bOptExcl));
-        VERIFY(m_pMainFrame->m_pMVRS->SettingsGetBoolean(L"enableSeekbar", &bOptExclSeekbar));
-        bExclSeekbar = (bOptExcl && bOptExclSeekbar);
-    } else if (m_bDelayShowNotLoaded && st.bLastHaveExclusiveSeekbar) {
-        bExclSeekbar = true;
-    }
+    const bool bExclSeekbar = m_pMainFrame->m_osd.SeekbarEnabled() ||
+                              (m_bDelayShowNotLoaded && st.bLastHaveExclusiveSeekbar);
 
     if (m_pMainFrame->m_fFullScreen && s.bHideFullscreenControls &&
             ePolicy == CAppSettings::HideFullscreenControlsPolicy::SHOW_NEVER) {
@@ -399,17 +392,19 @@ void CMainFrameControls::UpdateToolbarsVisibility()
                 if (bOnWindow) {
                     unsigned uTop, uLeft, uRight, uBottom;
                     GetDockZones(uTop, uLeft, uRight, uBottom, bEnumedPanelZones ? false : (bEnumedPanelZones = true));
-                    unsigned uExclSeekbarHeight = 0;
                     if (bExclSeekbar) {
-                        uExclSeekbarHeight = 56; // TODO: query this through IMadVRInfo
                         uBottom = 0;
                     }
                     if (!bCanHideDockedPanels) {
                         uTop = uLeft = uRight = 0;
                     }
+
                     CRect clientRect;
                     m_pMainFrame->GetClientRect(clientRect);
-                    const bool bHoveringExclSeekbar = (bExclSeekbar && clientPoint.y + (int)uExclSeekbarHeight >= clientRect.Height());
+
+                    const bool bHoveringExclSeekbar = m_pMainFrame->m_osd.PointOnOsdControl(
+                                                          m_pMainFrame->m_wndView.GetVideoPoint(clientPoint));
+
                     ret = true;
                     if (clientRect.PtInRect(clientPoint)) {
                         if (ePolicy == CAppSettings::HideFullscreenControlsPolicy::SHOW_WHEN_CURSOR_MOVED) {

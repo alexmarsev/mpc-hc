@@ -73,6 +73,7 @@ private:
     CPoint m_leftDoubleStartPoint;
     int m_leftDoubleStartTime;
     int m_popupMenuUninitTime;
+    bool m_bDraggingOsd;
 
     std::pair<bool, CPoint> m_switchingToFullscreen;
 
@@ -94,13 +95,10 @@ private:
     void SetCursor(const CPoint& screenPoint);
     bool TestDrag(const CPoint& screenPoint);
 
+    void CancelOsdDrag();
+
     EventClient m_eventc;
     void EventCallback(MpcEvent ev);
-
-    bool UsingMVR() const;
-    void MVRMove(UINT nFlags, const CPoint& point);
-    bool MVRDown(UINT nFlags, const CPoint& point);
-    bool MVRUp(UINT nFlags, const CPoint& point);
 
 protected:
     void InternalOnLButtonDown(UINT nFlags, const CPoint& point);
@@ -118,6 +116,7 @@ protected:
     BOOL InternalOnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
     void InternalOnMouseMove(UINT nFlags, const CPoint& point);
     void InternalOnMouseLeave();
+    void InternalOnCaptureChanged(CWnd* pWnd);
     void InternalOnDestroy();
 };
 
@@ -153,6 +152,8 @@ private:
     void OnMouseMove(UINT nFlags, CPoint point);
 
     void OnMouseLeave();
+
+    void OnCaptureChanged(CWnd* pWnd);
 
     void OnDestroy();
 
