@@ -10136,8 +10136,12 @@ double CMainFrame::GetZoomAutoFitScale(bool bLargerOnly)
 
 void CMainFrame::RepaintVideo()
 {
-    if (!m_bDelaySetOutputRect && m_pCAP) {
-        m_pCAP->Paint(false);
+    if (!m_bDelaySetOutputRect) {
+        if (m_pCAP) {
+            m_pCAP->Paint(false);
+        } else if (m_pMFVDC) {
+            m_pMFVDC->RepaintVideo();
+        }
     }
 }
 
