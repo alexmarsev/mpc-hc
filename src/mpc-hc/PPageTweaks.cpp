@@ -109,8 +109,8 @@ BOOL CPPageTweaks::OnInitDialog()
     m_TimeTooltipPosition.SetCurSel(s.nTimeTooltipPosition);
     m_TimeTooltipPosition.EnableWindow(m_fUseTimeTooltip);
 
-    m_nOSDSize = s.nOSDSize;
-    m_strOSDFont = s.strOSDFont;
+    m_nOSDSize = s.osd.fontSize;
+    m_strOSDFont = s.osd.fontName;
 
     m_fFastSeek = s.bFastSeek;
     m_FastSeekMethod.AddString(ResStr(IDS_FASTSEEK_LATEST));
@@ -176,8 +176,8 @@ BOOL CPPageTweaks::OnApply()
     s.fUseSearchInFolder = !!m_fUseSearchInFolder;
     s.fUseTimeTooltip = !!m_fUseTimeTooltip;
     s.nTimeTooltipPosition = m_TimeTooltipPosition.GetCurSel();
-    s.nOSDSize = m_nOSDSize;
-    m_FontType.GetLBText(m_FontType.GetCurSel(), s.strOSDFont);
+    s.osd.fontSize = m_nOSDSize;
+    m_FontType.GetLBText(m_FontType.GetCurSel(), s.osd.fontName);
 
     s.bFastSeek = !!m_fFastSeek;
     s.eFastSeekMethod = static_cast<decltype(s.eFastSeekMethod)>(m_FastSeekMethod.GetCurSel());

@@ -6129,7 +6129,7 @@ void CMainFrame::OnViewVSyncOffsetDecrease()
 void CMainFrame::OnUpdateViewRemainingTime(CCmdUI* pCmdUI)
 {
     const CAppSettings& s = AfxGetAppSettings();
-    pCmdUI->Enable(s.fShowOSD && (GetLoadState() != MLS::CLOSED));
+    pCmdUI->Enable(s.osd.bEnabled && (GetLoadState() != MLS::CLOSED));
     pCmdUI->SetCheck(m_bRemainingTime);
 }
 
@@ -11755,7 +11755,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
         m_pMVRS = m_pCAP;
         pMVTO = m_pCAP;
 
-        if (s.fShowOSD || s.fShowDebugInfo) { // Force OSD on when the debug switch is used
+        if (s.osd.bEnabled || s.fShowDebugInfo) { // Force OSD on when the debug switch is used
             if (pVMB) {
                 m_OSD.Start(m_pVideoWnd, pVMB, IsD3DFullScreenMode());
             } else if (pMFVMB) {
@@ -14147,7 +14147,7 @@ bool CMainFrame::BuildGraphVideoAudio(int fVPreview, bool fVCapture, int fAPrevi
                 m_pVMRWC->SetVideoClippingWindow(m_pVideoWnd->m_hWnd);
             }
 
-            if (s.fShowOSD || s.fShowDebugInfo) {
+            if (s.osd.bEnabled || s.fShowDebugInfo) {
                 if (pVMB) {
                     m_OSD.Start(m_pVideoWnd, pVMB, IsD3DFullScreenMode());
                 } else if (pMFVMB) {

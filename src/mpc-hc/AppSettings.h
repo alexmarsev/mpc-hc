@@ -382,7 +382,6 @@ public:
     // Player
     bool            fAllowMultipleInst;
     bool            fTrayIcon;
-    bool            fShowOSD;
     bool            fLimitWindowProportions;
     bool            fSnapToDesktopEdges;
     bool            fHideCDROMsSubMenu;
@@ -558,9 +557,13 @@ public:
     bool            fUseSearchInFolder;
     bool            fUseTimeTooltip;
     int             nTimeTooltipPosition;
-    CString         strOSDFont;
-    int             nOSDSize;
     bool            bHideWindowedMousePointer;
+
+    struct {
+        bool bEnabled = false;
+        CString fontName;
+        int fontSize = 0;
+    } osd;
 
     // Miscellaneous
     int             iBrightness;

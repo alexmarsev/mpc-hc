@@ -110,7 +110,7 @@ BOOL CPPagePlayer::OnInitDialog()
     m_fKeepHistory = s.fKeepHistory;
     m_fHideCDROMsSubMenu = s.fHideCDROMsSubMenu;
     m_priority = s.dwPriority != NORMAL_PRIORITY_CLASS;
-    m_fShowOSD = s.fShowOSD;
+    m_fShowOSD = s.osd.bEnabled;
     m_fRememberDVDPos = s.fRememberDVDPos;
     m_fRememberFilePos = s.fRememberFilePos;
     m_fLimitWindowProportions = s.fLimitWindowProportions;
@@ -142,7 +142,7 @@ BOOL CPPagePlayer::OnApply()
     s.fKeepHistory = !!m_fKeepHistory;
     s.fHideCDROMsSubMenu = !!m_fHideCDROMsSubMenu;
     s.dwPriority = m_priority ? ABOVE_NORMAL_PRIORITY_CLASS : NORMAL_PRIORITY_CLASS;
-    s.fShowOSD = !!m_fShowOSD;
+    s.osd.bEnabled = !!m_fShowOSD;
     s.fLimitWindowProportions = !!m_fLimitWindowProportions;
     s.fRememberDVDPos = !!m_fRememberDVDPos;
     s.fRememberFilePos = !!m_fRememberFilePos;
