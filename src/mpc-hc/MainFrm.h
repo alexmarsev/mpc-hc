@@ -42,6 +42,7 @@
 #include "GraphThread.h"
 #include "TimerWrappers.h"
 #include "MainFrmControls.h"
+#include "TaskbarList.h"
 
 #include "../SubPic/ISubPic.h"
 
@@ -176,6 +177,7 @@ public:
         STATUS_ERASE,
         SEEKBAR_TOOLTIP,
         SEEKBAR_HALT_THUMB_DRAG,
+        TASKBAR_LONG_LOAD_OR_CLOSE,
     };
     OneTimeTimerPool<TimerOneTimeSubscriber> m_timerOneTime;
 
@@ -987,10 +989,7 @@ public:
 
     CString GetVidPos() const;
 
-    ITaskbarList3* m_pTaskbarList;
-    HRESULT CreateThumbnailToolbar();
-    HRESULT UpdateThumbarButton();
-    HRESULT UpdateThumbarButton(MPC_PLAYSTATE iPlayState);
+    CTaskbarList m_taskbarList;
     void UpdateThumbnailClip();
 
 protected:
@@ -1047,6 +1046,7 @@ public:
         UPDATE_AUDIO_SWITCHER,
         UPDATE_CONTROLS_VISIBILITY,
         UPDATE_CHILDVIEW_CURSOR_HACK,
+        UPDATE_WIN7_TASKBAR,
     };
 
     void UpdateControlState(UpdateControlTarget target);

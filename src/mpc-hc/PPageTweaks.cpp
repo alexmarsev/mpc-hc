@@ -1,6 +1,6 @@
 /*
  * (C) 2003-2006 Gabest
- * (C) 2006-2013 see Authors.txt
+ * (C) 2006-2014 see Authors.txt
  *
  * This file is part of MPC-HC.
  *
@@ -188,16 +188,11 @@ BOOL CPPageTweaks::OnApply()
 
     s.fLCDSupport = !!m_fLCDSupport;
 
-    CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
-    if (m_fUseWin7TaskBar) {
-        pFrame->CreateThumbnailToolbar();
-    }
-    pFrame->UpdateThumbarButton();
-
     // There is no main frame when the option dialog is displayed stand-alone
     if (CMainFrame* pMainFrame = AfxGetMainFrame()) {
         pMainFrame->UpdateControlState(CMainFrame::UPDATE_SKYPE);
         pMainFrame->UpdateControlState(CMainFrame::UPDATE_SEEKBAR_CHAPTERS);
+        pMainFrame->UpdateControlState(CMainFrame::UPDATE_WIN7_TASKBAR);
     }
 
     return __super::OnApply();

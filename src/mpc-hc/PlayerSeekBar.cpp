@@ -218,21 +218,12 @@ void CPlayerSeekBar::MoveThumbToPositition(REFERENCE_TIME rtPos)
 
         m_rtThumbPos = std::max(0ll, std::min(pos.rtDur, rtPos));
 
-        // TODO: refactor out
-        bool bSetTaskbar = (rtPos <= 0);
-
         if (IsVisible()) {
             const CRect newThumbRect(GetThumbRect());
 
             if (newThumbRect != m_lastThumbRect) {
-                bSetTaskbar = true;
                 InvalidateRect(newThumbRect | m_lastThumbRect);
             }
-        }
-
-        // TODO: refactor out
-        if (bSetTaskbar && AfxGetAppSettings().fUseWin7TaskBar && m_pMainFrame->m_pTaskbarList) {
-            VERIFY(S_OK == m_pMainFrame->m_pTaskbarList->SetProgressValue(m_pMainFrame->m_hWnd, max(m_rtThumbPos, 1ll), pos.rtDur));
         }
     }
 }

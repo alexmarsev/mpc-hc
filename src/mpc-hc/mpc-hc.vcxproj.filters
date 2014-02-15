@@ -381,6 +381,9 @@
     <ClCompile Include="ColorButton.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
+    <ClCompile Include="TaskbarList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="PlaybackState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -780,6 +783,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PlaybackState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TaskbarList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

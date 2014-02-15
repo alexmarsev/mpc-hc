@@ -730,7 +730,6 @@ CMainFrame::CMainFrame()
     , m_rtStepForwardStart(0)
     , m_lCurrentChapter(0)
     , m_lChapterStartTime(0xFFFFFFFF)
-    , m_pTaskbarList(nullptr)
     , m_pGraphThread(nullptr)
     , m_bOpenedThroughThread(false)
     , m_evOpenPrivateFinished(FALSE, TRUE)
@@ -772,6 +771,7 @@ CMainFrame::CMainFrame()
     , m_dLastVideoScaleFactor(0)
     , m_nLastVideoWidth(0)
     , m_ps(std::make_shared<PlaybackState>())
+    , m_taskbarList(this)
 {
     m_Lcd.SetVolumeRange(0, 100);
     m_liLastSaveTime.QuadPart = 0;
@@ -1076,7 +1076,6 @@ LRESULT CMainFrame::OnNotifyIcon(WPARAM wParam, LPARAM lParam)
     switch ((UINT)lParam) {
         case WM_LBUTTONDOWN:
             ShowWindow(SW_SHOW);
-            CreateThumbnailToolbar();
             MoveVideoWindow();
             SetForegroundWindow();
             break;
@@ -1106,7 +1105,8 @@ LRESULT CMainFrame::OnNotifyIcon(WPARAM wParam, LPARAM lParam)
 
 LRESULT CMainFrame::OnTaskBarThumbnailsCreate(WPARAM, LPARAM)
 {
-    return CreateThumbnailToolbar();
+    m_taskbarList.OnCreate();
+    return 0;
 }
 
 LRESULT CMainFrame::OnSkypeAttach(WPARAM wParam, LPARAM lParam)
@@ -3149,9 +3149,6 @@ void CMainFrame::OnUpdatePlayerStatus(CCmdUI* pCmdUI)
 {
     if (GetLoadState() == MLS::LOADING) {
         m_wndStatusBar.SetStatusMessage(ResStr(IDS_CONTROLS_OPENING));
-        if (AfxGetAppSettings().fUseWin7TaskBar && m_pTaskbarList) {
-            m_pTaskbarList->SetProgressState(m_hWnd, TBPF_INDETERMINATE);
-        }
     } else if (GetLoadState() == MLS::LOADED) {
         CString msg;
 
@@ -3260,9 +3257,6 @@ void CMainFrame::OnUpdatePlayerStatus(CCmdUI* pCmdUI)
         m_wndStatusBar.SetStatusMessage(UI_Text);
     } else if (GetLoadState() == MLS::CLOSING) {
         m_wndStatusBar.SetStatusMessage(ResStr(IDS_CONTROLS_CLOSING));
-        if (AfxGetAppSettings().fUseWin7TaskBar && m_pTaskbarList) {
-            m_pTaskbarList->SetProgressState(m_hWnd, TBPF_INDETERMINATE);
-        }
     } else {
         m_wndStatusBar.SetStatusMessage(m_closingmsg);
     }
@@ -6481,8 +6475,11 @@ void CMainFrame::OnViewFullscreenSecondary()
 
 void CMainFrame::OnUpdateViewFullscreen(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(GetLoadState() == MLS::LOADED && !m_fAudioOnly || m_fFullScreen);
+    const bool bEnable = (GetLoadState() == MLS::LOADED && !m_fAudioOnly || m_fFullScreen);
+    pCmdUI->Enable(bEnable);
     pCmdUI->SetCheck(m_fFullScreen);
+
+    m_taskbarList.EnableFullscreenButton(bEnable);
 }
 
 void CMainFrame::OnViewZoom(UINT nID)
@@ -7178,6 +7175,18 @@ void CMainFrame::OnUpdatePlayPauseStop(CCmdUI* pCmdUI)
         }
     } else if (pCmdUI->m_nID == ID_PLAY_PLAY && !IsPlaylistEmpty()) {
         fEnable = true;
+    }
+
+    switch (pCmdUI->m_nID)  {
+        case ID_PLAY_PLAY:
+            m_taskbarList.EnablePlayButton(fEnable);
+            break;
+        case ID_PLAY_PAUSE:
+            m_taskbarList.EnablePauseButton(fEnable && fs != State_Paused);
+            break;
+        case ID_PLAY_STOP:
+            m_taskbarList.EnableStopButton(fEnable);
+            break;
     }
 
     pCmdUI->Enable(fEnable);
@@ -8361,13 +8370,18 @@ void CMainFrame::OnUpdateNavigateSkip(CCmdUI* pCmdUI)
 {
     const CAppSettings& s = AfxGetAppSettings();
 
-    pCmdUI->Enable(GetLoadState() == MLS::LOADED
-                   && ((GetPlaybackMode() == PM_DVD
-                        && m_iDVDDomain != DVD_DOMAIN_VideoManagerMenu
-                        && m_iDVDDomain != DVD_DOMAIN_VideoTitleSetMenu)
-                       || (GetPlaybackMode() == PM_FILE  && s.fUseSearchInFolder)
-                       || (GetPlaybackMode() == PM_FILE  && !s.fUseSearchInFolder && (m_wndPlaylistBar.GetCount() > 1 || m_pCB->ChapGetCount() > 1))
-                       || (GetPlaybackMode() == PM_DIGITAL_CAPTURE && !m_fSetChannelActive)));
+    const bool bEnable = (GetLoadState() == MLS::LOADED) &&
+                         ((GetPlaybackMode() == PM_DVD && m_iDVDDomain != DVD_DOMAIN_VideoManagerMenu &&
+                           m_iDVDDomain != DVD_DOMAIN_VideoTitleSetMenu) ||
+                          (GetPlaybackMode() == PM_FILE && s.fUseSearchInFolder) ||
+                          (GetPlaybackMode() == PM_FILE && !s.fUseSearchInFolder &&
+                           (m_wndPlaylistBar.GetCount() > 1 || m_pCB->ChapGetCount() > 1)) ||
+                          (GetPlaybackMode() == PM_DIGITAL_CAPTURE && !m_fSetChannelActive));
+
+    pCmdUI->Enable(bEnable);
+
+    m_taskbarList.EnableBackButton(bEnable);
+    m_taskbarList.EnableForwardButton(bEnable);
 }
 
 void CMainFrame::OnNavigateSkipFile(UINT nID)
@@ -9370,6 +9384,10 @@ void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasT
 {
     if (IsD3DFullScreenMode()) {
         return;
+    }
+
+    if (IsIconic()) {
+        ShowWindow(SW_RESTORE);
     }
 
     CAppSettings& s = AfxGetAppSettings();
@@ -14749,6 +14767,7 @@ void CMainFrame::SetLoadState(MLS eState)
         m_eventc.FireEvent(MpcEvent::MEDIA_LOADED);
     }
     UpdateControlState(UPDATE_CONTROLS_VISIBILITY);
+    UpdateControlState(UPDATE_WIN7_TASKBAR);
 }
 
 MLS CMainFrame::GetLoadState() const
@@ -14772,7 +14791,7 @@ void CMainFrame::SetPlayState(MPC_PLAYSTATE iState)
         SetThreadExecutionState(iState == PS_PLAY ? ES_CONTINUOUS | ES_SYSTEM_REQUIRED : ES_CONTINUOUS);
     }
 
-    UpdateThumbarButton(iState);
+    m_taskbarList.SetPlayState(iState);
 }
 
 bool CMainFrame::CreateFullScreenWindow()
@@ -15690,228 +15709,14 @@ void CMainFrame::OnFileOpendirectory()
     OpenCurPlaylistItem();
 }
 
-HRESULT CMainFrame::CreateThumbnailToolbar()
-{
-    if (!AfxGetAppSettings().fUseWin7TaskBar || !SysVersion::Is7OrLater()) {
-        return E_FAIL;
-    }
-
-    if (m_pTaskbarList) {
-        m_pTaskbarList->Release();
-    }
-    HRESULT hr = CoCreateInstance(CLSID_TaskbarList, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&m_pTaskbarList));
-    if (SUCCEEDED(hr)) {
-        CMPCPngImage image;
-        if (!image.Load(MAKEINTRESOURCE(IDF_WIN7_TOOLBAR))) {
-            m_pTaskbarList->Release();
-            image.CleanUp();
-            return E_FAIL;
-        }
-
-        BITMAP bi;
-        image.GetBitmap(&bi);
-        int nI = bi.bmWidth / bi.bmHeight;
-        HIMAGELIST hImageList = ImageList_Create(bi.bmHeight, bi.bmHeight, ILC_COLOR32, nI, 0);
-
-        ImageList_Add(hImageList, (HBITMAP)image, 0);
-        hr = m_pTaskbarList->ThumbBarSetImageList(m_hWnd, hImageList);
-
-        if (SUCCEEDED(hr)) {
-            THUMBBUTTON buttons[5] = {};
-
-            // PREVIOUS
-            buttons[0].dwMask = THB_BITMAP | THB_TOOLTIP | THB_FLAGS;
-            buttons[0].dwFlags = THBF_DISABLED;
-            buttons[0].iId = IDTB_BUTTON3;
-            buttons[0].iBitmap = 0;
-            StringCchCopy(buttons[0].szTip, _countof(buttons[0].szTip), ResStr(IDS_AG_PREVIOUS));
-
-            // STOP
-            buttons[1].dwMask = THB_BITMAP | THB_TOOLTIP | THB_FLAGS;
-            buttons[1].dwFlags = THBF_DISABLED;
-            buttons[1].iId = IDTB_BUTTON1;
-            buttons[1].iBitmap = 1;
-            StringCchCopy(buttons[1].szTip, _countof(buttons[1].szTip), ResStr(IDS_AG_STOP));
-
-            // PLAY/PAUSE
-            buttons[2].dwMask = THB_BITMAP | THB_TOOLTIP | THB_FLAGS;
-            buttons[2].dwFlags = THBF_DISABLED;
-            buttons[2].iId = IDTB_BUTTON2;
-            buttons[2].iBitmap = 3;
-            StringCchCopy(buttons[2].szTip, _countof(buttons[2].szTip), ResStr(IDS_AG_PLAYPAUSE));
-
-            // NEXT
-            buttons[3].dwMask = THB_BITMAP | THB_TOOLTIP | THB_FLAGS;
-            buttons[3].dwFlags = THBF_DISABLED;
-            buttons[3].iId = IDTB_BUTTON4;
-            buttons[3].iBitmap = 4;
-            StringCchCopy(buttons[3].szTip, _countof(buttons[3].szTip), ResStr(IDS_AG_NEXT));
-
-            // FULLSCREEN
-            buttons[4].dwMask = THB_BITMAP | THB_TOOLTIP | THB_FLAGS;
-            buttons[4].dwFlags = THBF_DISABLED;
-            buttons[4].iId = IDTB_BUTTON5;
-            buttons[4].iBitmap = 5;
-            StringCchCopy(buttons[4].szTip, _countof(buttons[4].szTip), ResStr(IDS_AG_FULLSCREEN));
-
-            hr = m_pTaskbarList->ThumbBarAddButtons(m_hWnd, ARRAYSIZE(buttons), buttons);
-        }
-        ImageList_Destroy(hImageList);
-        image.CleanUp();
-    }
-
-    return hr;
-}
-
-HRESULT CMainFrame::UpdateThumbarButton()
-{
-    MPC_PLAYSTATE state = PS_STOP;
-    if (GetLoadState() == MLS::LOADED) {
-        switch (GetMediaState()) {
-            case State_Running:
-                state = PS_PLAY;
-                break;
-            case State_Paused:
-                state = PS_PAUSE;
-                break;
-        }
-    }
-    return UpdateThumbarButton(state);
-}
-
-HRESULT CMainFrame::UpdateThumbarButton(MPC_PLAYSTATE iPlayState)
-{
-    if (!m_pTaskbarList) {
-        return E_FAIL;
-    }
-
-    const CAppSettings& s = AfxGetAppSettings();
-
-    if (!s.fUseWin7TaskBar) {
-        m_pTaskbarList->SetOverlayIcon(m_hWnd, nullptr, L"");
-        m_pTaskbarList->SetProgressState(m_hWnd, TBPF_NOPROGRESS);
-
-        THUMBBUTTON buttons[5] = {};
-
-        buttons[0].dwMask = THB_BITMAP | THB_TOOLTIP | THB_FLAGS;
-        buttons[0].dwFlags = THBF_HIDDEN;
-        buttons[0].iId = IDTB_BUTTON3;
-
-        buttons[1].dwMask = THB_BITMAP | THB_TOOLTIP | THB_FLAGS;
-        buttons[1].dwFlags = THBF_HIDDEN;
-        buttons[1].iId = IDTB_BUTTON1;
-
-        buttons[2].dwMask = THB_BITMAP | THB_TOOLTIP | THB_FLAGS;
-        buttons[2].dwFlags = THBF_HIDDEN;
-        buttons[2].iId = IDTB_BUTTON2;
-
-        buttons[3].dwMask = THB_BITMAP | THB_TOOLTIP | THB_FLAGS;
-        buttons[3].dwFlags = THBF_HIDDEN;
-        buttons[3].iId = IDTB_BUTTON4;
-
-        buttons[4].dwMask = THB_BITMAP | THB_TOOLTIP | THB_FLAGS;
-        buttons[4].dwFlags = THBF_HIDDEN;
-        buttons[4].iId = IDTB_BUTTON5;
-
-        HRESULT hr = m_pTaskbarList->ThumbBarUpdateButtons(m_hWnd, ARRAYSIZE(buttons), buttons);
-        return hr;
-    }
-
-    THUMBBUTTON buttons[5] = {};
-
-    buttons[0].dwMask = THB_BITMAP | THB_TOOLTIP | THB_FLAGS;
-    buttons[0].dwFlags = (!s.fUseSearchInFolder && m_wndPlaylistBar.GetCount() <= 1 && (m_pCB && m_pCB->ChapGetCount() <= 1)) ? THBF_DISABLED : THBF_ENABLED;
-    buttons[0].iId = IDTB_BUTTON3;
-    buttons[0].iBitmap = 0;
-    StringCchCopy(buttons[0].szTip, _countof(buttons[0].szTip), ResStr(IDS_AG_PREVIOUS));
-
-    buttons[1].dwMask = THB_BITMAP | THB_TOOLTIP | THB_FLAGS;
-    buttons[1].iId = IDTB_BUTTON1;
-    buttons[1].iBitmap = 1;
-    StringCchCopy(buttons[1].szTip, _countof(buttons[1].szTip), ResStr(IDS_AG_STOP));
-
-    buttons[2].dwMask = THB_BITMAP | THB_TOOLTIP | THB_FLAGS;
-    buttons[2].iId = IDTB_BUTTON2;
-    buttons[2].iBitmap = 3;
-    StringCchCopy(buttons[2].szTip, _countof(buttons[2].szTip), ResStr(IDS_AG_PLAYPAUSE));
-
-    buttons[3].dwMask = THB_BITMAP | THB_TOOLTIP | THB_FLAGS;
-    buttons[3].dwFlags = (!s.fUseSearchInFolder && m_wndPlaylistBar.GetCount() <= 1 && (m_pCB && m_pCB->ChapGetCount() <= 1)) ? THBF_DISABLED : THBF_ENABLED;
-    buttons[3].iId = IDTB_BUTTON4;
-    buttons[3].iBitmap = 4;
-    StringCchCopy(buttons[3].szTip, _countof(buttons[3].szTip), ResStr(IDS_AG_NEXT));
-
-    buttons[4].dwMask = THB_BITMAP | THB_TOOLTIP | THB_FLAGS;
-    buttons[4].dwFlags = THBF_ENABLED;
-    buttons[4].iId = IDTB_BUTTON5;
-    buttons[4].iBitmap = 5;
-    StringCchCopy(buttons[4].szTip, _countof(buttons[4].szTip), ResStr(IDS_AG_FULLSCREEN));
-
-    if (GetLoadState() == MLS::LOADED) {
-        HICON hIcon = nullptr;
-        if (iPlayState == PS_PLAY) {
-            buttons[1].dwFlags = THBF_ENABLED;
-            buttons[2].dwFlags = THBF_ENABLED;
-            buttons[2].iBitmap = 2;
-
-            hIcon = (HICON)LoadImage(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_TB_PLAY), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE);
-            m_pTaskbarList->SetProgressState(m_hWnd, m_ps->HasDuration() ? TBPF_NORMAL : TBPF_NOPROGRESS);
-        } else if (iPlayState == PS_STOP) {
-            buttons[1].dwFlags = THBF_DISABLED;
-            buttons[2].dwFlags = THBF_ENABLED;
-            buttons[2].iBitmap = 3;
-
-            hIcon = (HICON)LoadImage(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_TB_STOP), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE);
-            m_pTaskbarList->SetProgressState(m_hWnd, TBPF_NOPROGRESS);
-        } else if (iPlayState == PS_PAUSE) {
-            buttons[1].dwFlags = THBF_ENABLED;
-            buttons[2].dwFlags = THBF_ENABLED;
-            buttons[2].iBitmap = 3;
-
-            hIcon = (HICON)LoadImage(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_TB_PAUSE), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE);
-            m_pTaskbarList->SetProgressState(m_hWnd, m_ps->HasDuration() ? TBPF_PAUSED : TBPF_NOPROGRESS);
-        }
-
-        if (m_fAudioOnly) {
-            buttons[4].dwFlags = THBF_DISABLED;
-        }
-
-        if (GetPlaybackMode() == PM_DVD && m_iDVDDomain != DVD_DOMAIN_Title) {
-            buttons[0].dwFlags = THBF_DISABLED;
-            buttons[1].dwFlags = THBF_DISABLED;
-            buttons[2].dwFlags = THBF_DISABLED;
-            buttons[3].dwFlags = THBF_DISABLED;
-        }
-
-        m_pTaskbarList->SetOverlayIcon(m_hWnd, hIcon, L"");
-
-        if (hIcon != nullptr) {
-            DestroyIcon(hIcon);
-        }
-    } else {
-        buttons[0].dwFlags = THBF_DISABLED;
-        buttons[1].dwFlags = THBF_DISABLED;
-        buttons[2].dwFlags = THBF_DISABLED;
-        buttons[3].dwFlags = THBF_DISABLED;
-        buttons[4].dwFlags = THBF_DISABLED;
-
-        m_pTaskbarList->SetOverlayIcon(m_hWnd, nullptr, L"");
-        m_pTaskbarList->SetProgressState(m_hWnd, TBPF_NOPROGRESS);
-    }
-
-    HRESULT hr = m_pTaskbarList->ThumbBarUpdateButtons(m_hWnd, ARRAYSIZE(buttons), buttons);
-
-    return hr;
-}
-
 void CMainFrame::UpdateThumbnailClip()
 {
-    if (m_pTaskbarList) {
+    if (CComPtr<ITaskbarList3> service = m_taskbarList.GetService()) {
         const auto& s = AfxGetAppSettings();
 
         if (!s.fUseWin7TaskBar || GetLoadState() != MLS::LOADED ||
                 m_fAudioOnly || m_fFullScreen || IsD3DFullScreenMode()) {
-            VERIFY(SUCCEEDED(m_pTaskbarList->SetThumbnailClip(m_hWnd, nullptr)));
+            VERIFY(SUCCEEDED(service->SetThumbnailClip(m_hWnd, nullptr)));
         } else {
             CRect rect;
             m_wndView.GetWindowRect(rect);
@@ -15942,45 +15747,43 @@ void CMainFrame::UpdateThumbnailClip()
                 rect.bottom += menuHeight;
             }
 
-            VERIFY(SUCCEEDED(m_pTaskbarList->SetThumbnailClip(m_hWnd, rect)));
+            VERIFY(SUCCEEDED(service->SetThumbnailClip(m_hWnd, rect)));
         }
     }
 }
 
 LRESULT CMainFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
+    const auto& s = AfxGetAppSettings();
+
     if (message == WM_LBUTTONDOWN || message == WM_LBUTTONUP) {
         ASSERT(m_pMVRS);
         return 42;
     }
 
-    if ((message == WM_COMMAND) && (THBN_CLICKED == HIWORD(wParam))) {
-        int const wmId = LOWORD(wParam);
-        switch (wmId) {
-            case IDTB_BUTTON1:
-                SendMessage(WM_COMMAND, ID_PLAY_STOP);
-                break;
-            case IDTB_BUTTON2:
-                SendMessage(WM_COMMAND, ID_PLAY_PLAYPAUSE);
-                break;
-            case IDTB_BUTTON3:
-                SendMessage(WM_COMMAND, ID_NAVIGATE_SKIPBACK);
-                break;
-            case IDTB_BUTTON4:
-                SendMessage(WM_COMMAND, ID_NAVIGATE_SKIPFORWARD);
-                break;
-            case IDTB_BUTTON5:
-                WINDOWPLACEMENT wp;
-                GetWindowPlacement(&wp);
-                if (wp.showCmd == SW_SHOWMINIMIZED) {
-                    SendMessage(WM_SYSCOMMAND, SC_RESTORE, -1);
-                }
-                SetForegroundWindow();
-                SendMessage(WM_COMMAND, ID_VIEW_FULLSCREEN);
-                break;
-            default:
-                break;
-        }
+    // update taskbar buttons as if they were on some visible CToolBar
+    if (message == WM_IDLEUPDATECMDUI && s.fUseWin7TaskBar) {
+        struct CFooCmdUI : CCmdUI {
+            virtual void SetCheck(int = 1) override {};
+            virtual void Enable(BOOL = TRUE) override {};
+        };
+        CFooCmdUI cmd;
+        cmd.m_nID = ID_PLAY_PAUSE;
+        cmd.DoUpdate(this, FALSE);
+        cmd.m_nID = ID_PLAY_PLAY;
+        cmd.DoUpdate(this, FALSE);
+        cmd.m_nID = ID_PLAY_STOP;
+        cmd.DoUpdate(this, FALSE);
+        cmd.m_nID = ID_NAVIGATE_SKIPBACK;
+        cmd.DoUpdate(this, FALSE);
+        cmd.m_nID = ID_NAVIGATE_SKIPFORWARD;
+        cmd.DoUpdate(this, FALSE);
+        cmd.m_nID = ID_VIEW_FULLSCREEN;
+        cmd.DoUpdate(this, FALSE);
+    }
+
+    // handle taskbar buttons clicks
+    if (m_taskbarList.EatWindowMessage(message, wParam, lParam)) {
         return 0;
     }
 
@@ -16159,6 +15962,9 @@ void CMainFrame::UpdateControlState(UpdateControlTarget target)
             // HACK: windowed (not renderless) video renderers created in graph thread do not
             // produce WM_MOUSEMOVE message when we release mouse capture on top of it, here's a workaround
             m_timerOneTime.Subscribe(TimerOneTimeSubscriber::CHILDVIEW_CURSOR_HACK, std::bind(&CChildView::Invalidate, &m_wndView, FALSE), 16);
+            break;
+        case UPDATE_WIN7_TASKBAR:
+            m_taskbarList.Update();
             break;
         default:
             ASSERT(FALSE);
