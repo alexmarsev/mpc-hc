@@ -1,6 +1,6 @@
 /*
  * (C) 2003-2006 Gabest
- * (C) 2006-2013 see Authors.txt
+ * (C) 2006-2014 see Authors.txt
  *
  * This file is part of MPC-HC.
  *
@@ -22,11 +22,38 @@
 #pragma once
 
 #include "DSMPropertyBag.h"
+#include "EventDispatcher.h"
 #include <memory>
 
 class CMainFrame;
 
-class CPlayerSeekBar : public CDialogBar
+class CDraggableSeekbar
+{
+public:
+    CDraggableSeekbar(CMainFrame* pMainFrame);
+    virtual ~CDraggableSeekbar();
+
+    bool DraggingThumb() const;
+    void HaltThumbDrag();
+
+protected:
+    virtual void DraggedThumb(const CPoint& point, REFERENCE_TIME rtPos) = 0;
+
+    void StartThumbDrag();
+    void DragThumb(const CPoint& point, REFERENCE_TIME rtPos);
+    void StopThumbDrag(bool bHard = true);
+
+private:
+    REFERENCE_TIME m_rtDragThumbPos = 0;
+    REFERENCE_TIME m_rtDragThumbHaltPos = 0;
+    CPoint m_dragThumbPoint = { 0, 0 };
+    CPoint m_dragThumbHaltPoint = { 0, 0 };
+    bool m_bDraggingThumb = false;
+    bool m_bDragThumbHaltedOnce = false;
+    CMainFrame* m_pMainFrame;
+};
+
+class CPlayerSeekBar : public CDialogBar, public CDraggableSeekbar
 {
     DECLARE_DYNAMIC(CPlayerSeekBar)
 
@@ -36,40 +63,38 @@ public:
     virtual BOOL Create(CWnd* pParentWnd);
 
 private:
-    enum { TIMER_SHOWHIDE_TOOLTIP = 1, TIMER_HOVER_CAPTURED };
-
     CMainFrame* m_pMainFrame;
-    REFERENCE_TIME m_rtStart, m_rtStop, m_rtPos;
+    EventClient m_eventc;
     bool m_bEnabled;
-    bool m_bHasDuration;
-    REFERENCE_TIME m_rtHoverPos;
-    bool m_bHovered;
-    CPoint m_hoverPoint;
+
+    REFERENCE_TIME m_rtThumbPos;
+
     HCURSOR m_cursor;
-    bool m_bDraggingThumb;
 
     CToolTipCtrl m_tooltip;
-    enum { TOOLTIP_HIDDEN, TOOLTIP_TRIGGERED, TOOLTIP_VISIBLE } m_tooltipState;
+    enum class TooltipState { HIDDEN, TRIGGERED, VISIBLE } m_tooltipState;
     TOOLINFO m_ti;
     CPoint m_tooltipPoint;
     bool m_bIgnoreLastTooltipPoint;
     CString m_tooltipText;
 
-    CComPtr<IDSMChapterBag> m_pChapterBag;
-    CCritSec m_csChapterBag; // Graph thread sets the chapter bag
-
     std::unique_ptr<CDC> m_pEnabledThumb;
     std::unique_ptr<CDC> m_pDisabledThumb;
     CRect m_lastThumbRect;
+
+    void EventCallback(MpcEvent ev);
 
     virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
     virtual CSize CalcFixedLayout(BOOL bStretch, BOOL bHorz) override;
 
     void MoveThumb(const CPoint& point);
-    void SyncVideoToThumb();
+    void MoveThumbToPositition(REFERENCE_TIME rtPos);
+    void SyncMediaToThumb();
     long ChannelPointFromPosition(REFERENCE_TIME rtPos) const;
     REFERENCE_TIME PositionFromClientPoint(const CPoint& point) const;
-    void SyncThumbToVideo(REFERENCE_TIME rtPos);
+
+    virtual void DraggedThumb(const CPoint& point, REFERENCE_TIME rtPos) override;
+    void CancelDrag();
 
     void CreateThumb(bool bEnabled, CDC& parentDC);
     CRect GetChannelRect() const;
@@ -77,23 +102,10 @@ private:
     CRect GetInnerThumbRect(bool bEnabled, const CRect& thumbRect) const;
 
     void UpdateTooltip(const CPoint& point);
-    void UpdateToolTipPosition();
-    void UpdateToolTipText();
-
-public:
-    void Enable(bool bEnable);
-    void HideToolTip();
-
-    void GetRange(REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop) const;
-    void SetRange(REFERENCE_TIME rtStart, REFERENCE_TIME rtStop);
-    REFERENCE_TIME GetPos() const;
-    void SetPos(REFERENCE_TIME rtPos);
-    bool HasDuration() const;
-
-    void SetChapterBag(IDSMChapterBag* pCB);
-    void RemoveChapters();
-
-    bool DraggingThumb();
+    void UpdateTooltipPosition();
+    void UpdateTooltipText();
+    void ShowTooltip();
+    void HideTooltip();
 
 private:
     DECLARE_MESSAGE_MAP()
@@ -108,7 +120,6 @@ private:
     afx_msg void OnMouseMove(UINT nFlags, CPoint point);
     afx_msg BOOL OnEraseBkgnd(CDC* pDC);
     afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
-    afx_msg void OnTimer(UINT_PTR nIDEvent);
     afx_msg void OnMouseLeave();
     afx_msg LRESULT OnThemeChanged();
     afx_msg void OnCaptureChanged(CWnd* pWnd);

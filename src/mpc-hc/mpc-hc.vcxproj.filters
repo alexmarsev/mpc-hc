@@ -381,6 +381,9 @@
     <ClCompile Include="ColorButton.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
+    <ClCompile Include="PlaybackState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppSettings.h">
@@ -774,6 +777,9 @@
       <Filter>Controls</Filter>
     </ClInclude>
     <ClInclude Include="SharedMutex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlaybackState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

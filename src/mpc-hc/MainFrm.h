@@ -25,6 +25,7 @@
 
 #include "ChildView.h"
 #include "DebugShadersDlg.h"
+#include "PlaybackState.h"
 #include "PlayerSeekBar.h"
 #include "PlayerToolBar.h"
 #include "PlayerInfoBar.h"
@@ -173,6 +174,8 @@ public:
         DELAY_PLAYPAUSE_AFTER_AUTOCHANGE_MODE,
         DVBINFO_UPDATE,
         STATUS_ERASE,
+        SEEKBAR_TOOLTIP,
+        SEEKBAR_HALT_THUMB_DRAG,
     };
     OneTimeTimerPool<TimerOneTimeSubscriber> m_timerOneTime;
 
@@ -508,8 +511,11 @@ public:
     void HideVideoWindow(bool fHide);
 
     OAFilterState GetMediaState() const;
+
+    // TODO: get rid of these two getters in favor of PlaybackState
     REFERENCE_TIME GetPos() const;
     REFERENCE_TIME GetDur() const;
+
     bool GetNeighbouringKeyFrames(REFERENCE_TIME rtTarget, std::pair<REFERENCE_TIME, REFERENCE_TIME>& keyframes) const;
     REFERENCE_TIME GetClosestKeyFrame(REFERENCE_TIME rtTarget) const;
     void SeekTo(REFERENCE_TIME rt, bool bShowOSD = true);
@@ -1020,6 +1026,8 @@ protected:
     double m_dLastVideoScaleFactor;
     int m_nLastVideoWidth;
 
+    std::shared_ptr<PlaybackState> m_ps;
+
 public:
     afx_msg UINT OnPowerBroadcast(UINT nPowerEvent, LPARAM nEventData);
     afx_msg void OnSessionChange(UINT nSessionState, UINT nId);
@@ -1047,4 +1055,8 @@ public:
     bool GetDecoderType(CString& type) const;
 
     DPI m_dpi;
+
+    std::shared_ptr<const PlaybackState> GetPlaybackState() const {
+        return m_ps;
+    }
 };

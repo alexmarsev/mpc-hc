@@ -760,6 +760,7 @@ CMainFrame::CMainFrame()
     , m_fSetChannelActive(false)
     , m_dLastVideoScaleFactor(0)
     , m_nLastVideoWidth(0)
+    , m_ps(std::make_shared<PlaybackState>())
 {
     m_Lcd.SetVolumeRange(0, 100);
     m_liLastSaveTime.QuadPart = 0;
@@ -782,6 +783,8 @@ CMainFrame::CMainFrame()
     fires.insert(MpcEvent::SWITCHED_FROM_FULLSCREEN);
     fires.insert(MpcEvent::SWITCHING_TO_FULLSCREEN_D3D);
     fires.insert(MpcEvent::SWITCHED_TO_FULLSCREEN_D3D);
+    fires.insert(MpcEvent::SWITCHING_FROM_FULLSCREEN_D3D);
+    fires.insert(MpcEvent::SWITCHED_FROM_FULLSCREEN_D3D);
     fires.insert(MpcEvent::MEDIA_LOADED);
     fires.insert(MpcEvent::DISPLAY_MODE_AUTOCHANGING);
     fires.insert(MpcEvent::DISPLAY_MODE_AUTOCHANGED);
@@ -789,6 +792,7 @@ CMainFrame::CMainFrame()
     fires.insert(MpcEvent::CONTEXT_MENU_POPUP_UNINITIALIZED);
     fires.insert(MpcEvent::SYSTEM_MENU_POPUP_INITIALIZED);
     fires.insert(MpcEvent::SYSTEM_MENU_POPUP_UNINITIALIZED);
+    fires.insert(MpcEvent::PLAYBACK_ENTERING_STOP);
     GetEventd().Connect(m_eventc, recieves, std::bind(&CMainFrame::EventCallback, this, std::placeholders::_1), fires);
 }
 
@@ -1805,9 +1809,11 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent)
                     }
 
                     g_bNoDuration = rtDur <= 0;
-                    m_wndSeekBar.Enable(rtDur > 0);
-                    m_wndSeekBar.SetRange(0, rtDur);
-                    m_wndSeekBar.SetPos(rtNow);
+                    PlaybackState::Pos pos = m_ps->GetPos();
+                    pos.rtStart = 0;
+                    pos.rtStop = rtDur;
+                    pos.rtNow = rtNow;
+                    m_ps->SetPos(pos);
                     m_OSD.SetRange(0, rtDur);
                     m_OSD.SetPos(rtNow);
                     m_Lcd.SetMediaRange(0, rtDur);
@@ -1826,9 +1832,11 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent)
                     }
 
                     g_bNoDuration = rtDur <= 0;
-                    m_wndSeekBar.Enable(false);
-                    m_wndSeekBar.SetRange(0, rtDur);
-                    m_wndSeekBar.SetPos(rtNow);
+                    PlaybackState::Pos pos = m_ps->GetPos();
+                    pos.rtStart = 0;
+                    pos.rtStop = rtDur;
+                    pos.rtNow = rtNow;
+                    m_ps->SetPos(pos);
                     m_OSD.SetRange(0, rtDur);
                     m_OSD.SetPos(rtNow);
                     m_Lcd.SetMediaRange(0, rtDur);
@@ -1848,7 +1856,8 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent)
                             REFERENCE_TIME rtTimeCode = HMSF2RT(Location.TimeCode, fps);
                             m_pCAP->SetTime(rtTimeCode);
                         } else {
-                            m_pCAP->SetTime(/*rtNow*/m_wndSeekBar.GetPos());
+                            const PlaybackState::Pos pos = m_ps->GetPos();
+                            m_pCAP->SetTime(/*rtNow*/pos.rtNow);
                         }
                     } else {
                         // Set rtNow to support DVB subtitle
@@ -1861,9 +1870,7 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent)
             break;
         case TIMER_STREAMPOSPOLLER2:
             if (GetLoadState() == MLS::LOADED) {
-                __int64 start, stop, pos;
-                m_wndSeekBar.GetRange(start, stop);
-                pos = m_wndSeekBar.GetPos();
+                const PlaybackState::Pos pos = m_ps->GetPos();
 
                 if (GetPlaybackMode() == PM_ANALOG_CAPTURE && !m_fCapturing) {
                     CString str = ResStr(IDS_CAPTURE_LIVE);
@@ -1881,7 +1888,7 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent)
                 } else if (GetPlaybackMode() == PM_DIGITAL_CAPTURE) {
                     m_wndStatusBar.SetStatusTimer(ResStr(IDS_CAPTURE_LIVE));
                 } else {
-                    m_wndStatusBar.SetStatusTimer(pos, stop, !!m_wndSubresyncBar.IsWindowVisible(), GetTimeFormat());
+                    m_wndStatusBar.SetStatusTimer(pos.rtNow, pos.rtStop, !!m_wndSubresyncBar.IsWindowVisible(), GetTimeFormat());
                     if (m_bRemainingTime) {
                         m_OSD.DisplayMessage(OSD_TOPLEFT, m_wndStatusBar.GetStatusTimer());
                     }
@@ -1889,7 +1896,7 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent)
 
                 if (m_pCAP) {
                     m_wndSubresyncBar.SetFPS(m_pCAP->GetFPS());
-                    m_wndSubresyncBar.SetTime(pos);
+                    m_wndSubresyncBar.SetTime(pos.rtNow);
                     if (!m_bDelaySetOutputRect && GetMediaState() == State_Paused) {
                         m_pCAP->Paint(false); // TODO: Improve subpic queue and remove this call.
                     }
@@ -2620,8 +2627,10 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
                 }
 
                 g_bNoDuration = rtDur <= 0;
-                m_wndSeekBar.Enable(rtDur > 0);
-                m_wndSeekBar.SetRange(0, rtDur);
+                PlaybackState::Pos pos = m_ps->GetPos();
+                pos.rtStart = 0;
+                pos.rtStop = rtDur;
+                m_ps->SetPos(pos);
                 m_OSD.SetRange(0, rtDur);
                 m_Lcd.SetMediaRange(0, rtDur);
 
@@ -2633,7 +2642,8 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
                     memcpy(&dvdPosition->timecode, (void*)&evParam1, sizeof(DVD_HMSF_TIMECODE));
                 }
 
-                m_wndSeekBar.SetPos(rtNow);
+                pos.rtNow = rtNow;
+                m_ps->SetPos(pos);
                 m_OSD.SetPos(rtNow);
                 m_Lcd.SetMediaPos(rtNow);
 
@@ -2812,8 +2822,6 @@ void CMainFrame::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
     if (pScrollBar->IsKindOf(RUNTIME_CLASS(CVolumeCtrl))) {
         OnPlayVolume(0);
-    } else if (pScrollBar->IsKindOf(RUNTIME_CLASS(CPlayerSeekBar)) && GetLoadState() == MLS::LOADED) {
-        SeekTo(m_wndSeekBar.GetPos());
     } else if (*pScrollBar == *m_pVideoWnd) {
         SeekTo(m_OSD.GetPos());
     }
@@ -3216,9 +3224,7 @@ void CMainFrame::OnUpdatePlayerStatus(CCmdUI* pCmdUI)
                     if (SUCCEEDED(pAMNS->get_BufferingProgress(&BufferingProgress)) && BufferingProgress > 0) {
                         msg.Format(IDS_CONTROLS_BUFFERING, BufferingProgress);
 
-                        __int64 start = 0, stop = 0;
-                        m_wndSeekBar.GetRange(start, stop);
-                        m_fLiveWM = (stop == start);
+                        m_fLiveWM = !m_ps->HasDuration();
                     }
                     break;
                 }
@@ -3280,6 +3286,11 @@ LRESULT CMainFrame::OnFilePostOpenmedia(WPARAM wParam, LPARAM lParam)
     // load keyframes for fast-seek
     if (wParam == PM_FILE) {
         LoadKeyFrames();
+    }
+
+    // initialize chapter bag
+    if (wParam == PM_FILE) {
+        SetupChapters();
     }
 
     // remember OpenMediaData for later use
@@ -3459,10 +3470,7 @@ void CMainFrame::OnFilePostClosemedia(bool bNextIsQueued/* = false*/)
     }
 
     m_wndView.SetVideoRect();
-    m_wndSeekBar.Enable(false);
-    m_wndSeekBar.SetRange(0, 0);
-    m_wndSeekBar.SetPos(0);
-    m_wndSeekBar.RemoveChapters();
+    m_ps->SetPos({});
     m_wndInfoBar.RemoveAllLines();
     m_wndStatsBar.RemoveAllLines();
     m_wndStatusBar.Clear();
@@ -4959,14 +4967,12 @@ CString CMainFrame::GetVidPos() const
 {
     CString posstr = _T("");
     if ((GetPlaybackMode() == PM_FILE) || (GetPlaybackMode() == PM_DVD)) {
-        __int64 start, stop, pos;
-        m_wndSeekBar.GetRange(start, stop);
-        pos = m_wndSeekBar.GetPos();
+        const PlaybackState::Pos pos = m_ps->GetPos();
 
-        DVD_HMSF_TIMECODE tcNow = RT2HMSF(pos);
-        DVD_HMSF_TIMECODE tcDur = RT2HMSF(stop);
+        DVD_HMSF_TIMECODE tcNow = RT2HMSF(pos.rtNow);
+        DVD_HMSF_TIMECODE tcDur = RT2HMSF(pos.rtStop);
 
-        if (tcDur.bHours > 0 || (pos >= stop && tcNow.bHours > 0)) {
+        if (tcDur.bHours > 0 || (pos.rtNow >= pos.rtStop && tcNow.bHours > 0)) {
             posstr.Format(_T("%02u.%02u.%02u"), tcNow.bHours, tcNow.bMinutes, tcNow.bSeconds);
         } else {
             posstr.Format(_T("%02u.%02u"), tcNow.bMinutes, tcNow.bSeconds);
@@ -7033,11 +7039,16 @@ void CMainFrame::OnApiPlay()
 
 void CMainFrame::OnPlayStop()
 {
+    m_eventc.FireEvent(MpcEvent::PLAYBACK_ENTERING_STOP);
+
     m_timerOneTime.Unsubscribe(TimerOneTimeSubscriber::DELAY_PLAYPAUSE_AFTER_AUTOCHANGE_MODE);
     m_bOpeningInAutochangedMonitorMode = false;
     m_bPausedForAutochangeMonitorMode = false;
 
-    m_wndSeekBar.SetPos(0);
+    PlaybackState::Pos pos = m_ps->GetPos();
+    pos.rtNow = 0;
+    m_ps->SetPos(pos);
+
     if (GetLoadState() == MLS::LOADED) {
         if (GetPlaybackMode() == PM_FILE) {
             LONGLONG pos = 0;
@@ -7090,10 +7101,9 @@ void CMainFrame::OnPlayStop()
         MoveVideoWindow();
 
         if (GetLoadState() == MLS::LOADED) {
-            __int64 start, stop;
-            m_wndSeekBar.GetRange(start, stop);
+            const PlaybackState::Pos pos = m_ps->GetPos();
             if (!IsPlaybackCaptureMode()) {
-                m_wndStatusBar.SetStatusTimer(m_wndSeekBar.GetPos(), stop, !!m_wndSubresyncBar.IsWindowVisible(), GetTimeFormat());
+                m_wndStatusBar.SetStatusTimer(pos.rtNow, pos.rtStop, !!m_wndSubresyncBar.IsWindowVisible(), GetTimeFormat());
             }
 
             SetAlwaysOnTop(AfxGetAppSettings().iOnTop);
@@ -7286,15 +7296,15 @@ void CMainFrame::OnPlaySeek(UINT nID)
         rtSeekTo /= 10000i64 * 100;
     }
 
-    const REFERENCE_TIME rtPos = m_wndSeekBar.GetPos();
-    rtSeekTo += rtPos;
+    const PlaybackState::Pos pos = m_ps->GetPos();
+    rtSeekTo += pos.rtNow;
 
     if (s.bFastSeek && !m_kfs.empty()) {
         // seek to the closest keyframe, but never in the opposite direction
         rtSeekTo = GetClosestKeyFrame(rtSeekTo);
-        if ((bSeekingForward && rtSeekTo <= rtPos) ||
+        if ((bSeekingForward && rtSeekTo <= pos.rtNow) ||
                 (!bSeekingForward &&
-                 rtSeekTo >= rtPos - (GetMediaState() == State_Running ? 10000000 : 0))) {
+                 rtSeekTo >= pos.rtNow - (GetMediaState() == State_Running ? 10000000 : 0))) {
             OnPlaySeekKey(bSeekingForward ? ID_PLAY_SEEKKEYFORWARD : ID_PLAY_SEEKKEYBACKWARD);
             return;
         }
@@ -7305,11 +7315,9 @@ void CMainFrame::OnPlaySeek(UINT nID)
 
 void CMainFrame::OnPlaySeekSet()
 {
-    const REFERENCE_TIME rtPos = m_wndSeekBar.GetPos();
-    REFERENCE_TIME rtStart, rtStop;
-    m_wndSeekBar.GetRange(rtStart, rtStop);
-    if (rtPos != rtStart) {
-        SeekTo(rtStart);
+    const PlaybackState::Pos pos = m_ps->GetPos();
+    if (pos.rtNow != pos.rtStart) {
+        SeekTo(pos.rtStart);
     }
 }
 
@@ -7332,13 +7340,13 @@ void CMainFrame::OnPlaySeekKey(UINT nID)
 {
     if (!m_kfs.empty()) {
         bool bSeekingForward = (nID == ID_PLAY_SEEKKEYFORWARD);
-        const REFERENCE_TIME rtPos = m_wndSeekBar.GetPos();
-        REFERENCE_TIME rtSeekTo = rtPos - (bSeekingForward ? 0 : (GetMediaState() == State_Running) ? 10000000 : 10000);
+        const PlaybackState::Pos pos = m_ps->GetPos();
+        REFERENCE_TIME rtSeekTo = pos.rtNow - (bSeekingForward ? 0 : (GetMediaState() == State_Running) ? 10000000 : 10000);
         std::pair<REFERENCE_TIME, REFERENCE_TIME> keyframes;
 
         if (GetNeighbouringKeyFrames(rtSeekTo, keyframes)) {
             rtSeekTo = bSeekingForward ? keyframes.second : keyframes.first;
-            if (bSeekingForward && rtSeekTo <= rtPos) {
+            if (bSeekingForward && rtSeekTo <= pos.rtNow) {
                 // the end of stream is near, no keyframes before it
                 return;
             }
@@ -8146,8 +8154,6 @@ bool CMainFrame::SeekToFileChapter(int iChapter, bool bRelative /*= false*/)
         return false;
     }
 
-    SetupChapters();
-
     bool ret = false;
 
     if (DWORD nChapters = m_pCB->ChapGetCount()) {
@@ -8261,15 +8267,15 @@ bool CMainFrame::SeekToDVDChapter(int iChapter, bool bRelative /*= false*/)
                 && SUCCEEDED(m_pDVDI->GetNumberOfChapters(Location.TitleNum, &ulNumOfChapters))) {
             CString strTitle;
             strTitle.Format(IDS_AG_TITLE2, Location.TitleNum, ulNumOfTitles);
-            __int64 start, stop;
-            m_wndSeekBar.GetRange(start, stop);
+
+            const PlaybackState::Pos pos = m_ps->GetPos();
 
             CString strOSD;
-            if (stop > 0) {
+            if (pos.rtStop > 0) {
                 const CAppSettings& s = AfxGetAppSettings();
 
-                DVD_HMSF_TIMECODE currentHMSF = s.fRemainingTime ? RT2HMS_r(stop - HMSF2RT(Location.TimeCode)) : Location.TimeCode;
-                DVD_HMSF_TIMECODE stopHMSF = RT2HMS_r(stop);
+                DVD_HMSF_TIMECODE currentHMSF = s.fRemainingTime ? RT2HMS_r(pos.rtStop - HMSF2RT(Location.TimeCode)) : Location.TimeCode;
+                DVD_HMSF_TIMECODE stopHMSF = RT2HMS_r(pos.rtStop);
                 strOSD.Format(_T("%s%s/%s %s, %s%02u/%02lu"),
                               s.fRemainingTime ? _T("- ") : _T(""), DVDtimeToString(currentHMSF, stopHMSF.bHours > 0), DVDtimeToString(stopHMSF),
                               strTitle, ResStr(IDS_AG_CHAPTER2), Location.ChapterNum, ulNumOfChapters);
@@ -8433,9 +8439,8 @@ void CMainFrame::OnNavigateGoto()
         }
     }
 
-    REFERENCE_TIME start, dur = -1;
-    m_wndSeekBar.GetRange(start, dur);
-    CGoToDlg dlg(m_wndSeekBar.GetPos(), dur, atpf > 0 ? (1.0 / atpf) : 0);
+    const PlaybackState::Pos pos = m_ps->GetPos();
+    CGoToDlg dlg(pos.rtNow, pos.rtStop, atpf > 0 ? (1.0 / atpf) : 0);
     if (IDOK != dlg.DoModal() || dlg.m_time < 0) {
         return;
     }
@@ -9534,6 +9539,8 @@ void CMainFrame::ToggleD3DFullscreen(bool fSwitchScreenResWhenHasTo)
         s.fLastFullScreen = bIsFullscreen;
 
         if (bIsFullscreen) {
+            m_eventc.FireEvent(MpcEvent::SWITCHING_FROM_FULLSCREEN_D3D);
+
             // Turn off D3D Fullscreen
             m_OSD.EnableShowSeekBar(false);
             pD3DFS->SetD3DFullscreen(false);
@@ -9552,6 +9559,8 @@ void CMainFrame::ToggleD3DFullscreen(bool fSwitchScreenResWhenHasTo)
             ZoomVideoWindow();
 
             MoveVideoWindow();
+
+            m_eventc.FireEvent(MpcEvent::SWITCHED_FROM_FULLSCREEN_D3D);
         } else {
             // Set the fullscreen display mode
             if (s.AutoChangeFullscrRes.bEnabled && fSwitchScreenResWhenHasTo) {
@@ -10485,8 +10494,6 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
         }
         EndEnumFilters;
     }
-
-    SetupChapters();
 
     SetPlaybackMode(PM_FILE);
 }
@@ -12834,7 +12841,6 @@ void CMainFrame::SetupJumpToSubMenus(CMenu* parentMenu /*= nullptr*/, int iInser
             addSubMenuIfPossible(ResStr(IDS_NAVIGATE_BD_PLAYLISTS), m_BDPlaylistMenu);
         }
 
-        SetupChapters();
         REFERENCE_TIME rt = GetPos();
         DWORD j = m_pCB->ChapLookup(&rt, nullptr);
 
@@ -13641,14 +13647,14 @@ void CMainFrame::SetAudioTrackIdx(int index)
 
 REFERENCE_TIME CMainFrame::GetPos() const
 {
-    return (GetLoadState() == MLS::LOADED ? m_wndSeekBar.GetPos() : 0);
+    const PlaybackState::Pos pos = m_ps->GetPos();
+    return GetLoadState() == MLS::LOADED ? pos.rtNow : 0;
 }
 
 REFERENCE_TIME CMainFrame::GetDur() const
 {
-    __int64 start, stop;
-    m_wndSeekBar.GetRange(start, stop);
-    return (GetLoadState() == MLS::LOADED ? stop : 0);
+    const PlaybackState::Pos pos = m_ps->GetPos();
+    return (GetLoadState() == MLS::LOADED ? pos.rtStop : 0);
 }
 
 bool CMainFrame::GetNeighbouringKeyFrames(REFERENCE_TIME rtTarget, std::pair<REFERENCE_TIME, REFERENCE_TIME>& keyframes) const
@@ -13726,12 +13732,11 @@ void CMainFrame::SeekTo(REFERENCE_TIME rtPos, bool bShowOSD /*= true*/)
 
     m_nStepForwardCount = 0;
     if (!IsPlaybackCaptureMode()) {
-        __int64 start, stop;
-        m_wndSeekBar.GetRange(start, stop);
-        if (rtPos > stop) {
-            rtPos = stop;
+        const PlaybackState::Pos pos = m_ps->GetPos();
+        if (rtPos > pos.rtStop) {
+            rtPos = pos.rtStop;
         }
-        m_wndStatusBar.SetStatusTimer(rtPos, stop, !!m_wndSubresyncBar.IsWindowVisible(), GetTimeFormat());
+        m_wndStatusBar.SetStatusTimer(rtPos, pos.rtStop, !!m_wndSubresyncBar.IsWindowVisible(), GetTimeFormat());
 
         if (bShowOSD) {
             m_OSD.DisplayMessage(OSD_TOPLEFT, m_wndStatusBar.GetStatusTimer(), 1500);
@@ -14932,7 +14937,8 @@ LPCTSTR CMainFrame::GetDVDAudioFormatName(const DVD_AudioAttributes& ATR) const
 afx_msg void CMainFrame::OnGotoSubtitle(UINT nID)
 {
     if (!m_pSubStreams.IsEmpty() && !IsPlaybackCaptureMode()) {
-        m_rtCurSubPos = m_wndSeekBar.GetPos();
+        const PlaybackState::Pos pos = m_ps->GetPos();
+        m_rtCurSubPos = pos.rtNow;
         m_lSubtitleShift = 0;
         m_nCurSubtitle = m_wndSubresyncBar.FindNearestSub(m_rtCurSubPos, (nID == ID_GOTO_NEXT_SUB));
         if (m_nCurSubtitle >= 0 && m_pMS) {
@@ -15818,7 +15824,7 @@ HRESULT CMainFrame::UpdateThumbarButton(MPC_PLAYSTATE iPlayState)
             buttons[2].iBitmap = 2;
 
             hIcon = (HICON)LoadImage(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_TB_PLAY), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE);
-            m_pTaskbarList->SetProgressState(m_hWnd, m_wndSeekBar.HasDuration() ? TBPF_NORMAL : TBPF_NOPROGRESS);
+            m_pTaskbarList->SetProgressState(m_hWnd, m_ps->HasDuration() ? TBPF_NORMAL : TBPF_NOPROGRESS);
         } else if (iPlayState == PS_STOP) {
             buttons[1].dwFlags = THBF_DISABLED;
             buttons[2].dwFlags = THBF_ENABLED;
@@ -15832,7 +15838,7 @@ HRESULT CMainFrame::UpdateThumbarButton(MPC_PLAYSTATE iPlayState)
             buttons[2].iBitmap = 3;
 
             hIcon = (HICON)LoadImage(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_TB_PAUSE), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE);
-            m_pTaskbarList->SetProgressState(m_hWnd, m_wndSeekBar.HasDuration() ? TBPF_PAUSED : TBPF_NOPROGRESS);
+            m_pTaskbarList->SetProgressState(m_hWnd, m_ps->HasDuration() ? TBPF_PAUSED : TBPF_NOPROGRESS);
         }
 
         if (m_fAudioOnly) {
@@ -16052,13 +16058,15 @@ void CMainFrame::UpdateSkypeHandler()
 void CMainFrame::UpdateSeekbarChapterBag()
 {
     const auto& s = AfxGetAppSettings();
-    if (s.fShowChapters && m_pCB) {
-        m_wndSeekBar.SetChapterBag(m_pCB);
+    PlaybackState::Pos pos = m_ps->GetPos();
+    if (s.fShowChapters) {
+        pos.pChapterBag = m_pCB;
         m_OSD.SetChapterBag(m_pCB);
     } else {
-        m_wndSeekBar.RemoveChapters();
+        pos.pChapterBag = nullptr;
         m_OSD.RemoveChapters();
     }
+    m_ps->SetPos(pos);
 }
 
 void CMainFrame::UpdateAudioSwitcher()
