@@ -991,7 +991,7 @@ public:
     HRESULT CreateThumbnailToolbar();
     HRESULT UpdateThumbarButton();
     HRESULT UpdateThumbarButton(MPC_PLAYSTATE iPlayState);
-    HRESULT UpdateThumbnailClip();
+    void UpdateThumbnailClip();
 
 protected:
     // GDI+

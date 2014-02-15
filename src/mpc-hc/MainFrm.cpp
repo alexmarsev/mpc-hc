@@ -1231,15 +1231,21 @@ void CMainFrame::RecalcLayout(BOOL bNotify)
 {
     __super::RecalcLayout(bNotify);
 
-    CRect r;
-    GetWindowRect(&r);
-    MINMAXINFO mmi;
-    ZeroMemory(&mmi, sizeof(mmi));
-    OnGetMinMaxInfo(&mmi);
-    const POINT& min = mmi.ptMinTrackSize;
-    if (r.Height() < min.y || r.Width() < min.x) {
-        r |= CRect(r.TopLeft(), CSize(min));
-        MoveWindow(r);
+    if (!IsIconic()) {
+        CRect r;
+        GetWindowRect(&r);
+
+        MINMAXINFO mmi;
+        ZeroMemory(&mmi, sizeof(mmi));
+        OnGetMinMaxInfo(&mmi);
+
+        const POINT& min = mmi.ptMinTrackSize;
+        if (r.Height() < min.y || r.Width() < min.x) {
+            r |= CRect(r.TopLeft(), CSize(min));
+            MoveWindow(r);
+        }
+
+        UpdateThumbnailClip();
     }
 }
 
@@ -15895,33 +15901,50 @@ HRESULT CMainFrame::UpdateThumbarButton(MPC_PLAYSTATE iPlayState)
 
     HRESULT hr = m_pTaskbarList->ThumbBarUpdateButtons(m_hWnd, ARRAYSIZE(buttons), buttons);
 
-    UpdateThumbnailClip();
-
     return hr;
 }
 
-HRESULT CMainFrame::UpdateThumbnailClip()
+void CMainFrame::UpdateThumbnailClip()
 {
-    if (!m_pTaskbarList) {
-        return E_FAIL;
+    if (m_pTaskbarList) {
+        const auto& s = AfxGetAppSettings();
+
+        if (!s.fUseWin7TaskBar || GetLoadState() != MLS::LOADED ||
+                m_fAudioOnly || m_fFullScreen || IsD3DFullScreenMode()) {
+            VERIFY(SUCCEEDED(m_pTaskbarList->SetThumbnailClip(m_hWnd, nullptr)));
+        } else {
+            CRect rect;
+            m_wndView.GetWindowRect(rect);
+            ScreenToClient(rect);
+
+            // if we don't do this, we may get artifact lines near the borders,
+            // DWM downscaler is likely to blame
+            rect.DeflateRect(2, 2, 2, 2);
+
+            const bool bToolbarsOnVideo = m_controls.ToolbarsCoverVideo();
+            const bool bPanelsOnVideo = m_controls.PanelsCoverVideo();
+            if (bPanelsOnVideo) {
+                unsigned uTop, uLeft, uRight, uBottom;
+                m_controls.GetVisibleDockZones(uTop, uLeft, uRight, uBottom);
+                if (!bToolbarsOnVideo) {
+                    uBottom -= m_controls.GetVisibleToolbarsHeight();
+                }
+                rect.InflateRect(uLeft, uTop, uRight, uBottom);
+            } else if (bToolbarsOnVideo) {
+                rect.bottom += m_controls.GetVisibleToolbarsHeight();
+            }
+
+            const int menuHeight = GetSystemMetrics(SM_CYMENU);
+            if (GetMenuBarVisibility() == AFX_MBV_KEEPVISIBLE) {
+                rect.top += menuHeight;
+                rect.bottom += menuHeight;
+            } else if (m_bShowingFloatingMenubar) {
+                rect.bottom += menuHeight;
+            }
+
+            VERIFY(SUCCEEDED(m_pTaskbarList->SetThumbnailClip(m_hWnd, rect)));
+        }
     }
-
-    const CAppSettings& s = AfxGetAppSettings();
-
-    if (!s.fUseWin7TaskBar || (GetLoadState() != MLS::LOADED) || m_fAudioOnly || m_fFullScreen) {
-        return m_pTaskbarList->SetThumbnailClip(m_hWnd, nullptr);
-    }
-
-    RECT vid_rect, result_rect;
-    m_wndView.GetClientRect(&vid_rect);
-
-    // Remove the menu from thumbnail clip preview if it displayed
-    result_rect.left = 2;
-    result_rect.right = result_rect.left + (vid_rect.right - vid_rect.left) - 4;
-    result_rect.top = (s.eCaptionMenuMode == MODE_SHOWCAPTIONMENU) ? 22 : 2;
-    result_rect.bottom = result_rect.top + (vid_rect.bottom - vid_rect.top) - 4;
-
-    return m_pTaskbarList->SetThumbnailClip(m_hWnd, &result_rect);
 }
 
 LRESULT CMainFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
