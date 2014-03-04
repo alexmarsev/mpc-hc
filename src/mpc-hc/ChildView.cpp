@@ -37,6 +37,10 @@ CChildView::CChildView(CMainFrame* pMainFrame)
         MpcEvent::SWITCHED_TO_FULLSCREEN,
         MpcEvent::SWITCHING_FROM_FULLSCREEN,
         MpcEvent::SWITCHED_FROM_FULLSCREEN,
+        MpcEvent::SWITCHING_TO_FULLSCREEN_D3D,
+        MpcEvent::SWITCHED_TO_FULLSCREEN_D3D,
+        MpcEvent::SWITCHING_FROM_FULLSCREEN_D3D,
+        MpcEvent::SWITCHED_FROM_FULLSCREEN_D3D,
         MpcEvent::MEDIA_LOADED,
     }, std::bind(&CChildView::EventCallback, this, std::placeholders::_1));
 }
@@ -50,10 +54,14 @@ void CChildView::EventCallback(MpcEvent ev)
     switch (ev) {
         case MpcEvent::SWITCHING_TO_FULLSCREEN:
         case MpcEvent::SWITCHING_FROM_FULLSCREEN:
+        case MpcEvent::SWITCHING_TO_FULLSCREEN_D3D:
+        case MpcEvent::SWITCHING_FROM_FULLSCREEN_D3D:
             m_bSwitchingFullscreen = true;
             break;
         case MpcEvent::SWITCHED_TO_FULLSCREEN:
         case MpcEvent::SWITCHED_FROM_FULLSCREEN:
+        case MpcEvent::SWITCHED_TO_FULLSCREEN_D3D:
+        case MpcEvent::SWITCHED_FROM_FULLSCREEN_D3D:
             m_bSwitchingFullscreen = false;
             break;
         case MpcEvent::MEDIA_LOADED:
