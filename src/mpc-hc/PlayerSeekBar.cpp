@@ -216,7 +216,7 @@ void CPlayerSeekBar::MoveThumbToPositition(REFERENCE_TIME rtPos)
     if (m_pMainFrame->GetPlaybackState()->HasDuration()) {
         PlaybackState::Pos pos = m_pMainFrame->GetPlaybackState()->GetPos();
 
-        m_rtThumbPos = std::max(pos.rtStart, std::min(pos.rtStop, rtPos));
+        m_rtThumbPos = std::max(0ll, std::min(pos.rtDur, rtPos));
 
         // TODO: refactor out
         bool bSetTaskbar = (rtPos <= 0);
@@ -232,7 +232,7 @@ void CPlayerSeekBar::MoveThumbToPositition(REFERENCE_TIME rtPos)
 
         // TODO: refactor out
         if (bSetTaskbar && AfxGetAppSettings().fUseWin7TaskBar && m_pMainFrame->m_pTaskbarList) {
-            VERIFY(S_OK == m_pMainFrame->m_pTaskbarList->SetProgressValue(m_pMainFrame->m_hWnd, max(m_rtThumbPos, 1ll), pos.rtStop - pos.rtStart));
+            VERIFY(S_OK == m_pMainFrame->m_pTaskbarList->SetProgressValue(m_pMainFrame->m_hWnd, max(m_rtThumbPos, 1ll), pos.rtDur));
         }
     }
 }
@@ -250,12 +250,12 @@ long CPlayerSeekBar::ChannelPointFromPosition(REFERENCE_TIME rtPos) const
 
     PlaybackState::Pos pos = m_pMainFrame->GetPlaybackState()->GetPos();
 
-    rtPos = std::min(pos.rtStop, std::max(pos.rtStart, rtPos));
+    rtPos = std::min(pos.rtDur, std::max(0ll, rtPos));
 
     const int w = GetChannelRect().Width();
 
-    if (pos.rtStart < pos.rtStop) {
-        ret = (long)(w * (rtPos - pos.rtStart) / (pos.rtStop - pos.rtStart));
+    if (pos.rtDur > 0) {
+        ret = (long)(w * rtPos / pos.rtDur);
     }
 
     if (ret >= w) {
@@ -271,14 +271,13 @@ REFERENCE_TIME CPlayerSeekBar::PositionFromClientPoint(const CPoint& point) cons
 
     if (m_pMainFrame->GetPlaybackState()->HasDuration()) {
         PlaybackState::Pos pos = m_pMainFrame->GetPlaybackState()->GetPos();
-        ASSERT(pos.rtStart < pos.rtStop);
 
         const CRect channelRect(GetChannelRect());
         const long channelPointX = (point.x < channelRect.left) ? channelRect.left :
                                    (point.x > channelRect.right) ? channelRect.right : point.x;
         ASSERT(channelPointX >= channelRect.left && channelPointX <= channelRect.right);
 
-        rtRet = pos.rtStart + (channelPointX - channelRect.left) * (pos.rtStop - pos.rtStart) / channelRect.Width();
+        rtRet = (channelPointX - channelRect.left) * pos.rtDur / channelRect.Width();
     }
 
     return rtRet;

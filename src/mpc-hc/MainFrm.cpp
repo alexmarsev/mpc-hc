@@ -1810,8 +1810,7 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent)
 
                     g_bNoDuration = rtDur <= 0;
                     PlaybackState::Pos pos = m_ps->GetPos();
-                    pos.rtStart = 0;
-                    pos.rtStop = rtDur;
+                    pos.rtDur = rtDur;
                     pos.rtNow = rtNow;
                     m_ps->SetPos(pos);
                     m_OSD.SetRange(0, rtDur);
@@ -1833,8 +1832,7 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent)
 
                     g_bNoDuration = rtDur <= 0;
                     PlaybackState::Pos pos = m_ps->GetPos();
-                    pos.rtStart = 0;
-                    pos.rtStop = rtDur;
+                    pos.rtDur = rtDur;
                     pos.rtNow = rtNow;
                     m_ps->SetPos(pos);
                     m_OSD.SetRange(0, rtDur);
@@ -1888,7 +1886,7 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent)
                 } else if (GetPlaybackMode() == PM_DIGITAL_CAPTURE) {
                     m_wndStatusBar.SetStatusTimer(ResStr(IDS_CAPTURE_LIVE));
                 } else {
-                    m_wndStatusBar.SetStatusTimer(pos.rtNow, pos.rtStop, !!m_wndSubresyncBar.IsWindowVisible(), GetTimeFormat());
+                    m_wndStatusBar.SetStatusTimer(pos.rtNow, pos.rtDur, !!m_wndSubresyncBar.IsWindowVisible(), GetTimeFormat());
                     if (m_bRemainingTime) {
                         m_OSD.DisplayMessage(OSD_TOPLEFT, m_wndStatusBar.GetStatusTimer());
                     }
@@ -2628,8 +2626,7 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
 
                 g_bNoDuration = rtDur <= 0;
                 PlaybackState::Pos pos = m_ps->GetPos();
-                pos.rtStart = 0;
-                pos.rtStop = rtDur;
+                pos.rtDur = rtDur;
                 m_ps->SetPos(pos);
                 m_OSD.SetRange(0, rtDur);
                 m_Lcd.SetMediaRange(0, rtDur);
@@ -4970,9 +4967,9 @@ CString CMainFrame::GetVidPos() const
         const PlaybackState::Pos pos = m_ps->GetPos();
 
         DVD_HMSF_TIMECODE tcNow = RT2HMSF(pos.rtNow);
-        DVD_HMSF_TIMECODE tcDur = RT2HMSF(pos.rtStop);
+        DVD_HMSF_TIMECODE tcDur = RT2HMSF(pos.rtDur);
 
-        if (tcDur.bHours > 0 || (pos.rtNow >= pos.rtStop && tcNow.bHours > 0)) {
+        if (tcDur.bHours > 0 || (pos.rtNow >= pos.rtDur && tcNow.bHours > 0)) {
             posstr.Format(_T("%02u.%02u.%02u"), tcNow.bHours, tcNow.bMinutes, tcNow.bSeconds);
         } else {
             posstr.Format(_T("%02u.%02u"), tcNow.bMinutes, tcNow.bSeconds);
@@ -7103,7 +7100,7 @@ void CMainFrame::OnPlayStop()
         if (GetLoadState() == MLS::LOADED) {
             const PlaybackState::Pos pos = m_ps->GetPos();
             if (!IsPlaybackCaptureMode()) {
-                m_wndStatusBar.SetStatusTimer(pos.rtNow, pos.rtStop, !!m_wndSubresyncBar.IsWindowVisible(), GetTimeFormat());
+                m_wndStatusBar.SetStatusTimer(pos.rtNow, pos.rtDur, !!m_wndSubresyncBar.IsWindowVisible(), GetTimeFormat());
             }
 
             SetAlwaysOnTop(AfxGetAppSettings().iOnTop);
@@ -7316,8 +7313,8 @@ void CMainFrame::OnPlaySeek(UINT nID)
 void CMainFrame::OnPlaySeekSet()
 {
     const PlaybackState::Pos pos = m_ps->GetPos();
-    if (pos.rtNow != pos.rtStart) {
-        SeekTo(pos.rtStart);
+    if (pos.rtNow != 0) {
+        SeekTo(0);
     }
 }
 
@@ -8271,11 +8268,11 @@ bool CMainFrame::SeekToDVDChapter(int iChapter, bool bRelative /*= false*/)
             const PlaybackState::Pos pos = m_ps->GetPos();
 
             CString strOSD;
-            if (pos.rtStop > 0) {
+            if (pos.rtDur > 0) {
                 const CAppSettings& s = AfxGetAppSettings();
 
-                DVD_HMSF_TIMECODE currentHMSF = s.fRemainingTime ? RT2HMS_r(pos.rtStop - HMSF2RT(Location.TimeCode)) : Location.TimeCode;
-                DVD_HMSF_TIMECODE stopHMSF = RT2HMS_r(pos.rtStop);
+                DVD_HMSF_TIMECODE currentHMSF = s.fRemainingTime ? RT2HMS_r(pos.rtDur - HMSF2RT(Location.TimeCode)) : Location.TimeCode;
+                DVD_HMSF_TIMECODE stopHMSF = RT2HMS_r(pos.rtDur);
                 strOSD.Format(_T("%s%s/%s %s, %s%02u/%02lu"),
                               s.fRemainingTime ? _T("- ") : _T(""), DVDtimeToString(currentHMSF, stopHMSF.bHours > 0), DVDtimeToString(stopHMSF),
                               strTitle, ResStr(IDS_AG_CHAPTER2), Location.ChapterNum, ulNumOfChapters);
@@ -8440,7 +8437,7 @@ void CMainFrame::OnNavigateGoto()
     }
 
     const PlaybackState::Pos pos = m_ps->GetPos();
-    CGoToDlg dlg(pos.rtNow, pos.rtStop, atpf > 0 ? (1.0 / atpf) : 0);
+    CGoToDlg dlg(pos.rtNow, pos.rtDur, atpf > 0 ? (1.0 / atpf) : 0);
     if (IDOK != dlg.DoModal() || dlg.m_time < 0) {
         return;
     }
@@ -13654,7 +13651,7 @@ REFERENCE_TIME CMainFrame::GetPos() const
 REFERENCE_TIME CMainFrame::GetDur() const
 {
     const PlaybackState::Pos pos = m_ps->GetPos();
-    return (GetLoadState() == MLS::LOADED ? pos.rtStop : 0);
+    return (GetLoadState() == MLS::LOADED ? pos.rtDur : 0);
 }
 
 bool CMainFrame::GetNeighbouringKeyFrames(REFERENCE_TIME rtTarget, std::pair<REFERENCE_TIME, REFERENCE_TIME>& keyframes) const
@@ -13733,10 +13730,10 @@ void CMainFrame::SeekTo(REFERENCE_TIME rtPos, bool bShowOSD /*= true*/)
     m_nStepForwardCount = 0;
     if (!IsPlaybackCaptureMode()) {
         const PlaybackState::Pos pos = m_ps->GetPos();
-        if (rtPos > pos.rtStop) {
-            rtPos = pos.rtStop;
+        if (rtPos > pos.rtDur) {
+            rtPos = pos.rtDur;
         }
-        m_wndStatusBar.SetStatusTimer(rtPos, pos.rtStop, !!m_wndSubresyncBar.IsWindowVisible(), GetTimeFormat());
+        m_wndStatusBar.SetStatusTimer(rtPos, pos.rtDur, !!m_wndSubresyncBar.IsWindowVisible(), GetTimeFormat());
 
         if (bShowOSD) {
             m_OSD.DisplayMessage(OSD_TOPLEFT, m_wndStatusBar.GetStatusTimer(), 1500);

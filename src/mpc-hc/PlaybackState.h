@@ -33,8 +33,7 @@ public:
     PlaybackState& operator=(const PlaybackState&) = delete;
 
     struct Pos {
-        REFERENCE_TIME rtStart = 0;
-        REFERENCE_TIME rtStop = 0;
+        REFERENCE_TIME rtDur = 0;
         REFERENCE_TIME rtNow = 0;
         CComPtr<IDSMChapterBag> pChapterBag;
     };

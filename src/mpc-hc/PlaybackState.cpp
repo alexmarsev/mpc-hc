@@ -45,7 +45,7 @@ void PlaybackState::SetPos(const PlaybackState::Pos& pos)
     {
         auto lock = m_mutex.GetExclusiveLock();
         bChapterBagChanged = (m_pos.pChapterBag != pos.pChapterBag);
-        bDurationChanged = (m_pos.rtStart != pos.rtStart || m_pos.rtStop != pos.rtStop);
+        bDurationChanged = (m_pos.rtDur != pos.rtDur);
         bPositionChanged = (m_pos.rtNow != pos.rtNow);
         m_pos = pos;
     }
@@ -63,7 +63,7 @@ void PlaybackState::SetPos(const PlaybackState::Pos& pos)
 bool PlaybackState::HasDuration() const
 {
     auto lock = m_mutex.GetSharedLock();
-    return m_pos.rtStart < m_pos.rtStop;
+    return m_pos.rtDur > 0;
 }
 
 bool PlaybackState::HasChapterBag() const
