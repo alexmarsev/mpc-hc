@@ -191,7 +191,7 @@ BOOL CPlayerSeekBar::PreCreateWindow(CREATESTRUCT& cs)
 CSize CPlayerSeekBar::CalcFixedLayout(BOOL bStretch, BOOL bHorz)
 {
     CSize ret = __super::CalcFixedLayout(bStretch, bHorz);
-    ret.cy = m_pMainFrame->m_dpi.ScaleY(20);
+    ret.cy = m_pMainFrame->GetDpiHelper()->ScaleY(20);
     if (!m_pMainFrame->m_controls.ControlChecked(CMainFrameControls::Toolbar::CONTROLS)) {
         ret.cy += ADD_TO_BOTTOM_WITHOUT_CONTROLBAR;
     }
@@ -342,7 +342,7 @@ CRect CPlayerSeekBar::GetChannelRect() const
     if (m_pMainFrame->m_controls.ControlChecked(CMainFrameControls::Toolbar::CONTROLS)) {
         r.bottom += ADD_TO_BOTTOM_WITHOUT_CONTROLBAR;
     }
-    CSize s(m_pMainFrame->m_dpi.ScaleFloorX(8), m_pMainFrame->m_dpi.ScaleFloorY(7) + 1);
+    CSize s(m_pMainFrame->GetDpiHelper()->ScaleFloorX(8), m_pMainFrame->GetDpiHelper()->ScaleFloorY(7) + 1);
     r.DeflateRect(s.cx, s.cy, s.cx, s.cy);
     return r;
 }
@@ -352,15 +352,15 @@ CRect CPlayerSeekBar::GetThumbRect() const
     const CRect channelRect(GetChannelRect());
     const long x = channelRect.left + ChannelPointFromPosition(m_rtThumbPos);
     CSize s;
-    s.cy = m_pMainFrame->m_dpi.ScaleFloorY(5);
-    s.cx = m_pMainFrame->m_dpi.TransposeScaledY(channelRect.Height()) / 2 + s.cy;
+    s.cy = m_pMainFrame->GetDpiHelper()->ScaleFloorY(5);
+    s.cx = m_pMainFrame->GetDpiHelper()->TransposeScaledY(channelRect.Height()) / 2 + s.cy;
     CRect r(x + 1 - s.cx, channelRect.top - s.cy, x + s.cx, channelRect.bottom + s.cy);
     return r;
 }
 
 CRect CPlayerSeekBar::GetInnerThumbRect(bool bEnabled, const CRect& thumbRect) const
 {
-    CSize s(m_pMainFrame->m_dpi.ScaleFloorX(4) - 1, m_pMainFrame->m_dpi.ScaleFloorY(5));
+    CSize s(m_pMainFrame->GetDpiHelper()->ScaleFloorX(4) - 1, m_pMainFrame->GetDpiHelper()->ScaleFloorY(5));
     if (!bEnabled) {
         s.cy -= 1;
     }
@@ -425,10 +425,10 @@ void CPlayerSeekBar::UpdateTooltipPosition()
 
     if (AfxGetAppSettings().nTimeTooltipPosition == TIME_TOOLTIP_ABOVE_SEEKBAR) {
         point.x -= bubbleSize.cx / 2 - 2;
-        point.y = GetChannelRect().TopLeft().y - (bubbleSize.cy + m_pMainFrame->m_dpi.ScaleY(13));
+        point.y = GetChannelRect().TopLeft().y - (bubbleSize.cy + m_pMainFrame->GetDpiHelper()->ScaleY(13));
     } else {
-        point.x += m_pMainFrame->m_dpi.ScaleX(10);
-        point.y += m_pMainFrame->m_dpi.ScaleY(20);
+        point.x += m_pMainFrame->GetDpiHelper()->ScaleX(10);
+        point.y += m_pMainFrame->GetDpiHelper()->ScaleY(20);
     }
     point.x = max(0l, min(point.x, windowRect.Width() - bubbleSize.cx));
     ClientToScreen(&point);

@@ -1031,6 +1031,7 @@ protected:
     int m_nLastVideoWidth;
 
     std::shared_ptr<PlaybackState> m_ps;
+    std::shared_ptr<DPI> m_dpi;
 
     // TODO: get rid of this variable, it's just a crutch
     bool m_bInPostOpen = false;
@@ -1062,9 +1063,11 @@ public:
 
     bool GetDecoderType(CString& type) const;
 
-    DPI m_dpi;
-
     std::shared_ptr<const PlaybackState> GetPlaybackState() const {
         return m_ps;
+    }
+
+    std::shared_ptr<const DPI> GetDpiHelper() const {
+        return m_dpi;
     }
 };

@@ -117,7 +117,7 @@ BOOL CPlayerInfoBar::Create(CWnd* pParentWnd)
 
     m_tooltip.Create(this, TTS_NOPREFIX);
     m_tooltip.Activate(TRUE);
-    m_tooltip.SetMaxTipWidth(m_pMainFrame->m_dpi.ScaleX(500));
+    m_tooltip.SetMaxTipWidth(m_pMainFrame->GetDpiHelper()->ScaleX(500));
     m_tooltip.SetDelayTime(TTDT_AUTOPOP, 10000);
 
     return res;
@@ -139,8 +139,8 @@ CSize CPlayerInfoBar::CalcFixedLayout(BOOL bStretch, BOOL bHorz)
 {
     CRect r;
     GetParent()->GetClientRect(&r);
-    r.bottom = r.top + (LONG)m_label.GetCount() * m_pMainFrame->m_dpi.ScaleY(17) +
-               (m_label.GetCount() ? m_pMainFrame->m_dpi.ScaleY(2) * 2 : 0);
+    r.bottom = r.top + (LONG)m_label.GetCount() * m_pMainFrame->GetDpiHelper()->ScaleY(17) +
+               (m_label.GetCount() ? m_pMainFrame->GetDpiHelper()->ScaleY(2) * 2 : 0);
     return r.Size();
 }
 
@@ -149,9 +149,9 @@ void CPlayerInfoBar::Relayout()
     CRect r;
     GetParent()->GetClientRect(&r);
 
-    int w = m_pMainFrame->m_dpi.ScaleX(100);
-    const int h = m_pMainFrame->m_dpi.ScaleY(17);
-    int y = m_pMainFrame->m_dpi.ScaleY(2);
+    int w = m_pMainFrame->GetDpiHelper()->ScaleX(100);
+    const int h = m_pMainFrame->GetDpiHelper()->ScaleY(17);
+    int y = m_pMainFrame->GetDpiHelper()->ScaleY(2);
 
     for (size_t i = 0; i < m_label.GetCount(); i++) {
         CDC* pDC = m_label[i]->GetDC();
@@ -161,7 +161,7 @@ void CPlayerInfoBar::Relayout()
         m_label[i]->ReleaseDC(pDC);
     }
 
-    const int sep = m_pMainFrame->m_dpi.ScaleX(10);
+    const int sep = m_pMainFrame->GetDpiHelper()->ScaleX(10);
     for (size_t i = 0; i < m_label.GetCount(); i++, y += h) {
         m_label[i]->MoveWindow(1, y, w - sep, h);
         m_info[i]->MoveWindow(w + sep, y, r.Width() - w - sep - 1, h);

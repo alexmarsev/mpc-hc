@@ -203,7 +203,6 @@ public:
 
 class DPI final
 {
-    int m_dpix, m_dpiy;
 public:
     DPI() {
         HDC hDC = ::GetDC(nullptr);
@@ -211,12 +210,16 @@ public:
         m_dpiy = GetDeviceCaps(hDC, LOGPIXELSY);
         ::ReleaseDC(nullptr, hDC);
     }
-    int ScaleFloorX(int x) { return x * m_dpix / 96; }
-    int ScaleFloorY(int y) { return y * m_dpiy / 96; }
-    int ScaleX(int x) { return MulDiv(x, m_dpix, 96); }
-    int ScaleY(int y) { return MulDiv(y, m_dpiy, 96); }
-    int TransposeScaledX(int x) { return MulDiv(x, m_dpiy, m_dpix); }
-    int TransposeScaledY(int y) { return MulDiv(y, m_dpix, m_dpiy); }
+
+    int ScaleFloorX(int x) const { return x * m_dpix / 96; }
+    int ScaleFloorY(int y) const { return y * m_dpiy / 96; }
+    int ScaleX(int x) const { return MulDiv(x, m_dpix, 96); }
+    int ScaleY(int y) const { return MulDiv(y, m_dpiy, 96); }
+    int TransposeScaledX(int x) const { return MulDiv(x, m_dpiy, m_dpix); }
+    int TransposeScaledY(int y) const { return MulDiv(y, m_dpix, m_dpiy); }
+
+protected:
+    int m_dpix, m_dpiy;
 };
 
 #define AfxGetAppSettings() (*static_cast<CMPlayerCApp*>(AfxGetApp())->m_s.get())

@@ -771,6 +771,7 @@ CMainFrame::CMainFrame()
     , m_dLastVideoScaleFactor(0)
     , m_nLastVideoWidth(0)
     , m_ps(std::make_shared<PlaybackState>())
+    , m_dpi(std::make_shared<DPI>())
     , m_taskbarList(this)
 {
     m_Lcd.SetVolumeRange(0, 100);
@@ -1380,7 +1381,7 @@ void CMainFrame::OnEnterSizeMove()
 void CMainFrame::OnMoving(UINT fwSide, LPRECT pRect)
 {
     if (AfxGetAppSettings().fSnapToDesktopEdges) {
-        const CSize threshold(m_dpi.ScaleX(16), m_dpi.ScaleY(16));
+        const CSize threshold(m_dpi->ScaleX(16), m_dpi->ScaleY(16));
 
         CRect rect(pRect);
 

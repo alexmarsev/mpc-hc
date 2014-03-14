@@ -119,11 +119,11 @@ void CPlayerStatusBar::Relayout()
     GetClientRect(r);
 
     if (m_type.GetIcon()) {
-        r2.SetRect(6, r.top + 4, 6 + m_pMainFrame->m_dpi.ScaleX(16), r.bottom - 4);
+        r2.SetRect(6, r.top + 4, 6 + m_pMainFrame->GetDpiHelper()->ScaleX(16), r.bottom - 4);
         m_type.MoveWindow(r2);
     }
 
-    r.DeflateRect(11 + m_pMainFrame->m_dpi.ScaleX(16), 5, bm.bmWidth + 8, 4);
+    r.DeflateRect(11 + m_pMainFrame->GetDpiHelper()->ScaleX(16), 5, bm.bmWidth + 8, 4);
 
     if (CDC* pDC = m_time.GetDC()) {
         CFont* pOld = pDC->SelectObject(&m_time.GetFont());

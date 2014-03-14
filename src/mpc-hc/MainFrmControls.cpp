@@ -232,8 +232,8 @@ CSize CMainFrameControls::GetDockZonesMinSize(unsigned uSaneFallback)
 {
     EnumPanelZones();
 
-    const long saneX = m_pMainFrame->m_dpi.ScaleX(uSaneFallback);
-    const long saneY = m_pMainFrame->m_dpi.ScaleY(uSaneFallback);
+    const long saneX = m_pMainFrame->GetDpiHelper()->ScaleX(uSaneFallback);
+    const long saneY = m_pMainFrame->GetDpiHelper()->ScaleY(uSaneFallback);
 
     auto calcDock = [&](DockZone zone) {
         bool bHorz = (zone == DOCK_TOP || zone == DOCK_BOTTOM);
