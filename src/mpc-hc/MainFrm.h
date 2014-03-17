@@ -463,6 +463,9 @@ protected:
     void OpenSetupCaptureBar();
     void OpenSetupWindowTitle(bool reset = false);
 
+    // queries IAMMediaContent interface
+    void UpdateFileMetadata();
+
 public:
     static bool GetCurDispMode(const CString& displayName, dispmode& dm);
     static bool GetDispMode(CString displayName, int i, dispmode& dm);
@@ -1027,6 +1030,9 @@ protected:
     int m_nLastVideoWidth;
 
     std::shared_ptr<PlaybackState> m_ps;
+
+    // TODO: get rid of this variable, it's just a crutch
+    bool m_bInPostOpen = false;
 
 public:
     afx_msg UINT OnPowerBroadcast(UINT nPowerEvent, LPARAM nEventData);

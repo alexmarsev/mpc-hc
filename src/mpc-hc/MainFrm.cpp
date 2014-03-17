@@ -667,6 +667,17 @@ void CMainFrame::EventCallback(MpcEvent ev)
                 }
             }
             break;
+        case MpcEvent::MEDIA_FILE_METADATA_CHANGED:
+            if (!m_bInPostOpen && GetLoadState() == MLS::LOADED) {
+                const auto& s = AfxGetAppSettings();
+                OpenSetupInfoBar(false);
+                if (s.iTitleBarTextStyle == 1 && s.fTitleBarTextTitle) {
+                    OpenSetupWindowTitle();
+                }
+                SendNowPlayingToSkype();
+                SendNowPlayingToApi();
+            }
+            break;
         default:
             ASSERT(FALSE);
     }
@@ -776,6 +787,7 @@ CMainFrame::CMainFrame()
     recieves.insert(MpcEvent::SHADER_POSTRESIZE_SELECTION_CHANGED);
     recieves.insert(MpcEvent::DISPLAY_MODE_AUTOCHANGING);
     recieves.insert(MpcEvent::DISPLAY_MODE_AUTOCHANGED);
+    recieves.insert(MpcEvent::MEDIA_FILE_METADATA_CHANGED);
     EventRouter::EventSelection fires;
     fires.insert(MpcEvent::SWITCHING_TO_FULLSCREEN);
     fires.insert(MpcEvent::SWITCHED_TO_FULLSCREEN);
@@ -2171,13 +2183,8 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent)
                     m_wndStatsBar.SetLine(ResStr(IDS_STATSBAR_SIGNAL), Signal);
                 }
             } else if (GetPlaybackMode() == PM_FILE) {
-                OpenSetupInfoBar(false);
-                const CAppSettings& s = AfxGetAppSettings();
-                if (s.iTitleBarTextStyle == 1 && s.fTitleBarTextTitle) {
-                    OpenSetupWindowTitle();
-                }
-                SendNowPlayingToSkype();
-                SendNowPlayingToApi();
+                UpdateFileMetadata();
+                UpdateChapterInInfoBar();
             }
 
             if (GetMediaState() == State_Running && !m_fAudioOnly) {
@@ -3257,6 +3264,8 @@ void CMainFrame::OnUpdatePlayerStatus(CCmdUI* pCmdUI)
 
 LRESULT CMainFrame::OnFilePostOpenmedia(WPARAM wParam, LPARAM lParam)
 {
+    m_bInPostOpen = true;
+
     ASSERT(GetLoadState() == MLS::LOADING);
     auto& s = AfxGetAppSettings();
 
@@ -3330,6 +3339,11 @@ LRESULT CMainFrame::OnFilePostOpenmedia(WPARAM wParam, LPARAM lParam)
             }
         }
         s.strPnSPreset.Empty();
+    }
+
+    // update file metadata, should be called before OpenSetupInfoBar()
+    if (wParam == PM_FILE) {
+        UpdateFileMetadata();
     }
 
     // initiate toolbars with the new media
@@ -3410,6 +3424,8 @@ LRESULT CMainFrame::OnFilePostOpenmedia(WPARAM wParam, LPARAM lParam)
         SendNowPlayingToApi();
     }
 
+    m_bInPostOpen = false;
+
     return 0;
 }
 
@@ -3468,6 +3484,7 @@ void CMainFrame::OnFilePostClosemedia(bool bNextIsQueued/* = false*/)
 
     m_wndView.SetVideoRect();
     m_ps->SetPos({});
+    m_ps->SetFileMetadata({});
     m_wndInfoBar.RemoveAllLines();
     m_wndStatsBar.RemoveAllLines();
     m_wndStatusBar.Clear();
@@ -11141,40 +11158,13 @@ void CMainFrame::OpenSetupInfoBar(bool bClear /*= true*/)
     }
 
     if (GetPlaybackMode() == PM_FILE) {
-        CComBSTR bstr;
-        CString title, author, copyright, rating, description;
-        BeginEnumFilters(m_pGB, pEF, pBF) {
-            if (CComQIPtr<IAMMediaContent, &IID_IAMMediaContent> pAMMC = pBF) {
-                if (SUCCEEDED(pAMMC->get_Title(&bstr)) && bstr.Length()) {
-                    title = bstr.m_str;
-                }
-                bstr.Empty();
-                if (SUCCEEDED(pAMMC->get_AuthorName(&bstr)) && bstr.Length()) {
-                    author = bstr.m_str;
-                }
-                bstr.Empty();
-                if (SUCCEEDED(pAMMC->get_Copyright(&bstr)) && bstr.Length()) {
-                    copyright = bstr.m_str;
-                }
-                bstr.Empty();
-                if (SUCCEEDED(pAMMC->get_Rating(&bstr)) && bstr.Length()) {
-                    rating = bstr.m_str;
-                }
-                bstr.Empty();
-                if (SUCCEEDED(pAMMC->get_Description(&bstr)) && bstr.Length()) {
-                    description = bstr.m_str;
-                }
-                bstr.Empty();
-            }
-        }
-        EndEnumFilters;
-
-        m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_TITLE), title);
+        PlaybackState::MediaFileMetadata metadata = m_ps->GetFileMetadata();
+        m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_TITLE), metadata[PlaybackState::MediaFileMetadataId::TITLE]);
+        m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_AUTHOR), metadata[PlaybackState::MediaFileMetadataId::AUTHOR_NAME]);
+        m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_COPYRIGHT), metadata[PlaybackState::MediaFileMetadataId::COPYRIGHT]);
+        m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_RATING), metadata[PlaybackState::MediaFileMetadataId::RATING]);
+        m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_DESCRIPTION), metadata[PlaybackState::MediaFileMetadataId::DESCRIPTION]);
         UpdateChapterInInfoBar();
-        m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_AUTHOR), author);
-        m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_COPYRIGHT), copyright);
-        m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_RATING), rating);
-        m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_DESCRIPTION), description);
     } else if (GetPlaybackMode() == PM_DVD) {
         CString info('-');
         m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_DOMAIN), info);
@@ -11354,6 +11344,44 @@ void CMainFrame::OpenSetupWindowTitle(bool reset /*= false*/)
 
     SetWindowText(title);
     m_Lcd.SetMediaTitle(title);
+}
+
+void CMainFrame::UpdateFileMetadata()
+{
+    if (GetLoadState() == MLS::LOADED && GetPlaybackMode() == PM_FILE) {
+        PlaybackState::MediaFileMetadata metadata;
+
+        CComBSTR bstr;
+        BeginEnumFilters(m_pGB, pEF, pBF) {
+            if (CComQIPtr<IAMMediaContent, &IID_IAMMediaContent> pAMMC = pBF) {
+                if (SUCCEEDED(pAMMC->get_Title(&bstr)) && bstr.Length()) {
+                    metadata.emplace(PlaybackState::MediaFileMetadataId::TITLE, bstr.m_str);
+                }
+                bstr.Empty();
+                if (SUCCEEDED(pAMMC->get_AuthorName(&bstr)) && bstr.Length()) {
+                    metadata.emplace(PlaybackState::MediaFileMetadataId::AUTHOR_NAME, bstr.m_str);
+                }
+                bstr.Empty();
+                if (SUCCEEDED(pAMMC->get_Copyright(&bstr)) && bstr.Length()) {
+                    metadata.emplace(PlaybackState::MediaFileMetadataId::COPYRIGHT, bstr.m_str);
+                }
+                bstr.Empty();
+                if (SUCCEEDED(pAMMC->get_Rating(&bstr)) && bstr.Length()) {
+                    metadata.emplace(PlaybackState::MediaFileMetadataId::RATING, bstr.m_str);
+                }
+                bstr.Empty();
+                if (SUCCEEDED(pAMMC->get_Description(&bstr)) && bstr.Length()) {
+                    metadata.emplace(PlaybackState::MediaFileMetadataId::DESCRIPTION, bstr.m_str);
+                }
+                bstr.Empty();
+            }
+        }
+        EndEnumFilters;
+
+        m_ps->SetFileMetadata(metadata);
+    } else {
+        ASSERT(FALSE);
+    }
 }
 
 // Called from GraphThread

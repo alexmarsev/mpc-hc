@@ -23,6 +23,8 @@
 #include "EventDispatcher.h"
 #include "SharedMutex.h"
 
+#include <map>
+
 struct IDSMChapterBag;
 
 class PlaybackState
@@ -43,8 +45,25 @@ public:
     bool HasDuration() const;
     bool HasChapterBag() const;
 
+    // currently represents IAMMediaContent interface
+    // (or, more precisely, sub-portion of it)
+    enum class MediaFileMetadataId
+    {
+        TITLE,
+        AUTHOR_NAME,
+        COPYRIGHT,
+        RATING,
+        DESCRIPTION,
+    };
+
+    typedef std::map<MediaFileMetadataId, CString> MediaFileMetadata;
+
+    MediaFileMetadata GetFileMetadata() const;
+    void SetFileMetadata(const MediaFileMetadata& metadata);
+
 protected:
     EventClient m_eventc;
     mutable SharedMutex m_mutex;
     Pos m_pos;
+    MediaFileMetadata m_fileMetadata;
 };

@@ -30,6 +30,7 @@ PlaybackState::PlaybackState()
         MpcEvent::MEDIA_CHAPTERBAG_CHANGED,
         MpcEvent::MEDIA_DURATION_CHANGED,
         MpcEvent::MEDIA_POSITION_CHANGED,
+        MpcEvent::MEDIA_FILE_METADATA_CHANGED,
     });
 }
 
@@ -70,4 +71,25 @@ bool PlaybackState::HasChapterBag() const
 {
     auto lock = m_mutex.GetSharedLock();
     return !!m_pos.pChapterBag;
+}
+
+PlaybackState::MediaFileMetadata PlaybackState::GetFileMetadata() const
+{
+    auto lock = m_mutex.GetSharedLock();
+    return m_fileMetadata;
+}
+
+void PlaybackState::SetFileMetadata(const PlaybackState::MediaFileMetadata& metadata)
+{
+    bool bChanged = false;
+    {
+        auto lock = m_mutex.GetExclusiveLock();
+        if (metadata != m_fileMetadata) {
+            bChanged = true;
+            m_fileMetadata = metadata;
+        }
+    }
+    if (bChanged) {
+        m_eventc.FireEvent(MpcEvent::MEDIA_FILE_METADATA_CHANGED);
+    }
 }
