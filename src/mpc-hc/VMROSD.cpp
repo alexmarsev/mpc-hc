@@ -1035,9 +1035,15 @@ public:
 
         // animation callbacks
         {
-            const PlaybackState::GraphState graphState = m_ps->GetGraphState();
-            const auto info = (graphState.bAsync || graphState.state == State_Paused) ?
-                              ItemAnimationInfo::Paused : ItemAnimationInfo::Playing;
+            ItemAnimationInfo info;
+            if (m_madvrOsdService) {
+                const PlaybackState::GraphState graphState = m_ps->GetGraphState();
+                info = (graphState.bAsync || graphState.state == State_Paused) ?
+                       ItemAnimationInfo::Paused : ItemAnimationInfo::Playing;
+            } else {
+                // TODO: THOU FIXEST
+                info = ItemAnimationInfo::Playing;
+            }
 
             for (auto it = m_gdiItems.begin(); it != m_gdiItems.end();) {
                 auto& gdiItem = it->second;
