@@ -546,6 +546,7 @@
     <ClInclude Include="SelectMediaType.h" />
     <ClInclude Include="SettingsDefines.h" />
     <ClInclude Include="Shaders.h" />
+    <ClInclude Include="SharedMutex.h" />
     <ClInclude Include="ShockwaveGraph.h" />
     <ClInclude Include="SkypeMoodMsgHandler.h" />
     <ClInclude Include="StaticLink.h" />
