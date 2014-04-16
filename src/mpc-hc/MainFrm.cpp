@@ -9408,6 +9408,10 @@ void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasT
         SetCursor(nullptr); // prevents cursor flickering when our window is not under the cursor
         m_eventc.FireEvent(MpcEvent::SWITCHING_TO_FULLSCREEN);
 
+        if (CComQIPtr<IMadVRExclusiveModeControl> pMVREMC = m_pCAP) {
+            VERIFY(SUCCEEDED(pMVREMC->DisableExclusiveMode(FALSE)));
+        }
+
         if (s.bHidePlaylistFullScreen && m_controls.ControlChecked(CMainFrameControls::Panel::PLAYLIST)) {
             m_wndPlaylistBar.SetHiddenDueToFullscreen(true);
             ShowControlBar(&m_wndPlaylistBar, FALSE, FALSE);
@@ -9449,6 +9453,10 @@ void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasT
         SetMenuBarVisibility(AFX_MBV_DISPLAYONFOCUS | AFX_MBV_DISPLAYONF10);
     } else {
         m_eventc.FireEvent(MpcEvent::SWITCHING_FROM_FULLSCREEN);
+
+        if (CComQIPtr<IMadVRExclusiveModeControl> pMVREMC = m_pCAP) {
+            VERIFY(SUCCEEDED(pMVREMC->DisableExclusiveMode(TRUE)));
+        }
 
         if (s.AutoChangeFullscrRes.bEnabled && s.AutoChangeFullscrRes.bApplyDefault && s.AutoChangeFullscrRes.dmFullscreenRes[0].fChecked == 1) {
             SetDispMode(s.strFullScreenMonitor, s.AutoChangeFullscrRes.dmFullscreenRes[0].dmFSRes);
