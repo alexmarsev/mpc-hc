@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug Lite|Win32">
+      <Configuration>Debug Lite</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug Lite|x64">
+      <Configuration>Debug Lite</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release Lite|Win32">
+      <Configuration>Release Lite</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release Lite|x64">
+      <Configuration>Release Lite</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{569635D9-F997-4FEE-9094-45DD5FA5C054}</ProjectGuid>
+    <RootNamespace>shellres</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="..\..\platform.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\common.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)bin\mpc-hc_x86_$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug Lite|Win32'">$(SolutionDir)bin\mpc-hc_x86_$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)bin\mpc-hc_x64_$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug Lite|x64'">$(SolutionDir)bin\mpc-hc_x64_$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)bin\mpc-hc_x86\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release Lite|Win32'">$(SolutionDir)bin\mpc-hc_x86 Lite\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)bin\mpc-hc_x64\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release Lite|x64'">$(SolutionDir)bin\mpc-hc_x64 Lite\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>..\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <NoEntryPoint>true</NoEntryPoint>
+      <LinkTimeCodeGeneration>
+      </LinkTimeCodeGeneration>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icons\aac.ico" />
+    <Image Include="icons\ac3.ico" />
+    <Image Include="icons\aiff.ico" />
+    <Image Include="icons\alac.ico" />
+    <Image Include="icons\amr.ico" />
+    <Image Include="icons\ape.ico" />
+    <Image Include="icons\au.ico" />
+    <Image Include="icons\avi.ico" />
+    <Image Include="icons\bink.ico" />
+    <Image Include="icons\cda.ico" />
+    <Image Include="icons\default.ico" />
+    <Image Include="icons\dsm.ico" />
+    <Image Include="icons\dts.ico" />
+    <Image Include="icons\flac.ico" />
+    <Image Include="icons\flic.ico" />
+    <Image Include="icons\flv.ico" />
+    <Image Include="icons\ifo.ico" />
+    <Image Include="icons\ivf.ico" />
+    <Image Include="icons\midi.ico" />
+    <Image Include="icons\mka.ico" />
+    <Image Include="icons\mkv.ico" />
+    <Image Include="icons\mov.ico" />
+    <Image Include="icons\mp3.ico" />
+    <Image Include="icons\mp4.ico" />
+    <Image Include="icons\mpa.ico" />
+    <Image Include="icons\mpc.ico" />
+    <Image Include="icons\mpeg.ico" />
+    <Image Include="icons\ofr.ico" />
+    <Image Include="icons\ogg.ico" />
+    <Image Include="icons\ogm.ico" />
+    <Image Include="icons\playlist.ico" />
+    <Image Include="icons\ra.ico" />
+    <Image Include="icons\rm.ico" />
+    <Image Include="icons\rt.ico" />
+    <Image Include="icons\smk.ico" />
+    <Image Include="icons\swf.ico" />
+    <Image Include="icons\ts.ico" />
+    <Image Include="icons\tta.ico" />
+    <Image Include="icons\vob.ico" />
+    <Image Include="icons\wav.ico" />
+    <Image Include="icons\webm.ico" />
+    <Image Include="icons\wma.ico" />
+    <Image Include="icons\wmv.ico" />
+    <Image Include="icons\wv.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="shellres.rc2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\build\BuildConfig.vcxproj">
+      <Project>{981574ae-5a5e-4f27-bdf1-1b841e374cff}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\mpcresources\SyncTranslations.vcxproj">
+      <Project>{904017f7-ee7a-49b6-a000-0d2fe5d5809a}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

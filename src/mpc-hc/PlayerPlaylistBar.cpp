@@ -33,6 +33,8 @@
 #include "PathUtils.h"
 #include "WinAPIUtils.h"
 
+#include "MediaFormats/FileExtensionMatches.h"
+
 IMPLEMENT_DYNAMIC(CPlayerPlaylistBar, CPlayerBar)
 CPlayerPlaylistBar::CPlayerPlaylistBar(CMainFrame* pMainFrame)
     : m_pMainFrame(pMainFrame)
@@ -194,8 +196,6 @@ static bool SearchFiles(CString mask, CAtlList<CString>& sl)
     mask.Trim();
     sl.RemoveAll();
 
-    CMediaFormats& mf = AfxGetAppSettings().m_Formats;
-
     WIN32_FILE_ATTRIBUTE_DATA fad;
     bool fFilterKnownExts = (GetFileAttributesEx(mask, GetFileExInfoStandard, &fad)
                              && (fad.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY));
@@ -214,21 +214,17 @@ static bool SearchFiles(CString mask, CAtlList<CString>& sl)
                     continue;
                 }
 
-                CString fn = fd.cFileName;
-                //CString ext = fn.Mid(fn.ReverseFind('.')+1).MakeLower();
-                CString ext = fn.Mid(fn.ReverseFind('.')).MakeLower();
                 CString path = dir + fd.cFileName;
 
-                if (!fFilterKnownExts || mf.FindExt(ext)) {
-                    for (size_t i = 0; i < mf.GetCount(); i++) {
-                        CMediaFormatCategory& mfc = mf.GetAt(i);
-                        /* playlist files are skipped when playing the contents of an entire directory */
-                        if ((mfc.FindExt(ext)) && (mf[i].GetLabel().CompareNoCase(_T("pls")) != 0)) {
-                            sl.AddTail(path);
-                            break;
-                        }
-                    }
+                if (MediaFormats::IsPlaylistFilename(path)) {
+                    continue;
                 }
+
+                if (fFilterKnownExts && !MediaFormats::IsPlayableFilename(path)) {
+                    continue;
+                }
+
+                sl.AddTail(path);
 
             } while (FindNextFile(h, &fd));
 

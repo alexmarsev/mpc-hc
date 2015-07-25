@@ -1,6 +1,6 @@
 /*
  * (C) 2003-2006 Gabest
- * (C) 2006-2013 see Authors.txt
+ * (C) 2006-2015 see Authors.txt
  *
  * This file is part of MPC-HC.
  *
@@ -36,10 +36,8 @@ protected:
 };
 
 enum engine_t {
-    DirectShow = 0,
-    RealMedia,
-    QuickTime,
-    ShockWave
+    DirectShow,
+    ShockWave,
 };
 
 interface __declspec(uuid("B110CDE5-6331-4118-8AAF-A870D6F7E2E4"))

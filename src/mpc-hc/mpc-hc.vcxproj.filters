@@ -80,6 +80,15 @@
     <Filter Include="Crash Reporter">
       <UniqueIdentifier>{1d73f7db-64e8-4bc8-b0ca-72847253f467}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Media Formats">
+      <UniqueIdentifier>{0c7012e7-9236-42ef-8166-12258916f7d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Local Server %28COM%29">
+      <UniqueIdentifier>{c038805a-0cd5-47b9-aa8d-14343f843c71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Registration">
+      <UniqueIdentifier>{8bd2706f-3106-4e2f-9ded-f2073535da4a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AppSettings.cpp">
@@ -148,9 +157,6 @@
     <ClCompile Include="CShockwaveFlash.cpp">
       <Filter>Graph\Shockwave Flash</Filter>
     </ClCompile>
-    <ClCompile Include="FileAssoc.cpp">
-      <Filter>Player Config</Filter>
-    </ClCompile>
     <ClCompile Include="FloatEdit.cpp">
       <Filter>Custom Controls</Filter>
     </ClCompile>
@@ -165,9 +171,6 @@
     </ClCompile>
     <ClCompile Include="LcdSupport.cpp">
       <Filter>Integration\Logitech LCD</Filter>
-    </ClCompile>
-    <ClCompile Include="MediaFormats.cpp">
-      <Filter>Player Config</Filter>
     </ClCompile>
     <ClCompile Include="MediaPositionList.cpp">
       <Filter>Player Config</Filter>
@@ -428,6 +431,48 @@
     <ClCompile Include="DpiHelper.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="MediaFormats\Formats.cpp">
+      <Filter>Media Formats</Filter>
+    </ClCompile>
+    <ClCompile Include="LocalServer\ClassFactory.cpp">
+      <Filter>Local Server %28COM%29</Filter>
+    </ClCompile>
+    <ClCompile Include="LocalServer\ExecuteCommand.cpp">
+      <Filter>Local Server %28COM%29</Filter>
+    </ClCompile>
+    <ClCompile Include="LocalServer\Server.cpp">
+      <Filter>Local Server %28COM%29</Filter>
+    </ClCompile>
+    <ClCompile Include="LegacyAssocDlg.cpp">
+      <Filter>Modal Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="MediaFormats\FileDialogFilters.cpp">
+      <Filter>Media Formats</Filter>
+    </ClCompile>
+    <ClCompile Include="Registration\Branding.cpp">
+      <Filter>Registration</Filter>
+    </ClCompile>
+    <ClCompile Include="Registration\Registry.cpp">
+      <Filter>Registration</Filter>
+    </ClCompile>
+    <ClCompile Include="Registration\ShellResourceLoader.cpp">
+      <Filter>Registration</Filter>
+    </ClCompile>
+    <ClCompile Include="Registration\UserOverride.cpp">
+      <Filter>Registration</Filter>
+    </ClCompile>
+    <ClCompile Include="Registration\Backend.cpp">
+      <Filter>Registration</Filter>
+    </ClCompile>
+    <ClCompile Include="Registration\Manager.cpp">
+      <Filter>Registration</Filter>
+    </ClCompile>
+    <ClCompile Include="Registration\AutoplayEvents.cpp">
+      <Filter>Registration</Filter>
+    </ClCompile>
+    <ClCompile Include="MediaFormats\FileExtensionMatches.cpp">
+      <Filter>Media Formats</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppSettings.h">
@@ -496,9 +541,6 @@
     <ClInclude Include="CShockwaveFlash.h">
       <Filter>Graph\Shockwave Flash</Filter>
     </ClInclude>
-    <ClInclude Include="FileAssoc.h">
-      <Filter>Player Config</Filter>
-    </ClInclude>
     <ClInclude Include="FloatEdit.h">
       <Filter>Custom Controls</Filter>
     </ClInclude>
@@ -516,9 +558,6 @@
     </ClInclude>
     <ClInclude Include="LcdSupport.h">
       <Filter>Integration\Logitech LCD</Filter>
-    </ClInclude>
-    <ClInclude Include="MediaFormats.h">
-      <Filter>Player Config</Filter>
     </ClInclude>
     <ClInclude Include="MediaPositionList.h">
       <Filter>Player Config</Filter>
@@ -803,6 +842,51 @@
     </ClInclude>
     <ClInclude Include="DpiHelper.h">
       <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="MediaFormats\Formats.h">
+      <Filter>Media Formats</Filter>
+    </ClInclude>
+    <ClInclude Include="LocalServer\ClassFactory.h">
+      <Filter>Local Server %28COM%29</Filter>
+    </ClInclude>
+    <ClInclude Include="LocalServer\ExecuteCommand.h">
+      <Filter>Local Server %28COM%29</Filter>
+    </ClInclude>
+    <ClInclude Include="LocalServer\Server.h">
+      <Filter>Local Server %28COM%29</Filter>
+    </ClInclude>
+    <ClInclude Include="LocalServer\UnloadObserver.h">
+      <Filter>Local Server %28COM%29</Filter>
+    </ClInclude>
+    <ClInclude Include="LegacyAssocDlg.h">
+      <Filter>Modal Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="MediaFormats\FileDialogFilters.h">
+      <Filter>Media Formats</Filter>
+    </ClInclude>
+    <ClInclude Include="Registration\Branding.h">
+      <Filter>Registration</Filter>
+    </ClInclude>
+    <ClInclude Include="Registration\Registry.h">
+      <Filter>Registration</Filter>
+    </ClInclude>
+    <ClInclude Include="Registration\ShellResourceLoader.h">
+      <Filter>Registration</Filter>
+    </ClInclude>
+    <ClInclude Include="Registration\UserOverride.h">
+      <Filter>Registration</Filter>
+    </ClInclude>
+    <ClInclude Include="Registration\Backend.h">
+      <Filter>Registration</Filter>
+    </ClInclude>
+    <ClInclude Include="Registration\Manager.h">
+      <Filter>Registration</Filter>
+    </ClInclude>
+    <ClInclude Include="Registration\AutoplayEvents.h">
+      <Filter>Registration</Filter>
+    </ClInclude>
+    <ClInclude Include="MediaFormats\FileExtensionMatches.h">
+      <Filter>Media Formats</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

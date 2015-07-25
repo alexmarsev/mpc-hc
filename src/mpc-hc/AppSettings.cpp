@@ -23,7 +23,6 @@
 #include "mplayerc.h"
 #include "AppSettings.h"
 #include "FGFilter.h"
-#include "FileAssoc.h"
 #include "CrashReporter.h"
 #include "VersionInfo.h"
 #include "SysVersion.h"
@@ -72,7 +71,6 @@ CAppSettings::CAppSettings()
     , fSavePnSZoom(false)
     , dZoomX(1.0)
     , dZoomY(1.0)
-    , fAssociatedWithIcons(true)
     , hAccel(nullptr)
     , fWinLirc(false)
     , fUIce(false)
@@ -836,8 +834,6 @@ void CAppSettings::SaveSettings()
     pApp->WriteProfileInt(IDS_R_SETTINGS, IDS_RS_MPC_OSD_SIZE, nOSDSize);
     pApp->WriteProfileString(IDS_R_SETTINGS, IDS_RS_MPC_OSD_FONT, strOSDFont);
 
-    // Associated types with icon or not...
-    pApp->WriteProfileInt(IDS_R_SETTINGS, IDS_RS_ASSOCIATED_WITH_ICON, fAssociatedWithIcons);
     // Last Open Dir
     pApp->WriteProfileString(IDS_R_SETTINGS, IDS_RS_LAST_OPEN_DIR, strLastOpenDir);
 
@@ -939,8 +935,6 @@ void CAppSettings::SaveSettings()
     pApp->WriteProfileInt(IDS_R_SETTINGS, IDS_RS_LIMITWINDOWPROPORTIONS, fLimitWindowProportions);
 
     pApp->WriteProfileInt(IDS_R_SETTINGS, IDS_RS_LASTUSEDPAGE, nLastUsedPage);
-
-    m_Formats.UpdateData(true);
 
     // Internal filters
     for (int f = 0; f < SRC_LAST; f++) {
@@ -1344,8 +1338,6 @@ void CAppSettings::LoadSettings()
         strOSDFont = pApp->GetProfileString(IDS_R_SETTINGS, IDS_RS_MPC_OSD_FONT, _T("Arial"));
     }
 
-    // Associated types with icon or not...
-    fAssociatedWithIcons = !!pApp->GetProfileInt(IDS_R_SETTINGS, IDS_RS_ASSOCIATED_WITH_ICON, TRUE);
     // Last Open Dir
     strLastOpenDir = pApp->GetProfileString(IDS_R_SETTINGS, IDS_RS_LAST_OPEN_DIR, _T("C:\\"));
 
@@ -1397,7 +1389,9 @@ void CAppSettings::LoadSettings()
     sizeAspectRatio.cy = pApp->GetProfileInt(IDS_R_SETTINGS, IDS_RS_ASPECTRATIO_Y, 0);
 
     fKeepHistory = !!pApp->GetProfileInt(IDS_R_SETTINGS, IDS_RS_KEEPHISTORY, TRUE);
-    fileAssoc.SetNoRecentDocs(!fKeepHistory);
+    noFolderVerbs = !!pApp->GetProfileInt(IDS_R_SETTINGS, IDS_RS_NOFOLDERVERBS, FALSE);
+    registrationUserOverride.Apply(!fKeepHistory, noFolderVerbs);
+
     iRecentFilesNumber = std::max(0, (int)pApp->GetProfileInt(IDS_R_SETTINGS, IDS_RS_RECENT_FILES_NUMBER, 20));
     MRU.SetSize(iRecentFilesNumber);
     MRUDub.SetSize(iRecentFilesNumber);
@@ -1581,8 +1575,6 @@ void CAppSettings::LoadSettings()
     nJumpDistM = pApp->GetProfileInt(IDS_R_SETTINGS, IDS_RS_JUMPDISTM, DEFAULT_JUMPDISTANCE_2);
     nJumpDistL = pApp->GetProfileInt(IDS_R_SETTINGS, IDS_RS_JUMPDISTL, DEFAULT_JUMPDISTANCE_3);
     fLimitWindowProportions = !!pApp->GetProfileInt(IDS_R_SETTINGS, IDS_RS_LIMITWINDOWPROPORTIONS, FALSE);
-
-    m_Formats.UpdateData(false);
 
     // Internal filters
     for (int f = 0; f < SRC_LAST; f++) {
@@ -1777,7 +1769,7 @@ void CAppSettings::LoadSettings()
     bInitialized = true;
 }
 
-bool CAppSettings::GetAllowMultiInst() const
+bool CAppSettings::GetAllowMultiInst()
 {
     return !!AfxGetApp()->GetProfileInt(IDS_R_SETTINGS, IDS_RS_MULTIINST, FALSE);
 }
@@ -2041,24 +2033,34 @@ void CAppSettings::ParseCommandLine(CAtlList<CString>& cmdln)
                 nCLSwitches |= CLSW_DEVICE;
             } else if (sw == _T("add")) {
                 nCLSwitches |= CLSW_ADD;
+            } else if (sw == _T("registersystem")) {
+                registrationAction = Registration::Type::System;
+                nCLSwitches |= CLSW_REG;
+            } else if (sw == _T("registersysteminstaller")) {
+                registrationAction = Registration::Type::SystemWithDelegateExecute;
+                nCLSwitches |= CLSW_REG;
+            } else if (sw == _T("unregistersystem")) {
+                registrationAction = Registration::Type::System;
+                nCLSwitches |= CLSW_UNREG;
+            } else if (sw == _T("registeruser")) {
+                registrationAction = Registration::Type::User;
+                nCLSwitches |= CLSW_REG;
+            } else if (sw == _T("registeruserinstaller")) {
+                registrationAction = Registration::Type::UserWithDelegateExecute;
+                nCLSwitches |= CLSW_REG;
+            } else if (sw == _T("unregisteruser")) {
+                registrationAction = Registration::Type::User;
+                nCLSwitches |= CLSW_UNREG;
             } else if (sw == _T("randomize")) {
                 nCLSwitches |= CLSW_RANDOMIZE;
             } else if (sw == _T("regvid")) {
-                nCLSwitches |= CLSW_REGEXTVID;
             } else if (sw == _T("regaud")) {
-                nCLSwitches |= CLSW_REGEXTAUD;
             } else if (sw == _T("regpl")) {
-                nCLSwitches |= CLSW_REGEXTPL;
             } else if (sw == _T("regall")) {
-                nCLSwitches |= (CLSW_REGEXTVID | CLSW_REGEXTAUD | CLSW_REGEXTPL);
             } else if (sw == _T("unregall")) {
-                nCLSwitches |= CLSW_UNREGEXT;
             } else if (sw == _T("unregvid")) {
-                nCLSwitches |= CLSW_UNREGEXT;    /* keep for compatibility with old versions */
             } else if (sw == _T("unregaud")) {
-                nCLSwitches |= CLSW_UNREGEXT;    /* keep for compatibility with old versions */
             } else if (sw == _T("iconsassoc")) {
-                nCLSwitches |= CLSW_ICONSASSOC;
             } else if (sw == _T("start") && pos) {
                 rtStart = 10000i64 * _tcstol(cmdln.GetNext(pos), nullptr, 10);
                 nCLSwitches |= CLSW_STARTVALID;

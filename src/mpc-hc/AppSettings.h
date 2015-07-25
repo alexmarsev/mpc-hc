@@ -25,14 +25,15 @@
 #include "FilterEnum.h"
 #include "RenderersSettings.h"
 #include "../Subtitles/STS.h"
-#include "MediaFormats.h"
 #include "DVBChannel.h"
 #include "MediaPositionList.h"
 #include "../filters/switcher/AudioSwitcher/AudioSwitcher.h"
 #include "Shaders.h"
-#include "FileAssoc.h"
 #include "FakeFilterMapper2.h"
 #include "../thirdparty/sanear/sanear/src/Interfaces.h"
+
+#include "Registration/Manager.h"
+#include "Registration/UserOverride.h"
 
 #include <afxadv.h>
 #include <afxsock.h>
@@ -71,12 +72,9 @@ enum : UINT64 {
     CLSW_ADD = CLSW_DEVICE << 1,
     CLSW_RANDOMIZE = CLSW_ADD << 1,
     CLSW_MINIMIZED = CLSW_RANDOMIZE << 1,
-    CLSW_REGEXTVID = CLSW_MINIMIZED << 1,
-    CLSW_REGEXTAUD = CLSW_REGEXTVID << 1,
-    CLSW_REGEXTPL = CLSW_REGEXTAUD << 1,
-    CLSW_UNREGEXT = CLSW_REGEXTPL << 1,
-    CLSW_ICONSASSOC = CLSW_UNREGEXT << 1,
-    CLSW_STARTVALID = CLSW_ICONSASSOC << 1,
+    CLSW_REG = CLSW_MINIMIZED << 4,
+    CLSW_UNREG = CLSW_REG << 1,
+    CLSW_STARTVALID = CLSW_UNREG << 1,
     CLSW_NOFOCUS = CLSW_STARTVALID << 1,
     CLSW_FIXEDSIZE = CLSW_NOFOCUS << 1,
     CLSW_MONITOR = CLSW_FIXEDSIZE << 1,
@@ -439,8 +437,7 @@ public:
     double          dZoomY;
 
     // Formats
-    CMediaFormats   m_Formats;
-    bool            fAssociatedWithIcons;
+    bool            noFolderVerbs;
 
     // Keys
     CList<wmcmd>    wmcmds;
@@ -673,8 +670,6 @@ public:
     bool            IsInitialized() const;
     static bool     IsVideoRendererAvailable(int iVideoRendererType);
 
-    CFileAssoc      fileAssoc;
-
     CComPtr<SaneAudioRenderer::ISettings> sanear;
 
     DWORD           iLAVGPUDevice;
@@ -691,6 +686,9 @@ public:
     static bool IsSubtitleRendererRegistered(SubtitleRenderer eSubtitleRenderer);
 
     static bool IsSubtitleRendererSupported(SubtitleRenderer eSubtitleRenderer, int videoRenderer);
+
+    Registration::Type registrationAction = Registration::Type::None;
+    Registration::UserOverride registrationUserOverride;
 
 private:
     struct FilterKey {
@@ -747,7 +745,7 @@ public:
 
     CDVBChannel*    FindChannelByPref(int nPrefNumber);
 
-    bool            GetAllowMultiInst() const;
+    static bool     GetAllowMultiInst();
 
     static bool     IsVSFilterInstalled();
 };

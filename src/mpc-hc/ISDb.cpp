@@ -23,6 +23,7 @@
 #include <atlpath.h>
 #include "ISDb.h"
 #include "mplayerc.h"
+#include "MediaFormats/FileExtensionMatches.h"
 
 #define PROBE_SIZE (64 * 1024)
 
@@ -101,7 +102,7 @@ namespace ISDb
         POSITION pos = pl.GetHeadPosition();
         while (pos) {
             CString fn = pl.GetNext(pos).m_fns.GetHead();
-            if (AfxGetAppSettings().m_Formats.FindExt(CPath(fn).GetExtension().MakeLower(), true)) {
+            if (MediaFormats::IsVideoFilename(fn)) {
                 continue;
             }
 

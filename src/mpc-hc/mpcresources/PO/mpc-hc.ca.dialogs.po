@@ -572,85 +572,17 @@ msgctxt "IDD_PPAGESUBTITLES_IDC_STATIC"
 msgid "If you override and enable full-screen antialiasing somewhere at your videocard's settings, subtitles aren't going to look any better but it will surely eat your CPU."
 msgstr "Si actives l'antialiasing a pantalla completa en les opcions de la targeta de gràfica, els subtítols no es veuran millor i exigirant força CPU."
 
-msgctxt "IDD_PPAGEFORMATS_IDC_STATIC2"
-msgid "File extensions"
-msgstr "Extensions de fitxer"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_BUTTON2"
-msgid "Default"
-msgstr "Per defecte"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_BUTTON_EXT_SET"
-msgid "Set"
-msgstr "Fixar"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_STATIC3"
-msgid "Association"
-msgstr "Associació"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_CHECK8"
-msgid "Use the format-specific icons"
-msgstr "Utilitzeu les icones del format específic"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_BUTTON1"
-msgid "Run as &administrator"
-msgstr "Executa com a &administrador"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_BUTTON7"
-msgid "Set as &default program"
-msgstr "Estableix com a programa per &defecte"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_STATIC"
-msgid "Real-Time Streaming Protocol handler (for rtsp://... URLs)"
-msgstr "Gestor del Protocol de Transmisions en Temps Real (per rtsp://... URLs)"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_RADIO1"
-msgid "RealMedia"
-msgstr "RealMedia"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_RADIO2"
-msgid "QuickTime"
-msgstr "QuickTime"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_RADIO3"
-msgid "DirectShow"
-msgstr "DirectShow"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_CHECK5"
-msgid "Check file extension first"
-msgstr "Segons l'extensió del fitxer"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_STATIC"
-msgid "Explorer Context Menu"
-msgstr "Menú contextual de l’Explorador"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_CHECK6"
-msgid "Directory"
-msgstr "Carpeta"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_CHECK7"
-msgid "File(s)"
-msgstr "Fitxer(s)"
-
 msgctxt "IDD_PPAGEFORMATS_IDC_STATIC1"
-msgid "Autoplay"
-msgstr "Reproducció automàtica"
+msgid "Registration status"
+msgstr ""
 
 msgctxt "IDD_PPAGEFORMATS_IDC_CHECK1"
-msgid "Video"
-msgstr "Vídeo"
+msgid "Don't appear in Windows Explorer context menu for folders"
+msgstr ""
 
-msgctxt "IDD_PPAGEFORMATS_IDC_CHECK2"
-msgid "Music"
-msgstr "Música"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_CHECK4"
-msgid "DVD"
-msgstr "DVD"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_CHECK3"
-msgid "Audio CD"
-msgstr "CD d’àudio"
+msgctxt "IDD_PPAGEFORMATS_IDC_BUTTON2"
+msgid "Associations"
+msgstr ""
 
 msgctxt "IDD_PPAGETWEAKS_IDC_STATIC"
 msgid "Jump distances (small, medium, large in ms)"
@@ -1739,4 +1671,28 @@ msgstr "Reinicia el MPC-HC"
 msgctxt "IDD_CRASH_REPORTER_IDC_BUTTON2"
 msgid "Quit MPC-HC"
 msgstr "Surt del MPC-HC"
+
+msgctxt "IDD_LEGACYASSOC_DLG_CAPTION"
+msgid "Associations"
+msgstr ""
+
+msgctxt "IDD_LEGACYASSOC_DLG_IDC_CHECK1"
+msgid "Select All"
+msgstr ""
+
+msgctxt "IDD_LEGACYASSOC_DLG_IDC_CHECK2"
+msgid "Select Video Types"
+msgstr ""
+
+msgctxt "IDD_LEGACYASSOC_DLG_IDC_CHECK3"
+msgid "Select Audio Types"
+msgstr ""
+
+msgctxt "IDD_LEGACYASSOC_DLG_IDOK"
+msgid "Apply"
+msgstr ""
+
+msgctxt "IDD_LEGACYASSOC_DLG_IDCANCEL"
+msgid "Cancel"
+msgstr ""
 

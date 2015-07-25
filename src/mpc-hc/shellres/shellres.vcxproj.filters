@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="icons">
+      <UniqueIdentifier>{4eca3df8-2629-404e-a9cb-474918e41e46}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icons\default.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\mpeg.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\wv.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\wmv.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\wma.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\webm.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\wav.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\vob.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\tta.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\ts.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\swf.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\smk.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\rt.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\rm.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\ra.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\playlist.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\ogm.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\ogg.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\ofr.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\mpc.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\mpa.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\mp4.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\mp3.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\mov.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\mkv.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\mka.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\midi.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\ivf.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\ifo.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\flv.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\flic.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\flac.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\dts.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\dsm.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\cda.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\bink.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\avi.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\au.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\ape.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\amr.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\alac.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\aiff.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\ac3.ico">
+      <Filter>icons</Filter>
+    </Image>
+    <Image Include="icons\aac.ico">
+      <Filter>icons</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="shellres.rc2" />
+  </ItemGroup>
+</Project>

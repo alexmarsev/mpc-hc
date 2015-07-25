@@ -1,6 +1,6 @@
 /*
  * (C) 2003-2006 Gabest
- * (C) 2006-2014 see Authors.txt
+ * (C) 2006-2015 see Authors.txt
  *
  * This file is part of MPC-HC.
  *
@@ -22,10 +22,10 @@
 #include "stdafx.h"
 #include "mplayerc.h"
 #include "MainFrm.h"
-#include "FileAssoc.h"
 #include "PPagePlayer.h"
 #include "Translations.h"
 
+#include "Registration/UserOverride.h"
 
 // CPPagePlayer dialog
 
@@ -214,13 +214,10 @@ BOOL CPPagePlayer::OnApply()
         if (SUCCEEDED(hr)) {
             pDests->RemoveAllDestinations();
         }
-
-        // Ensure no new items are added in Windows recent menu and in the "Recent" jump list
-        s.fileAssoc.SetNoRecentDocs(true, true);
-    } else {
-        // Re-enable Windows recent menu and the "Recent" jump list if needed
-        s.fileAssoc.SetNoRecentDocs(false, true);
     }
+
+    s.registrationUserOverride.Apply(!s.fKeepHistory, s.noFolderVerbs);
+
     if (!m_fKeepHistory || !m_fRememberFilePos) {
         s.filePositions.Empty();
     }

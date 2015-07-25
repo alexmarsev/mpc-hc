@@ -25,6 +25,8 @@
 #include "PathUtils.h"
 #include "OpenDlg.h"
 
+#include "MediaFormats/FileDialogFilters.h"
+
 
 // COpenDlg dialog
 
@@ -136,16 +138,12 @@ void COpenDlg::OnBrowseFile()
 
     const CAppSettings& s = AfxGetAppSettings();
 
-    CString filter;
-    CAtlArray<CString> mask;
-    s.m_Formats.GetFilter(filter, mask);
-
     DWORD dwFlags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_NOCHANGEDIR;
     if (!s.fKeepHistory) {
         dwFlags |= OFN_DONTADDTORECENT;
     }
 
-    CFileDialog fd(TRUE, nullptr, m_path, dwFlags, filter, this);
+    CFileDialog fd(TRUE, nullptr, m_path, dwFlags, MediaFormats::OpenKnownFilesFilter(), this);
     if (fd.DoModal() != IDOK) {
         return;
     }
@@ -183,16 +181,12 @@ void COpenDlg::OnBrowseDubFile()
 
     const CAppSettings& s = AfxGetAppSettings();
 
-    CString filter;
-    CAtlArray<CString> mask;
-    s.m_Formats.GetAudioFilter(filter, mask);
-
     DWORD dwFlags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_HIDEREADONLY | OFN_NOCHANGEDIR;
     if (!s.fKeepHistory) {
         dwFlags |= OFN_DONTADDTORECENT;
     }
 
-    CFileDialog fd(TRUE, nullptr, m_pathDub, dwFlags, filter, this);
+    CFileDialog fd(TRUE, nullptr, m_pathDub, dwFlags, MediaFormats::OpenAudioFilesFilter(), this);
 
     if (fd.DoModal() != IDOK) {
         return;
@@ -219,7 +213,7 @@ void COpenDlg::OnOk()
 void COpenDlg::OnUpdateDub(CCmdUI* pCmdUI)
 {
     UpdateData();
-    pCmdUI->Enable(AfxGetAppSettings().m_Formats.GetEngine(m_path) == DirectShow);
+    pCmdUI->Enable(PathUtils::FileExt(m_path).CompareNoCase(_T(".swf")));
 }
 
 void COpenDlg::OnUpdateOk(CCmdUI* pCmdUI)

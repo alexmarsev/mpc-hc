@@ -106,6 +106,9 @@
 
 #include <strsafe.h>
 
+#include "MediaFormats/FileDialogFilters.h"
+#include "MediaFormats/FileExtensionMatches.h"
+
 template<typename T>
 bool NEARLY_EQ(T a, T b, T tol)
 {
@@ -3709,16 +3712,13 @@ void CMainFrame::OnFileOpenQuick()
     }
 
     const CAppSettings& s = AfxGetAppSettings();
-    CString filter;
-    CAtlArray<CString> mask;
-    s.m_Formats.GetFilter(filter, mask);
 
     DWORD dwFlags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_NOCHANGEDIR;
     if (!s.fKeepHistory) {
         dwFlags |= OFN_DONTADDTORECENT;
     }
 
-    CFileDialog fd(TRUE, nullptr, nullptr, dwFlags, filter, GetModalParent());
+    CFileDialog fd(TRUE, nullptr, nullptr, dwFlags, MediaFormats::OpenKnownFilesFilter(), GetModalParent());
     if (fd.DoModal() != IDOK) {
         return;
     }
@@ -10182,7 +10182,7 @@ void CMainFrame::OpenCreateGraphObject(OpenMediaData* pOMD)
     const CAppSettings& s = AfxGetAppSettings();
 
     if (auto pOpenFileData = dynamic_cast<OpenFileData*>(pOMD)) {
-        engine_t engine = s.m_Formats.GetEngine(pOpenFileData->fns.GetHead());
+        engine_t engine = DirectShow;
 
         CStringA ct = GetContentType(pOpenFileData->fns.GetHead());
 
@@ -11865,7 +11865,6 @@ bool CMainFrame::SearchInDir(bool bDirForward, bool bLoop /*= false*/)
     }
 
     std::set<CString, CStringUtils::LogicalLess> files;
-    const CMediaFormats& mf = AfxGetAppSettings().m_Formats;
     CString mask = pFileData->title.Left(pFileData->title.ReverseFind(_T('\\')) + 1) + _T("*.*");
     CFileFind finder;
     BOOL bHasNext = finder.FindFile(mask);
@@ -11875,8 +11874,7 @@ bool CMainFrame::SearchInDir(bool bDirForward, bool bLoop /*= false*/)
 
         if (!finder.IsDirectory()) {
             CString path = finder.GetFilePath();
-            CString ext = path.Mid(path.ReverseFind('.'));
-            if (mf.FindExt(ext)) {
+            if (MediaFormats::IsPlayableFilename(path)) {
                 files.insert(path);
             }
         }
@@ -14413,8 +14411,7 @@ void CMainFrame::OpenMedia(CAutoPtr<OpenMediaData> pOMD)
     SetLoadState(MLS::LOADING);
 
     // use the graph thread only for some media types
-    bool bDirectShow = pFileData && !pFileData->fns.IsEmpty() && s.m_Formats.GetEngine(pFileData->fns.GetHead()) == DirectShow;
-    bool bUseThread = m_pGraphThread && s.fEnableWorkerThreadForOpening && (bDirectShow || !pFileData) && (s.iDefaultCaptureDevice == 1 || !pDeviceData);
+    bool bUseThread = m_pGraphThread && s.fEnableWorkerThreadForOpening && (s.iDefaultCaptureDevice == 1 || !pDeviceData);
 
     // create d3dfs window if launching in fullscreen and d3dfs is enabled
     if (s.IsD3DFullscreen() && m_fStartInD3DFullscreen) {
@@ -15629,10 +15626,6 @@ void CMainFrame::OnFileOpendirectory()
             return;
         }
     } else {
-        CString filter;
-        CAtlArray<CString> mask;
-        s.m_Formats.GetFilter(filter, mask);
-
         COpenDirHelper::strLastOpenDir = s.strLastOpenDir;
 
         TCHAR _path[MAX_PATH];

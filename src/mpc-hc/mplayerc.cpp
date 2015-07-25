@@ -34,7 +34,6 @@
 #include "Monitors.h"
 #include "WinAPIUtils.h"
 #include "PathUtils.h"
-#include "FileAssoc.h"
 #include "UpdateChecker.h"
 #include "winddk/ntddcdvd.h"
 #include "MhookHelper.h"
@@ -48,6 +47,10 @@
 #include "CmdLineHelpDlg.h"
 #include "CrashReporter.h"
 
+#include "MediaFormats/Formats.h"
+#include "Registration/Manager.h"
+#include "Registration/ShellResourceLoader.h"
+#include "Registration/UserOverride.h"
 
 #define HOOKS_BUGS_URL _T("https://trac.mpc-hc.org/ticket/3739")
 
@@ -160,59 +163,15 @@ bool LoadType(CString fn, CString& type)
 {
     bool found = false;
 
-    if (!fn.IsEmpty()) {
-        CString ext = fn.Left(fn.Find(_T("://")) + 1).TrimRight(':');
-        if (ext.IsEmpty() || !ext.CompareNoCase(_T("file"))) {
-            ext = _T(".") + fn.Mid(fn.ReverseFind('.') + 1);
+    auto f = MediaFormats_ExtensionsLambda(...) {
+        if (ext.CompareNoCase(PathUtils::FileExt(fn)) == 0) {
+            Registration::ShellResourceLoader loader;
+            type = loader.GetString(format.friendlyName, AfxGetAppSettings().language);
+            found = !type.IsEmpty();
         }
+    };
 
-        // Try MPC-HC's internal formats list
-        const CMediaFormatCategory* mfc = AfxGetAppSettings().m_Formats.FindMediaByExt(ext);
-
-        if (mfc != nullptr) {
-            found = true;
-            type = mfc->GetDescription();
-        } else { // Fallback to registry
-            CRegKey key;
-            TCHAR buff[256];
-            ULONG len;
-
-            CString tmp = _T("");
-            CString mplayerc_ext = _T("mplayerc") + ext;
-
-            if (ERROR_SUCCESS == key.Open(HKEY_CLASSES_ROOT, mplayerc_ext)) {
-                tmp = mplayerc_ext;
-            }
-
-            if (!tmp.IsEmpty() || ERROR_SUCCESS == key.Open(HKEY_CLASSES_ROOT, ext)) {
-                found = true;
-
-                if (tmp.IsEmpty()) {
-                    tmp = ext;
-                }
-
-                while (ERROR_SUCCESS == key.Open(HKEY_CLASSES_ROOT, tmp)) {
-                    len = _countof(buff);
-                    ZeroMemory(buff, sizeof(buff));
-
-                    if (ERROR_SUCCESS != key.QueryStringValue(nullptr, buff, &len)) {
-                        break;
-                    }
-
-                    CString str(buff);
-                    str.Trim();
-
-                    if (str.IsEmpty() || str == tmp) {
-                        break;
-                    }
-
-                    tmp = str;
-                }
-
-                type = tmp;
-            }
-        }
-    }
+    MediaFormats::IterateExtensions(f);
 
     return found;
 }
@@ -1451,6 +1410,15 @@ BOOL CMPlayerCApp::InitInstance()
         ASSERT(FALSE);
     }
 
+    if (FAILED(OleInitialize(nullptr))) {
+        AfxMessageBox(_T("OleInitialize failed!"));
+        return FALSE;
+    }
+
+    if (RunEmbedded()) {
+        return m_localServer.Register();
+    }
+
     // At this point only main thread should be present, mhook is custom-hacked accordingly
     bool bHookingSuccessful = true;
 
@@ -1484,11 +1452,6 @@ BOOL CMPlayerCApp::InitInstance()
     VERIFY(Mhook_SetHookEx(&Real_mixerSetControlDetails, Mine_mixerSetControlDetails));
 
     CFilterMapper2::Init();
-
-    if (FAILED(OleInitialize(nullptr))) {
-        AfxMessageBox(_T("OleInitialize failed!"));
-        return FALSE;
-    }
 
     m_s = std::make_unique<CAppSettings>();
 
@@ -1596,63 +1559,31 @@ BOOL CMPlayerCApp::InitInstance()
         return FALSE;
     }
 
-    if (m_s->nCLSwitches & (CLSW_REGEXTVID | CLSW_REGEXTAUD | CLSW_REGEXTPL)) { // register file types
-        m_s->fileAssoc.RegisterApp();
-
-        CMediaFormats& mf = m_s->m_Formats;
-        mf.UpdateData(false);
-
-        bool bAudioOnly;
-
-        auto iconLib = m_s->fileAssoc.GetIconLib();
-        if (iconLib) {
-            iconLib->SaveVersion();
-        }
-
-        for (size_t i = 0, cnt = mf.GetCount(); i < cnt; i++) {
-            bool bPlaylist = !mf[i].GetLabel().CompareNoCase(_T("pls"));
-
-            if (bPlaylist && !(m_s->nCLSwitches & CLSW_REGEXTPL)) {
-                continue;
+    if (m_s->nCLSwitches & (CLSW_REG | CLSW_UNREG)) {
+        if (Registration::IsSystemLevelType(m_s->registrationAction) && !IsUserAnAdmin()) {
+            CString args;
+            if (m_s->nCLSwitches & CLSW_REG) {
+                if (m_s->registrationAction == Registration::Type::System) {
+                    args = _T("/registerSystem");
+                } else {
+                    // installer should handle this
+                    return FALSE;
+                }
+            } else {
+                args = _T("/unregisterSystem");
             }
+            RunAsAdministrator(PathUtils::GetProgramPath(true), args, true);
+            return FALSE;
+        }
 
-            bAudioOnly = mf[i].IsAudioOnly();
-
-            if (((m_s->nCLSwitches & CLSW_REGEXTVID) && !bAudioOnly) ||
-                    ((m_s->nCLSwitches & CLSW_REGEXTAUD) && bAudioOnly) ||
-                    ((m_s->nCLSwitches & CLSW_REGEXTPL) && bPlaylist)) {
-                m_s->fileAssoc.Register(mf[i], true, false, true);
+        if (m_s->nCLSwitches & CLSW_REG) {
+            if (PathUtils::Exists(Registration::GetShellResFile())) {
+                Registration::Register(m_s->registrationAction);
+                m_s->registrationUserOverride.Apply(!m_s->fKeepHistory, m_s->noFolderVerbs);
             }
+        } else {
+            Registration::Unregister(m_s->registrationAction);
         }
-
-        SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
-
-        return FALSE;
-    }
-
-    if (m_s->nCLSwitches & CLSW_UNREGEXT) { // unregistered file types
-        CMediaFormats& mf = m_s->m_Formats;
-        mf.UpdateData(false);
-
-        for (size_t i = 0, cnt = mf.GetCount(); i < cnt; i++) {
-            m_s->fileAssoc.Register(mf[i], false, false, false);
-        }
-
-        SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
-
-        return FALSE;
-    }
-
-    if (m_s->nCLSwitches & CLSW_ICONSASSOC) {
-        CMediaFormats& mf = m_s->m_Formats;
-        mf.UpdateData(false);
-
-        CAtlList<CString> registeredExts;
-        m_s->fileAssoc.GetAssociatedExtensionsFromRegistry(registeredExts);
-
-        m_s->fileAssoc.ReAssocIcons(registeredExts);
-
-        SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
 
         return FALSE;
     }
@@ -1678,7 +1609,7 @@ BOOL CMPlayerCApp::InitInstance()
     m_mutexOneInstance.Create(nullptr, TRUE, MPC_WND_CLASS_NAME);
 
     if (GetLastError() == ERROR_ALREADY_EXISTS &&
-            (!(m_s->GetAllowMultiInst() || m_s->nCLSwitches & CLSW_NEW || m_cmdln.IsEmpty()) || m_s->nCLSwitches & CLSW_ADD)) {
+            (!(CAppSettings::GetAllowMultiInst() || m_s->nCLSwitches & CLSW_NEW || m_cmdln.IsEmpty()) || m_s->nCLSwitches & CLSW_ADD)) {
 
         DWORD res = WaitForSingleObject(m_mutexOneInstance.m_h, 5000);
         if (res == WAIT_OBJECT_0 || res == WAIT_ABANDONED) {
@@ -1802,10 +1733,6 @@ BOOL CMPlayerCApp::InitInstance()
     m_mutexOneInstance.Release();
 
     CWebServer::Init();
-
-    if (m_s->fAssociatedWithIcons) {
-        m_s->fileAssoc.CheckIconsAssoc();
-    }
 
     return TRUE;
 }
@@ -2003,9 +1930,12 @@ UINT CMPlayerCApp::GetVKFromAppCommand(UINT nAppCommand)
 
 int CMPlayerCApp::ExitInstance()
 {
-    m_s->SaveSettings();
+    m_localServer.Unregister();
 
-    m_s = nullptr;
+    if (m_s) {
+        m_s->SaveSettings();
+        m_s = nullptr;
+    }
 
     CMPCPngImage::CleanUp();
 

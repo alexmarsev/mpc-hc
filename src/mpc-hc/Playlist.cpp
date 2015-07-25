@@ -25,6 +25,8 @@
 #include "PathUtils.h"
 #include "SettingsDefines.h"
 
+#include "MediaFormats/FileExtensionMatches.h"
+
 //
 // CPlaylistItem
 //
@@ -147,14 +149,12 @@ void CPlaylistItem::AutoLoadFiles()
 
     CString fn = m_fns.GetHead();
 
-    if (s.fAutoloadAudio && fn.Find(_T("://")) < 0) {
+    if (s.fAutoloadAudio && fn.Find(_T("://")) < 0 && MediaFormats::IsVideoFilename(fn)) {
         int i = fn.ReverseFind('.');
         if (i > 0) {
-            const CMediaFormats& mf = s.m_Formats;
-
             CString ext = fn.Mid(i + 1).MakeLower();
 
-            if (!mf.FindExt(ext, true)) {
+            {
                 CString path = fn;
                 path.Replace('/', '\\');
                 path = path.Left(path.ReverseFind('\\') + 1);
@@ -171,7 +171,7 @@ void CPlaylistItem::AutoLoadFiles()
                         CString fullpath = path + fd.cFileName;
                         CString ext2 = fullpath.Mid(fullpath.ReverseFind('.') + 1).MakeLower();
                         if (!FindFileInList(m_fns, fullpath) && ext != ext2
-                                && mf.FindExt(ext2, true) && mf.IsUsingEngine(fullpath, DirectShow)) {
+                                && MediaFormats::IsAudioFilename(fullpath)) {
                             m_fns.AddTail(fullpath);
                         }
                     } while (FindNextFile(hFind, &fd));

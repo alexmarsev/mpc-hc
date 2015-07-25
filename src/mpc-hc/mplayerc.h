@@ -25,10 +25,13 @@
 #error include 'stdafx.h' before including this file for PCH
 #endif
 
+#include "AppSettings.h"
 #include "EventDispatcher.h"
 #include "DpiHelper.h"
 #include "RenderersSettings.h"
 #include "resource.h"
+
+#include "LocalServer/Server.h"
 
 #include <atlsync.h>
 #include <d3d9.h> // needed for dxva2api.h and vmr9.h
@@ -95,8 +98,6 @@ struct COLORPROPERTY_RANGE {
     int   StepSize;
 };
 
-class CAppSettings;
-
 class CMPlayerCApp : public CWinApp
 {
     HMODULE m_hNTDLL;
@@ -143,6 +144,8 @@ private:
     void InitProfile();
     std::recursive_mutex m_profileMutex;
     DWORD m_dwProfileLastAccessTick;
+
+    LocalServer::Server m_localServer;
 
 public:
     void FlushProfile(bool bForce = true);
