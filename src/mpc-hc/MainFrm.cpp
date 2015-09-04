@@ -10217,22 +10217,8 @@ void CMainFrame::OpenCreateGraphObject(OpenMediaData* pOMD)
 
         CStringA ct = GetContentType(pOpenFileData->fns.GetHead());
 
-        if (ct == "video/x-ms-asf") {
-            // TODO: put something here to make the windows media source filter load later
-        } else if (ct == "audio/x-pn-realaudio"
-                   || ct == "audio/x-pn-realaudio-plugin"
-                   || ct == "audio/x-realaudio-secure"
-                   || ct == "video/vnd.rn-realvideo-secure"
-                   || ct == "application/vnd.rn-realmedia"
-                   || ct.Find("vnd.rn-") >= 0
-                   || ct.Find("realaudio") >= 0
-                   || ct.Find("realvideo") >= 0) {
-            engine = RealMedia;
-        } else if (ct == "application/x-shockwave-flash") {
+        if (ct == "application/x-shockwave-flash") {
             engine = ShockWave;
-        } else if (ct == "video/quicktime"
-                   || ct == "application/x-quicktimeplayer") {
-            engine = QuickTime;
         }
 
         HRESULT hr = E_FAIL;

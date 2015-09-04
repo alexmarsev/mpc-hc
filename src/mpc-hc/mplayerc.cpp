@@ -326,7 +326,7 @@ static bool FindRedir(const CString& fn, CString ct, CAtlList<CString>& fns, con
 CStringA GetContentType(CString fn, CAtlList<CString>* redir)
 {
     CUrl url;
-    CString ct, body;
+    CString ct, urlBody;
 
     fn.Trim();
 
@@ -412,7 +412,7 @@ CStringA GetContentType(CString fn, CAtlList<CString>* redir)
                 hdr += str;
                 int hdrend = hdr.Find("\r\n\r\n");
                 if (hdrend >= 0) {
-                    body = hdr.Mid(hdrend + 4);
+                    urlBody = hdr.Mid(hdrend + 4);
                     hdr = hdr.Left(hdrend);
                     break;
                 }
@@ -440,17 +440,17 @@ CStringA GetContentType(CString fn, CAtlList<CString>* redir)
                 }
             }
 
-            while (body.GetLength() < 256) {
+            while (urlBody.GetLength() < 256) {
                 CStringA str;
                 str.ReleaseBuffer(s.Receive(str.GetBuffer(256), 256)); // SOCKET_ERROR == -1, also suitable for ReleaseBuffer
                 if (str.IsEmpty()) {
                     break;
                 }
-                body += str;
+                urlBody += str;
             }
 
-            if (body.GetLength() >= 8) {
-                CStringA str = TToA(body);
+            if (urlBody.GetLength() >= 8) {
+                CStringA str = TToA(urlBody);
                 if (!strncmp((LPCSTR)str, ".ra", 3)) {
                     return "audio/x-pn-realaudio";
                 }
@@ -463,29 +463,24 @@ CStringA GetContentType(CString fn, CAtlList<CString>* redir)
                 if (!strncmp((LPCSTR)str + 4, "moov", 4)) {
                     return "video/quicktime";
                 }
+                if (!strncmp((LPCSTR)str, "FWS", 3)) {
+                    return "application/x-shockwave-flash";
+                }
             }
 
             if (redir
                     && (ct == _T("audio/x-scpls") || ct == _T("audio/scpls")
                         || ct == _T("audio/x-mpegurl") || ct == _T("audio/mpegurl")
                         || ct == _T("text/plain"))) {
-                while (body.GetLength() < 64 * 1024) { // should be enough for a playlist...
+                while (urlBody.GetLength() < 64 * 1024) { // should be enough for a playlist...
                     CStringA str;
                     str.ReleaseBuffer(s.Receive(str.GetBuffer(256), 256)); // SOCKET_ERROR == -1, also suitable for ReleaseBuffer
                     if (str.IsEmpty()) {
                         break;
                     }
-                    body += str;
+                    urlBody += str;
                 }
             }
-        }
-    } else if (!fn.IsEmpty()) {
-        FILE* f = nullptr;
-        if (!_tfopen_s(&f, fn, _T("rb"))) {
-            CStringA str;
-            str.ReleaseBufferSetLength((int)fread(str.GetBuffer(10240), 1, 10240, f));
-            body = AToT(str);
-            fclose(f);
         }
     }
 
@@ -508,17 +503,6 @@ CStringA GetContentType(CString fn, CAtlList<CString>* redir)
         } else if (ext == _T(".bdmv")) {
             ct = _T("application/x-bdmv-playlist");
         }
-    }
-
-    if (body.GetLength() >= 4) { // here only those which cannot be opened through dshow
-        CStringA str = TToA(body);
-        if (!strncmp((LPCSTR)str, ".ra", 3)) {
-            return "audio/x-pn-realaudio";
-        }
-        if (!strncmp((LPCSTR)str, "FWS", 3)) {
-            return "application/x-shockwave-flash";
-        }
-
     }
 
     if (redir && !ct.IsEmpty()) {
@@ -544,12 +528,10 @@ CStringA GetContentType(CString fn, CAtlList<CString>* redir)
             res.emplace_back(_T("http://[^\n]+"), reFlags);
         }
 
-        if (!body.IsEmpty()) {
-            if (fn.Find(_T("://")) >= 0) {
-                FindRedir(url, ct, body, *redir, res);
-            } else {
-                FindRedir(fn, ct, *redir, res);
-            }
+        if (!urlBody.IsEmpty()) {
+            FindRedir(url, ct, urlBody, *redir, res);
+        } else {
+            FindRedir(fn, ct, *redir, res);
         }
     }
 
