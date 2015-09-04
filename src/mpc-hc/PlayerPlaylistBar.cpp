@@ -503,7 +503,7 @@ void CPlayerPlaylistBar::Open(CAtlList<CString>& fns, bool fMulti, CAtlList<CStr
 
 void CPlayerPlaylistBar::Append(CAtlList<CString>& fns, bool fMulti, CAtlList<CString>* subs)
 {
-    POSITION posFirstAdded = m_pl.GetTailPosition();
+    POSITION posBeforeAdd = m_pl.GetTailPosition();
     int iFirstAdded = (int)m_pl.GetCount();
 
     if (fMulti) {
@@ -519,18 +519,14 @@ void CPlayerPlaylistBar::Append(CAtlList<CString>& fns, bool fMulti, CAtlList<CS
     Refresh();
     SavePlaylist();
 
-    // Get the POSITION of the first item we just added
-    if (posFirstAdded) {
-        m_pl.GetNext(posFirstAdded);
-    } else { // if the playlist was originally empty
-        posFirstAdded = m_pl.GetHeadPosition();
+    if (!posBeforeAdd) {
+        // if the playlist was originally empty
+        posBeforeAdd = m_pl.GetHeadPosition();
     }
-    if (posFirstAdded) {
+    if (posBeforeAdd) {
         EnsureVisible(m_pl.GetTailPosition()); // This ensures that we maximize the number of newly added items shown
-        EnsureVisible(posFirstAdded);
-        if (iFirstAdded) { // Select the first added item only if some were already present
-            m_list.SetItemState(iFirstAdded, LVIS_SELECTED, LVIS_SELECTED);
-        }
+        EnsureVisible(posBeforeAdd);
+        m_list.SetItemState(iFirstAdded > 0 ? iFirstAdded - 1 : 0, LVIS_SELECTED, LVIS_SELECTED);
     }
 }
 
