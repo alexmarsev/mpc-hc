@@ -587,8 +587,8 @@ msgid "Clip"
 msgstr "Klip"
 
 msgctxt "IDC_DSSYSDEF"
-msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason. On Windown XP this is the same as VMR-7 (windowed)."
-msgstr "Standard video-renderer filter til DirectShow. Andre vil falde tilbage til denne når de ikke kan benyttes. På Windows XP er denne det samme som VMR-7 (windowed)."
+msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason."
+msgstr ""
 
 msgctxt "IDC_DSOLD"
 msgid "This is the default renderer of Windows 9x/me/2k. Depending on the visibility of the video window and your video card's abilities, it will switch between GDI, DirectDraw, Overlay rendering modes dynamically."
@@ -633,22 +633,6 @@ msgstr "Høj-kvalitets renderer, kræver en GPU som understøtter D3D9 eller sen
 msgctxt "IDC_DSSYNC"
 msgid "Same as the EVR (CP), but offers several options to synchronize the video frame rate with the display refresh rate to eliminate skipped or duplicated video frames."
 msgstr "Samme som EVR (CP), men tilbyder en del indstillinger til at synkronisere billedhastigheden med skærmens opdateringshastighed for at forhindre oversprungne eller dobbelte videobilleder."
-
-msgctxt "IDC_RMSYSDEF"
-msgid "Real's own renderer. SMIL scripts will work, but interaction not likely. Uses DirectDraw and runs in Overlay when it can."
-msgstr "Real's egen renderer. SMIL scripts vil virker, men interaktion vil formodentligt ikke virke. Bruger DirectDraw og køre i Overlay når den kan."
-
-msgctxt "IDC_RMDX9"
-msgid "The output of Real's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "Output fra Real's motor rendereret af den DX9-baseret allokationspræsentation fra VMR-9 (renderless)."
-
-msgctxt "IDC_QTSYSDEF"
-msgid "QuickTime's own renderer. Gets a little slow when its video area is resized or partially covered by another window. When Overlay is not available it likes to fall back to GDI."
-msgstr "QuickTime's egen renderer. Bliver lidt langsom når videoens område ændre størrelse eller delvist dækket af andre vinduer. Den kan godt lide at falde tilbage til GDI når Overlay ikke er tilgængelig."
-
-msgctxt "IDC_QTDX9"
-msgid "The output of QuickTime's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "Output fra QuickTime's motor rendereret af den DX9-baseret allokationspræsentation fra VMR-9 (renderless)."
 
 msgctxt "IDC_REGULARSURF"
 msgid "Video surface will be allocated as a regular offscreen surface."
@@ -2174,10 +2158,6 @@ msgctxt "IDS_AG_TITLE2"
 msgid "Title: %02d/%02d"
 msgstr "Titel: %02d/%02d"
 
-msgctxt "IDS_REALVIDEO_INCOMPATIBLE"
-msgid "Filename contains unsupported characters (use only A-Z, 0-9)"
-msgstr "Filnavn indeholder tegn som ikke er understøttet (brug kun A-Z, 0-9)"
-
 msgctxt "IDS_THUMB_ROWNUMBER"
 msgid "Rows:"
 msgstr "Rækker:"
@@ -3365,14 +3345,6 @@ msgstr "Fejl ved fortolkning af den indtastede billedhastighed!"
 msgctxt "IDS_FRAME_STEP_ERROR_RENDERER"
 msgid "Cannot frame-step, try a different video renderer."
 msgstr "Kan ikke foretage billedtrin, prøv en anden video-renderer."
-
-msgctxt "IDS_SCREENSHOT_ERROR_REAL"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for RealMedia.\nSelect one of the DirectX renderers for RealMedia in MPC-HC's output options and reopen the file."
-msgstr "\"Gem billede\" og \"Gem miniaturer\" virker ikke med standard video-rendereren til RealMedia.\nVælg en af DirectX-rendererne til RealMedia i MPC-HC's outputindstillinger og åbn filen på ny."
-
-msgctxt "IDS_SCREENSHOT_ERROR_QT"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for QuickTime.\nSelect one of the DirectX renderers for QuickTime in MPC-HC's output options and reopen the file."
-msgstr "\"Gem billede\" og \"Gem miniaturer\" virker ikke med standard video-rendereren til QuickTime.\nVælg en af DirectX-rendererne til QuickTime i MPC-HC's outputindstillinger og åbn filen på ny."
 
 msgctxt "IDS_SCREENSHOT_ERROR_SHOCKWAVE"
 msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work for Shockwave files."

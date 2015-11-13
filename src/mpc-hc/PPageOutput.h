@@ -41,8 +41,6 @@ private:
     CComboBox m_iDSVideoRendererTypeCtrl;
     CComboBox m_iAudioRendererTypeCtrl;
     CComboBox m_SubtitleRendererCtrl;
-    CComboBox m_iRMVideoRendererTypeCtrl;
-    CComboBox m_iQTVideoRendererTypeCtrl;
     CComboBox m_iD3D9RenderDeviceCtrl;
     CComboBox m_APSurfaceUsageCtrl;
     CComboBox m_DX9ResizerCtrl;
@@ -53,10 +51,6 @@ private:
     CStatic m_iDSSaveImageSupport;
     CStatic m_iDSShaderSupport;
     CStatic m_iDSRotationSupport;
-    CStatic m_iRMSubtitleSupport;
-    CStatic m_iRMSaveImageSupport;
-    CStatic m_iQTSubtitleSupport;
-    CStatic m_iQTSaveImageSupport;
 
     void UpdateSubtitleSupport();
 
@@ -69,8 +63,6 @@ public:
     // Dialog Data
     enum { IDD = IDD_PPAGEOUTPUT };
     int m_iDSVideoRendererType;
-    int m_iRMVideoRendererType;
-    int m_iQTVideoRendererType;
     int m_iAPSurfaceUsage;
     int m_iAudioRendererType;
     std::pair<bool, CAppSettings::SubtitleRenderer> m_lastSubrenderer;
@@ -97,8 +89,6 @@ public:
     afx_msg void OnUpdateMixerYUV(CCmdUI* pCmdUI);
     afx_msg void OnSurfaceChange();
     afx_msg void OnDSRendererChange();
-    afx_msg void OnRMRendererChange();
-    afx_msg void OnQTRendererChange();
     afx_msg void OnSubtitleRendererChange();
     afx_msg void OnFullscreenCheck();
     afx_msg void OnD3D9DeviceCheck();

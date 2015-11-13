@@ -597,8 +597,8 @@ msgid "Clip"
 msgstr "Clipe"
 
 msgctxt "IDC_DSSYSDEF"
-msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason. On Windown XP this is the same as VMR-7 (windowed)."
-msgstr "Filtro renderizador padrão para DirectShow. Outros o utilizarão caso não possa carregar adequadamente por qualquer razão. no Windows XP é o mesmo que VMR-7 (windowed)."
+msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason."
+msgstr ""
 
 msgctxt "IDC_DSOLD"
 msgid "This is the default renderer of Windows 9x/me/2k. Depending on the visibility of the video window and your video card's abilities, it will switch between GDI, DirectDraw, Overlay rendering modes dynamically."
@@ -643,22 +643,6 @@ msgstr "Processador de vídeo de Alta-qualidade, requer uma GPU que suporte D3D9
 msgctxt "IDC_DSSYNC"
 msgid "Same as the EVR (CP), but offers several options to synchronize the video frame rate with the display refresh rate to eliminate skipped or duplicated video frames."
 msgstr "Mesmo do EVR (CP), mas oferece várias opções para sincronizar a taxa de quadros de vídeo com a taxa de atualização de vídeo para eliminar quadros perdidos ou duplicados."
-
-msgctxt "IDC_RMSYSDEF"
-msgid "Real's own renderer. SMIL scripts will work, but interaction not likely. Uses DirectDraw and runs in Overlay when it can."
-msgstr "O próprio Processador vídeo da Real. Os scripts SMIL funcionarão, mas a interação provavelmente não. Usa DirectDraw e executa em Overlay quando possivel."
-
-msgctxt "IDC_RMDX9"
-msgid "The output of Real's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "A saída do mecanismo da Real será renderizado pelo \"Allocator-Presenter\" baseado em DX9 de VMR-9 (sem processamento)."
-
-msgctxt "IDC_QTSYSDEF"
-msgid "QuickTime's own renderer. Gets a little slow when its video area is resized or partially covered by another window. When Overlay is not available it likes to fall back to GDI."
-msgstr "O Processador de vídeo do QuickTime. Torna-se um pouco lento quando sua área de vídeo é redimensionada ou parcialmente coberta por outra janela. quando o Overlay não esta disponível ele retorna ao GDI."
-
-msgctxt "IDC_QTDX9"
-msgid "The output of QuickTime's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "A saída do mecanismo do QuickTime será processado pelo \"Allocator-Presenter\" baseado em DX9 de VMR-9 (sem processamento)."
 
 msgctxt "IDC_REGULARSURF"
 msgid "Video surface will be allocated as a regular offscreen surface."
@@ -2184,10 +2168,6 @@ msgctxt "IDS_AG_TITLE2"
 msgid "Title: %02d/%02d"
 msgstr "Título: %02d/%02d"
 
-msgctxt "IDS_REALVIDEO_INCOMPATIBLE"
-msgid "Filename contains unsupported characters (use only A-Z, 0-9)"
-msgstr "O nome contém caracteres não suportados (utilizar apenas caracteres alfanuméricos)"
-
 msgctxt "IDS_THUMB_ROWNUMBER"
 msgid "Rows:"
 msgstr "Linhas: "
@@ -3375,14 +3355,6 @@ msgstr "Erro ao tentar processar a taxa de quadros digitada!"
 msgctxt "IDS_FRAME_STEP_ERROR_RENDERER"
 msgid "Cannot frame-step, try a different video renderer."
 msgstr "Não é possivel pular o quadro, tente processador de vídeo diferente."
-
-msgctxt "IDS_SCREENSHOT_ERROR_REAL"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for RealMedia.\nSelect one of the DirectX renderers for RealMedia in MPC-HC's output options and reopen the file."
-msgstr "As funções \"Salvar Imagem\" e \"Salvar Miniaturas\" não funcionam com o atual processador de vídeo para RealMedia.\nSelecione um dos processadores do DirectX para RealMedia nas opções de saída do MPC-HC e re-abra o arquivo."
-
-msgctxt "IDS_SCREENSHOT_ERROR_QT"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for QuickTime.\nSelect one of the DirectX renderers for QuickTime in MPC-HC's output options and reopen the file."
-msgstr "As funções \"Salvar Imagem\" e \"Salvar Miniaturas\" não funcionam com o atual processador de vídeo para QuickTime.\nSelecione um dos processadores do DirectX para QuickTime nas opções de saída do MPC-HC e re-abra o arquivo."
 
 msgctxt "IDS_SCREENSHOT_ERROR_SHOCKWAVE"
 msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work for Shockwave files."

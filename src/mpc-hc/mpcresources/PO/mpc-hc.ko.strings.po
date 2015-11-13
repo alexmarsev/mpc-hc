@@ -586,8 +586,8 @@ msgid "Clip"
 msgstr "클립"
 
 msgctxt "IDC_DSSYSDEF"
-msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason. On Windown XP this is the same as VMR-7 (windowed)."
-msgstr "DirectShow를 위한 기본 비디오 렌더러필터를 사용합니다. 다른 렌더러를 사용하지못할때 이 렌더러를 선택하면 됩니다.윈도우XP에서는 VMR-7(창화면)과 동일합니다."
+msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason."
+msgstr ""
 
 msgctxt "IDC_DSOLD"
 msgid "This is the default renderer of Windows 9x/me/2k. Depending on the visibility of the video window and your video card's abilities, it will switch between GDI, DirectDraw, Overlay rendering modes dynamically."
@@ -632,22 +632,6 @@ msgstr ""
 msgctxt "IDC_DSSYNC"
 msgid "Same as the EVR (CP), but offers several options to synchronize the video frame rate with the display refresh rate to eliminate skipped or duplicated video frames."
 msgstr ""
-
-msgctxt "IDC_RMSYSDEF"
-msgid "Real's own renderer. SMIL scripts will work, but interaction not likely. Uses DirectDraw and runs in Overlay when it can."
-msgstr "리얼미디어의 고유렌더러입니다. SMIL형식은 작동하지만 안정적이지는 않습니다. 오버레이상태에서 실행될때 DirectDraw를 사용합니다."
-
-msgctxt "IDC_RMDX9"
-msgid "The output of Real's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "리얼미디어의 엔진을 이용해서 DX9기반의 VMR-9 (렌더리스)모드에서 렌더링합니다."
-
-msgctxt "IDC_QTSYSDEF"
-msgid "QuickTime's own renderer. Gets a little slow when its video area is resized or partially covered by another window. When Overlay is not available it likes to fall back to GDI."
-msgstr "퀵타임의 고유렌더러입니다. 비디오화면을 조절할때 화면갱신속도가 느려질수 있고 다른 창의 뒤로 가려질수도 있습니다. 오버레이를 사용하지 못할 경우 GDI를 사용하게 됩니다."
-
-msgctxt "IDC_QTDX9"
-msgid "The output of QuickTime's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "퀵타임의 엔진을 이용해서 DX9기반의 VMR-9 (렌더리스)모드에서 렌더링합니다."
 
 msgctxt "IDC_REGULARSURF"
 msgid "Video surface will be allocated as a regular offscreen surface."
@@ -2173,10 +2157,6 @@ msgctxt "IDS_AG_TITLE2"
 msgid "Title: %02d/%02d"
 msgstr "타이틀: %02d/%02d"
 
-msgctxt "IDS_REALVIDEO_INCOMPATIBLE"
-msgid "Filename contains unsupported characters (use only A-Z, 0-9)"
-msgstr "파일이름에 지원되지않는 문자가 포함되어있습니다.(A-Z, 0-9 만 가능)"
-
 msgctxt "IDS_THUMB_ROWNUMBER"
 msgid "Rows:"
 msgstr "열:"
@@ -3364,14 +3344,6 @@ msgstr "프레임 레이트를 파싱하는데에 오류가 발생했습니다!"
 msgctxt "IDS_FRAME_STEP_ERROR_RENDERER"
 msgid "Cannot frame-step, try a different video renderer."
 msgstr "프레임 단위 이동에 문제가 있으면, 다른 비디오 렌더러를 사용해보세요."
-
-msgctxt "IDS_SCREENSHOT_ERROR_REAL"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for RealMedia.\nSelect one of the DirectX renderers for RealMedia in MPC-HC's output options and reopen the file."
-msgstr "'이미지 저장' 과 '썸넴일 저장' 은 비디오 렌더러가 RealMedia 기본렌더러로 설정되어있을 때는 작동하지 않습니다.\n'출력' 옵션에서 RealMedia를 위한 DirectX 렌더러로 변경한 후에 파일을 다시 여십시오."
-
-msgctxt "IDS_SCREENSHOT_ERROR_QT"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for QuickTime.\nSelect one of the DirectX renderers for QuickTime in MPC-HC's output options and reopen the file."
-msgstr "'이미지 저장' 과 '썸넴일 저장' 은 비디오 렌더러가 QuickTime 기본렌더러로 설정되어있을 때는 작동하지 않습니다.\n'출력' 옵션에서 QuickTime을 위한 DirectX 렌더러로 변경한 후에 파일을 다시 여십시오."
 
 msgctxt "IDS_SCREENSHOT_ERROR_SHOCKWAVE"
 msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work for Shockwave files."

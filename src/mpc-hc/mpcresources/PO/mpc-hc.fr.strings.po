@@ -585,8 +585,8 @@ msgid "Clip"
 msgstr "Informations"
 
 msgctxt "IDC_DSSYSDEF"
-msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason. On Windown XP this is the same as VMR-7 (windowed)."
-msgstr "Moteur de rendu vidéo par défaut pour les filtres DirectShow. Il sera utilisé comme solution de secours si un autre moteur de rendu ne peut être chargé pour une raison quelconque. Sur Windows XP, ce moteur de rendu correspond à VMR-7 (fenêtré)."
+msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason."
+msgstr ""
 
 msgctxt "IDC_DSOLD"
 msgid "This is the default renderer of Windows 9x/me/2k. Depending on the visibility of the video window and your video card's abilities, it will switch between GDI, DirectDraw, Overlay rendering modes dynamically."
@@ -631,22 +631,6 @@ msgstr "Moteur de rendu haute qualité, nécessite une carte graphique supportan
 msgctxt "IDC_DSSYNC"
 msgid "Same as the EVR (CP), but offers several options to synchronize the video frame rate with the display refresh rate to eliminate skipped or duplicated video frames."
 msgstr "Identique à EVR (CP), mais avec quelques options permettant de synchroniser le débit d'images avec le taux de rafraichissement de l'écran afin d'éviter les images perdues ou dupliquées."
-
-msgctxt "IDC_RMSYSDEF"
-msgid "Real's own renderer. SMIL scripts will work, but interaction not likely. Uses DirectDraw and runs in Overlay when it can."
-msgstr "Moteur de rendu de Real. Les scripts SMIL devraient fonctionner, mais probablement pas les interactions. Utilise DirectDraw et démarre en Overlay quand il peut."
-
-msgctxt "IDC_RMDX9"
-msgid "The output of Real's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "La sortie du moteur Real affichée par le plugin Présentation/Allocation de VMR-9 (sans rendu)."
-
-msgctxt "IDC_QTSYSDEF"
-msgid "QuickTime's own renderer. Gets a little slow when its video area is resized or partially covered by another window. When Overlay is not available it likes to fall back to GDI."
-msgstr "Moteur de rendu de QuickTime. Parfois un peu lent lorsque la zone vidéo est redimensionnée ou partiellement couverte par une autre fenêtre. Quand l'overlay n'est pas disponible, il tend à repasser en GDI."
-
-msgctxt "IDC_QTDX9"
-msgid "The output of QuickTime's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "La sortie du moteur QuickTime affichée par le plugin Présentation/Allocation de VMR-9 (sans rendu)."
 
 msgctxt "IDC_REGULARSURF"
 msgid "Video surface will be allocated as a regular offscreen surface."
@@ -2172,10 +2156,6 @@ msgctxt "IDS_AG_TITLE2"
 msgid "Title: %02d/%02d"
 msgstr "Titre : %02d/%02d"
 
-msgctxt "IDS_REALVIDEO_INCOMPATIBLE"
-msgid "Filename contains unsupported characters (use only A-Z, 0-9)"
-msgstr "Le nom du fichier contiens des caractères interdits (n'utilisez que A-Z, 0-9)"
-
 msgctxt "IDS_THUMB_ROWNUMBER"
 msgid "Rows:"
 msgstr "Lignes :"
@@ -3363,14 +3343,6 @@ msgstr "L'analyse du débit d'images entré a échoué !"
 msgctxt "IDS_FRAME_STEP_ERROR_RENDERER"
 msgid "Cannot frame-step, try a different video renderer."
 msgstr "Impossible d'utiliser le déplacement image par image, réessayez avec un autre moteur de rendu vidéo."
-
-msgctxt "IDS_SCREENSHOT_ERROR_REAL"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for RealMedia.\nSelect one of the DirectX renderers for RealMedia in MPC-HC's output options and reopen the file."
-msgstr "Les fonctions \"Enregistrer l'image\" et \"Enregistrer les miniatures\" ne fonctionnent pas avec le moteur de rendu vidéo par défaut pour RealMedia.\nSélectionnez un des moteurs de rendu DirectX pour RealMedia dans les options de sortie de MPC-HC et réouvrez le fichier."
-
-msgctxt "IDS_SCREENSHOT_ERROR_QT"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for QuickTime.\nSelect one of the DirectX renderers for QuickTime in MPC-HC's output options and reopen the file."
-msgstr "Les fonctions \"Enregistrer l'image\" et \"Enregistrer les miniatures\" ne fonctionnent pas avec le moteur de rendu vidéo par défaut pour QuickTime.\nSélectionnez un des moteurs de rendu DirectX pour QuickTime dans les options de sortie de MPC-HC et réouvrez le fichier."
 
 msgctxt "IDS_SCREENSHOT_ERROR_SHOCKWAVE"
 msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work for Shockwave files."

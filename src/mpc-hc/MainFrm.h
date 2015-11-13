@@ -46,11 +46,6 @@
 
 #include "IGraphBuilder2.h"
 
-#include "RealMediaGraph.h"
-#ifndef _WIN64
-// TODO: add QuickTime support for x64 when available!
-#include "QuicktimeGraph.h"
-#endif /* _WIN64 */
 #include "ShockwaveGraph.h"
 
 #include "IChapterInfo.h"
@@ -347,7 +342,7 @@ private:
     UINT m_nLastSkipDirection;
 
     bool m_fCustomGraph;
-    bool m_fRealMediaGraph, m_fShockwaveGraph, m_fQuicktimeGraph;
+    bool m_fShockwaveGraph;
 
     CComPtr<ISubClock> m_pSubClock;
 
@@ -441,7 +436,7 @@ public:
         return (m_wndPlaylistBar.GetCount() == 0);
     }
     bool IsInteractiveVideo() const {
-        return (AfxGetAppSettings().fIntRealMedia && m_fRealMediaGraph || m_fShockwaveGraph);
+        return m_fShockwaveGraph;
     }
     bool IsD3DFullScreenMode() const;
 
@@ -1021,7 +1016,6 @@ public:
     void        SetAudioDelay(REFERENCE_TIME rtShift);
     void        SetSubtitleDelay(int delay_ms);
     //void      AutoSelectTracks();
-    bool        IsRealEngineCompatible(CString strFilename) const;
     void        SetTimersPlay();
     void        KillTimersStop();
 

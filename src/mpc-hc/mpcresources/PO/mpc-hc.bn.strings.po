@@ -588,8 +588,8 @@ msgid "Clip"
 msgstr "ক্লিপ"
 
 msgctxt "IDC_DSSYSDEF"
-msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason. On Windown XP this is the same as VMR-7 (windowed)."
-msgstr "DirectShowর জন্য ডিফল্ট রেনডারার ফিল্টার। অন্যান্যগুলো কোন সমস্যায় পরে লোড করণে ব্যর্থ হলে এটাতেই ফিরে আসবে। Windown XPতে এটা এবং VMR-7 (windowed) একই রকম।"
+msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason."
+msgstr ""
 
 msgctxt "IDC_DSOLD"
 msgid "This is the default renderer of Windows 9x/me/2k. Depending on the visibility of the video window and your video card's abilities, it will switch between GDI, DirectDraw, Overlay rendering modes dynamically."
@@ -634,22 +634,6 @@ msgstr "উচ্চ-বৈশিষ্ট্যগুণ সম্পন্ন 
 msgctxt "IDC_DSSYNC"
 msgid "Same as the EVR (CP), but offers several options to synchronize the video frame rate with the display refresh rate to eliminate skipped or duplicated video frames."
 msgstr "EVR (CP)এর মত একই রকমের, তবে বাদ যাওয়া বা পুনরাবৃত্ত ভিডিও ফ্রেমসমূহ বর্জনের জন্য ভিডিও ফ্রেম রেটের সাথে ডিসপ্লে রিফ্রেশ রেটের সিঙ্ক্রোনাইজকরণে কয়েকটি অপশন দেয়।"
-
-msgctxt "IDC_RMSYSDEF"
-msgid "Real's own renderer. SMIL scripts will work, but interaction not likely. Uses DirectDraw and runs in Overlay when it can."
-msgstr "Realএর নিজস্ব রেনডারার। SMIL স্ক্রিপ্টসমুহ কাজ করবে, তবে পারস্পরিক ক্রিয়া-প্রতিক্রিয়ার সম্ভাবনা নেই। DirectDraw ব্যবহার করে আর যখন পারে Overlayএ চালনা করে।"
-
-msgctxt "IDC_RMDX9"
-msgid "The output of Real's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "Realএর ইঞ্জিন থেকে প্রাপ্ত আউটপুট DX9এর উপর ভিত্তি করা VMR-9 (renderless)এর অ্যালোকেটর-প্রেজেন্টার দ্বারা রেনডার করা হয়।"
-
-msgctxt "IDC_QTSYSDEF"
-msgid "QuickTime's own renderer. Gets a little slow when its video area is resized or partially covered by another window. When Overlay is not available it likes to fall back to GDI."
-msgstr "QuickTimeএর নিজস্ব রেনডারার। কিছুটা ধীরগতিতে কাজ করে যখন ভিডিওর সাইজপরিবর্তন করা হয় বা ভিডিও ক্ষেত্র আংশিকভাবে অন্য উইন্ডো দ্বারা ঢেকে যায়। এটা যখন Overlay ব্যবহার করতে পারে না তখন GDIএ ফিরে আসতে পছন্দ করে।"
-
-msgctxt "IDC_QTDX9"
-msgid "The output of QuickTime's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "QuickTimeএর ইঞ্জিন থেকে প্রাপ্ত আউটপুট DX9এর উপর ভিত্তি করা VMR-9 (renderless)এর অ্যালোকেটর-প্রেজেন্টার দ্বারা রেনডার করা হয়।"
 
 msgctxt "IDC_REGULARSURF"
 msgid "Video surface will be allocated as a regular offscreen surface."
@@ -2175,10 +2159,6 @@ msgctxt "IDS_AG_TITLE2"
 msgid "Title: %02d/%02d"
 msgstr "টাইটেল: %02d/%02d"
 
-msgctxt "IDS_REALVIDEO_INCOMPATIBLE"
-msgid "Filename contains unsupported characters (use only A-Z, 0-9)"
-msgstr "ফাইলের নামে সমর্থন করে না এমন ক্যারেক্টারসমূহ রয়েছে (শুধুমাত্র A-Z, 0-9 ব্যবহার করুন)"
-
 msgctxt "IDS_THUMB_ROWNUMBER"
 msgid "Rows:"
 msgstr "সারিসংখ্যা:"
@@ -3366,14 +3346,6 @@ msgstr "প্রবেশকৃত ফ্রেম রেটটি সমন্
 msgctxt "IDS_FRAME_STEP_ERROR_RENDERER"
 msgid "Cannot frame-step, try a different video renderer."
 msgstr "ফ্রেমের পদক্ষেপ নেয়া যাচ্ছে না, ভিন্ন ভিডিও রেনডারার চেষ্টা করে দেখুন।"
-
-msgctxt "IDS_SCREENSHOT_ERROR_REAL"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for RealMedia.\nSelect one of the DirectX renderers for RealMedia in MPC-HC's output options and reopen the file."
-msgstr "\"ছবি সেইভ করি\" এবং \"থাম্ব্‌নেইলসমূহ সেইভ করি\" ফাংশনসমূহ RealMediaর ডিফল্ট ভিডিও রেনডারারের সাথে কাজ করে না।\nMPC-HCএর আউটপুট অপশনসমূহে RealMediaর যেকোনো DirectX রেনডারার নির্ধারণ করুন এবং পুনরায় ফাইলটি চালনা করুন।"
-
-msgctxt "IDS_SCREENSHOT_ERROR_QT"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for QuickTime.\nSelect one of the DirectX renderers for QuickTime in MPC-HC's output options and reopen the file."
-msgstr "\"ছবি সেইভ করি\" এবং \"থাম্ব্‌নেইলসমূহ সেইভ করি\" ফাংশনসমূহ QuickTimeএর ডিফল্ট ভিডিও রেনডারারের সাথে কাজ করে না।\nMPC-HCএর আউটপুট অপশনসমূহে QuickTimeএর যেকোনো DirectX রেনডারার নির্ধারণ করুন এবং পুনরায় ফাইলটি চালনা করুন।"
 
 msgctxt "IDS_SCREENSHOT_ERROR_SHOCKWAVE"
 msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work for Shockwave files."

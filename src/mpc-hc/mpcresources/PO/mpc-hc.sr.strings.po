@@ -587,8 +587,8 @@ msgid "Clip"
 msgstr "Клип"
 
 msgctxt "IDC_DSSYSDEF"
-msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason. On Windown XP this is the same as VMR-7 (windowed)."
-msgstr "Подразумевани филтер DirectShow-а за рендеровање видео-записа. Други филтери ће прећи на овај уколико дође до грешке. На Windows XP-у, овај филтер је исти као VMR-7 (у прозору)."
+msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason."
+msgstr ""
 
 msgctxt "IDC_DSOLD"
 msgid "This is the default renderer of Windows 9x/me/2k. Depending on the visibility of the video window and your video card's abilities, it will switch between GDI, DirectDraw, Overlay rendering modes dynamically."
@@ -633,22 +633,6 @@ msgstr "Висококвалитетни рендерер захтева GPU к�
 msgctxt "IDC_DSSYNC"
 msgid "Same as the EVR (CP), but offers several options to synchronize the video frame rate with the display refresh rate to eliminate skipped or duplicated video frames."
 msgstr "Исто као EVR (CP), али пружа поједине опције за синхронизовање учесталости кадрова са учесталошћу освежавања екрана ради елиминисања прескочених или двоструких видео-кадрова."
-
-msgctxt "IDC_RMSYSDEF"
-msgid "Real's own renderer. SMIL scripts will work, but interaction not likely. Uses DirectDraw and runs in Overlay when it can."
-msgstr "Сопствени рендерер RealMedia формата. SMIL скрипти ће радити, али интеракција вероватно неће. Користи DirectDraw и прекривање, када је то могуће."
-
-msgctxt "IDC_RMDX9"
-msgid "The output of Real's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "Излаз модула RealMedia који је обрађен помоћу додатка додељивач-излагач у VMR-9 (без рендера)."
-
-msgctxt "IDC_QTSYSDEF"
-msgid "QuickTime's own renderer. Gets a little slow when its video area is resized or partially covered by another window. When Overlay is not available it likes to fall back to GDI."
-msgstr "Сопствени рендерер QuickTime формата. Може успорити приликом промене величине прозора за видео или његовог делимичног покривања. Када није доступан Overlay, користи се GDI."
-
-msgctxt "IDC_QTDX9"
-msgid "The output of QuickTime's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "Излаз модула QuickTime-а који је обрађен помоћу додатка додељивач-излагач у VMR-9 (без рендера)."
 
 msgctxt "IDC_REGULARSURF"
 msgid "Video surface will be allocated as a regular offscreen surface."
@@ -2174,10 +2158,6 @@ msgctxt "IDS_AG_TITLE2"
 msgid "Title: %02d/%02d"
 msgstr "Наслов: %02d/%02d"
 
-msgctxt "IDS_REALVIDEO_INCOMPATIBLE"
-msgid "Filename contains unsupported characters (use only A-Z, 0-9)"
-msgstr "Име датотеке садржи неподржане знакове (користите само A–Z, 0–9)"
-
 msgctxt "IDS_THUMB_ROWNUMBER"
 msgid "Rows:"
 msgstr "Редова:"
@@ -3365,14 +3345,6 @@ msgstr "Грешка приликом обраде наведене учеста
 msgctxt "IDS_FRAME_STEP_ERROR_RENDERER"
 msgid "Cannot frame-step, try a different video renderer."
 msgstr "Не могу да премотавам по кадровима. Пробајте други видео-рендерер."
-
-msgctxt "IDS_SCREENSHOT_ERROR_REAL"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for RealMedia.\nSelect one of the DirectX renderers for RealMedia in MPC-HC's output options and reopen the file."
-msgstr "Функције „Сачувај слику“ и „Сачувај сличице“ не раде са подразумеваним видео-рендерером за RealMedia.\nИзаберите један од DirectX рендерера за RealMedia у MPC-HC-овим излазним опцијама и поново отворите датотеку."
-
-msgctxt "IDS_SCREENSHOT_ERROR_QT"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for QuickTime.\nSelect one of the DirectX renderers for QuickTime in MPC-HC's output options and reopen the file."
-msgstr "Функције „Сачувај слику“ и „Сачувај сличице“ не раде са подразумеваним видео-рендерером за QuickTime.\nИзаберите један од DirectX рендерера за QuickTime у MPC-HC-овим излазним опцијама и поново отворите датотеку."
 
 msgctxt "IDS_SCREENSHOT_ERROR_SHOCKWAVE"
 msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work for Shockwave files."

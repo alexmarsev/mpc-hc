@@ -587,8 +587,8 @@ msgid "Clip"
 msgstr "Απόσπασμα"
 
 msgctxt "IDC_DSSYSDEF"
-msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason. On Windown XP this is the same as VMR-7 (windowed)."
-msgstr "Προεπιλεγμένο φίλτρο απόδοσης βίντεο DirectShow. Τα άλλα θα επιστρέψουν σ΄αυτό όταν για κάποιο λόγο δεν μπορούν να φορτωθούν. Στα Windows XP αυτό είναι όμοιο με το VMR-7 (παράθυρα)."
+msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason."
+msgstr ""
 
 msgctxt "IDC_DSOLD"
 msgid "This is the default renderer of Windows 9x/me/2k. Depending on the visibility of the video window and your video card's abilities, it will switch between GDI, DirectDraw, Overlay rendering modes dynamically."
@@ -633,22 +633,6 @@ msgstr "Απόδοση υψηλής ποιότητας. Απαιτείται μ�
 msgctxt "IDC_DSSYNC"
 msgid "Same as the EVR (CP), but offers several options to synchronize the video frame rate with the display refresh rate to eliminate skipped or duplicated video frames."
 msgstr "Ίδιο με το EVR (CP), αλλά προσφέρει πολλές επιλογές για συγχρονισμό του ρυθμού καρέ βίντεο με το ρυθμό ανανέωσης της οθόνης για εξάλειψη της παράλειψης ή διπλοαναπαραγωγής καρέ βίντεο."
-
-msgctxt "IDC_RMSYSDEF"
-msgid "Real's own renderer. SMIL scripts will work, but interaction not likely. Uses DirectDraw and runs in Overlay when it can."
-msgstr "Η απόδοση του QuickTime. Είναι λίγο αργή όταν η περιοχή του βίντεο αλλάζει μέγεθος ή καλύπτεται εν μέρει από ένα άλλο παράθυρο. Όταν η επικάλυψη δεν είναι διαθέσιμη, αυτό μπορεί να επανέλθει στο GDI."
-
-msgctxt "IDC_RMDX9"
-msgid "The output of Real's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "Η έξοδος των μηχανών απόδοσης των Real, από τη βασισμένη στο DX9 Εκχώρηση-Παρουσίαση της VMR-9 (χωρίς απόδοση)."
-
-msgctxt "IDC_QTSYSDEF"
-msgid "QuickTime's own renderer. Gets a little slow when its video area is resized or partially covered by another window. When Overlay is not available it likes to fall back to GDI."
-msgstr "Η απόδοση του QuickTime. Είναι λίγο αργή όταν η περιοχή του βίντεο αλλάζει μέγεθος ή καλύπτεται εν μέρει από ένα άλλο παράθυρο. Όταν η επικάλυψη δεν είναι διαθέσιμη, αυτό μπορεί να επανέλθει στο GDI."
-
-msgctxt "IDC_QTDX9"
-msgid "The output of QuickTime's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "Η έξοδος των μηχανών απόδοσης του QuickTime, από τη βασισμένη στο DX9 Εκχώρηση-Παρουσίαση της VMR-9 (χωρίς απόδοση)."
 
 msgctxt "IDC_REGULARSURF"
 msgid "Video surface will be allocated as a regular offscreen surface."
@@ -2174,10 +2158,6 @@ msgctxt "IDS_AG_TITLE2"
 msgid "Title: %02d/%02d"
 msgstr "Τίτλος: %02d/%02d"
 
-msgctxt "IDS_REALVIDEO_INCOMPATIBLE"
-msgid "Filename contains unsupported characters (use only A-Z, 0-9)"
-msgstr "Το όνομα αρχείου περιέχει μη υποστηριζόμενους χαρακτήρες (χρήση μόνο A-Z, 0-9)"
-
 msgctxt "IDS_THUMB_ROWNUMBER"
 msgid "Rows:"
 msgstr "Γραμμές:"
@@ -3365,14 +3345,6 @@ msgstr "Σφάλμα ανάλυσης του ρυθμού καρέ που έχε
 msgctxt "IDS_FRAME_STEP_ERROR_RENDERER"
 msgid "Cannot frame-step, try a different video renderer."
 msgstr "Δεν είναι δυνατό το βήμα καρέ.\nΔοκιμάστε μια διαφορετική απόδοση βίντεο."
-
-msgctxt "IDS_SCREENSHOT_ERROR_REAL"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for RealMedia.\nSelect one of the DirectX renderers for RealMedia in MPC-HC's output options and reopen the file."
-msgstr "Οι επιλογές \"Αποθήκευση εικόνας\" και \"Αποθήκευση μικρογραφιών\" δεν λειτουργούν με την προεπιλεγμένη απόδοση βίντεο για RealMedia.\nΕπιλέξτε μία από τις αποδόσεις DirectX για RealMedia στις επιλογές εξόδου του MPC-HC και ανοίξτε πάλι το αρχείο."
-
-msgctxt "IDS_SCREENSHOT_ERROR_QT"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for QuickTime.\nSelect one of the DirectX renderers for QuickTime in MPC-HC's output options and reopen the file."
-msgstr "Οι επιλογές \"Αποθήκευση εικόνας\" και \"Αποθήκευση μικρογραφιών\" δεν λειτουργούν με την προεπιλεγμένη απόδοση βίντεο για QuickTime.\nΕπιλέξτε μία από τις αποδόσεις DirectX για QuickTime στις επιλογές εξόδου του MPC-HC και ανοίξτε πάλι το αρχείο."
 
 msgctxt "IDS_SCREENSHOT_ERROR_SHOCKWAVE"
 msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work for Shockwave files."

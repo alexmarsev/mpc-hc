@@ -586,8 +586,8 @@ msgid "Clip"
 msgstr "Klip"
 
 msgctxt "IDC_DSSYSDEF"
-msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason. On Windown XP this is the same as VMR-7 (windowed)."
-msgstr "Výchozí video renderer filtr pro DirectShow. Pokud z nějakého důvodu není možné použít některý z ostatních zvolených rendererů, použije se tento. Ve Windows XP je to VMR-7 (windowed)."
+msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason."
+msgstr ""
 
 msgctxt "IDC_DSOLD"
 msgid "This is the default renderer of Windows 9x/me/2k. Depending on the visibility of the video window and your video card's abilities, it will switch between GDI, DirectDraw, Overlay rendering modes dynamically."
@@ -632,22 +632,6 @@ msgstr "Vysoce kvalitní renderer, vyžaduje GPU podporující D3D9 nebo nověj�
 msgctxt "IDC_DSSYNC"
 msgid "Same as the EVR (CP), but offers several options to synchronize the video frame rate with the display refresh rate to eliminate skipped or duplicated video frames."
 msgstr "Stejný jako EVR (CP), ale s dodatečnými možnostmi pro synchronizaci videa s obnovovací frekvencí displeje pro minimalizaci vynechaných nebo opakovaných rámců."
-
-msgctxt "IDC_RMSYSDEF"
-msgid "Real's own renderer. SMIL scripts will work, but interaction not likely. Uses DirectDraw and runs in Overlay when it can."
-msgstr "Vlastní renderer Real. Skripty SMIL budou funkční, ale interakce pravděpodobně ne. Používá DirectDraw a pokud může, použije overlay."
-
-msgctxt "IDC_RMDX9"
-msgid "The output of Real's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "Výstup Real enginu vykreslovaný pomocí Allocator-Presenteru VMR-9 (renderless)."
-
-msgctxt "IDC_QTSYSDEF"
-msgid "QuickTime's own renderer. Gets a little slow when its video area is resized or partially covered by another window. When Overlay is not available it likes to fall back to GDI."
-msgstr "Vlastní renderer QuickTime. Pomalý pokud dojde ke změně velikosti oblasti videa nebo je video částečně překryto jiným oknem. Pokud není k dispozici overlay, většinou použije GDI."
-
-msgctxt "IDC_QTDX9"
-msgid "The output of QuickTime's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "Výstup QuickTime enginu vykreslovaný pomocí Allocator-Presenteru VMR-9 (renderless)."
 
 msgctxt "IDC_REGULARSURF"
 msgid "Video surface will be allocated as a regular offscreen surface."
@@ -2173,10 +2157,6 @@ msgctxt "IDS_AG_TITLE2"
 msgid "Title: %02d/%02d"
 msgstr "Titul: %02d/%02d"
 
-msgctxt "IDS_REALVIDEO_INCOMPATIBLE"
-msgid "Filename contains unsupported characters (use only A-Z, 0-9)"
-msgstr "Název souboru obsahuje neplatné znaky (používejte jen A-Z, 0-9)"
-
 msgctxt "IDS_THUMB_ROWNUMBER"
 msgid "Rows:"
 msgstr "Řádky:"
@@ -3364,14 +3344,6 @@ msgstr "Při analýze zadané snímkové frekvence došlo k chybě!"
 msgctxt "IDS_FRAME_STEP_ERROR_RENDERER"
 msgid "Cannot frame-step, try a different video renderer."
 msgstr "Pohyb po snímcích není podporován, zkuste použít jiný video renderer."
-
-msgctxt "IDS_SCREENSHOT_ERROR_REAL"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for RealMedia.\nSelect one of the DirectX renderers for RealMedia in MPC-HC's output options and reopen the file."
-msgstr "Funkce Uložit obrázek a Uložit miniatury s výchozím video rendererem pro RealMedia nefungují.\nV nastavení výstupu vyberte jeden z DirectX rendererů pro RealMedia a soubor znovu otevřete."
-
-msgctxt "IDS_SCREENSHOT_ERROR_QT"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for QuickTime.\nSelect one of the DirectX renderers for QuickTime in MPC-HC's output options and reopen the file."
-msgstr "Funkce Uložit obrázek a Uložit miniatury s výchozím video rendererem pro QuickTime nefungují.\nV nastavení výstupu vyberte jeden z DirectX rendererů pro QuickTime a soubor znovu otevřete."
 
 msgctxt "IDS_SCREENSHOT_ERROR_SHOCKWAVE"
 msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work for Shockwave files."

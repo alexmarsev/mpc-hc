@@ -586,8 +586,8 @@ msgid "Clip"
 msgstr "Clip"
 
 msgctxt "IDC_DSSYSDEF"
-msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason. On Windown XP this is the same as VMR-7 (windowed)."
-msgstr "Mặc định đoạn bộ lọc video render DirectShow. Những người khác sẽ trở lại một khi họ không thể được nạp cho một số lý do. Trên Windown XP điều này cũng giống như VMR-7 (cửa sổ)."
+msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason."
+msgstr ""
 
 msgctxt "IDC_DSOLD"
 msgid "This is the default renderer of Windows 9x/me/2k. Depending on the visibility of the video window and your video card's abilities, it will switch between GDI, DirectDraw, Overlay rendering modes dynamically."
@@ -632,22 +632,6 @@ msgstr "Render hất lượng cao, đòi hỏi một GPU hỗ trợ D3D9 hoặc 
 msgctxt "IDC_DSSYNC"
 msgid "Same as the EVR (CP), but offers several options to synchronize the video frame rate with the display refresh rate to eliminate skipped or duplicated video frames."
 msgstr "Giống như EVR (CP), nhưng cung cấp nhiều tùy chọn để đồng bộ hóa các tốc độ khung hình với tốc độ làm tươi màn hình hiển thị để loại bỏ các khung hình video bỏ qua, nhân bản."
-
-msgctxt "IDC_RMSYSDEF"
-msgid "Real's own renderer. SMIL scripts will work, but interaction not likely. Uses DirectDraw and runs in Overlay when it can."
-msgstr "Dựng hình của Real. Kịch bản SMIL sẽ làm việc, nhưng không có khả năng tương tác. Sử dụng DirectDraw và chạy trong Overlay khi nó có thể."
-
-msgctxt "IDC_RMDX9"
-msgid "The output of Real's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "Đầu ra công cụ của Real đưa ra bởi các DX9 dựa trên cấp phát của VMR-9 (ít render hơn)."
-
-msgctxt "IDC_QTSYSDEF"
-msgid "QuickTime's own renderer. Gets a little slow when its video area is resized or partially covered by another window. When Overlay is not available it likes to fall back to GDI."
-msgstr "Dựng hình của QuickTime. Được một chút chậm khi khu vực video của nó được thay đổi kích cỡ hoặc phủ một phần bởi một cửa sổ khác. Lớp phủ khi không có nó thích rơi trở lại GDI."
-
-msgctxt "IDC_QTDX9"
-msgid "The output of QuickTime's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "Đầu ra công cụ của QuickTime kết xuất của DX9 dựa trên cấp phát của VMR-9 (ít render hơn)."
 
 msgctxt "IDC_REGULARSURF"
 msgid "Video surface will be allocated as a regular offscreen surface."
@@ -2173,10 +2157,6 @@ msgctxt "IDS_AG_TITLE2"
 msgid "Title: %02d/%02d"
 msgstr "Tiêu đề: %02d/%02d"
 
-msgctxt "IDS_REALVIDEO_INCOMPATIBLE"
-msgid "Filename contains unsupported characters (use only A-Z, 0-9)"
-msgstr "Tên tập tin chứa các ký tự không được hỗ trợ (chỉ sử dụng A-Z, 0-9)"
-
 msgctxt "IDS_THUMB_ROWNUMBER"
 msgid "Rows:"
 msgstr "Hàng:"
@@ -3364,14 +3344,6 @@ msgstr "Lỗi phân tích tỷ lệ khung hình vào!"
 msgctxt "IDS_FRAME_STEP_ERROR_RENDERER"
 msgid "Cannot frame-step, try a different video renderer."
 msgstr "Không thể đọc khung hình kế tiếp, hãy thử một bộ dựng hình khác."
-
-msgctxt "IDS_SCREENSHOT_ERROR_REAL"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for RealMedia.\nSelect one of the DirectX renderers for RealMedia in MPC-HC's output options and reopen the file."
-msgstr "\"Lưu ảnh\" và \"Lưu hình nhỏ\" chức năng không làm việc với trình phát video mặc định cho RealMedia.\nChọn một trong các kết xuất đồ họa DirectX cho RealMedia trong các tùy chọn đầu ra MPC-HC và mở lại tập tin."
-
-msgctxt "IDS_SCREENSHOT_ERROR_QT"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for QuickTime.\nSelect one of the DirectX renderers for QuickTime in MPC-HC's output options and reopen the file."
-msgstr "\"Lưu ảnh\" và \"Lưu hình nhỏ\" chức năng không làm việc với trình phát video mặc định cho QuickTime.\nChọn một trong các kết xuất đồ họa DirectX cho QuickTime trong các tùy chọn đầu ra MPC-HC và mở lại tập tin."
 
 msgctxt "IDS_SCREENSHOT_ERROR_SHOCKWAVE"
 msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work for Shockwave files."

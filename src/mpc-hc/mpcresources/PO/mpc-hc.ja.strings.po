@@ -585,8 +585,8 @@ msgid "Clip"
 msgstr "クリップ"
 
 msgctxt "IDC_DSSYSDEF"
-msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason. On Windown XP this is the same as VMR-7 (windowed)."
-msgstr "DirectShow 用の標準ビデオ レンダラです。他のレンダラが何らかの理由で読み込めなかった場合に使用されます。Windows XP では VMR-7 (ウィンドウ) と同じです。"
+msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason."
+msgstr ""
 
 msgctxt "IDC_DSOLD"
 msgid "This is the default renderer of Windows 9x/me/2k. Depending on the visibility of the video window and your video card's abilities, it will switch between GDI, DirectDraw, Overlay rendering modes dynamically."
@@ -631,22 +631,6 @@ msgstr "高品質のレンダラで Direct3D 9 以降をサポートする GPU �
 msgctxt "IDC_DSSYNC"
 msgid "Same as the EVR (CP), but offers several options to synchronize the video frame rate with the display refresh rate to eliminate skipped or duplicated video frames."
 msgstr "EVR (カスタム プレゼンタ) と同じですが、スキップされた、または重複したビデオ フレームを除去するためにビデオのフレーム レートをディスプレイのリフレッシュ レートに同期させるいくつかのオプションを提供します。"
-
-msgctxt "IDC_RMSYSDEF"
-msgid "Real's own renderer. SMIL scripts will work, but interaction not likely. Uses DirectDraw and runs in Overlay when it can."
-msgstr "Real 独自のレンダラです。相互作用はないですが、SMIL スクリプトは動作します。DirectDraw を使用して可能ならオーバーレイで動作します。"
-
-msgctxt "IDC_RMDX9"
-msgid "The output of Real's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "VMR-9 (レンダーレス) の DirectX 9 ベースのアロケータ プレゼンタで表示される Real 用の出力エンジンです。"
-
-msgctxt "IDC_QTSYSDEF"
-msgid "QuickTime's own renderer. Gets a little slow when its video area is resized or partially covered by another window. When Overlay is not available it likes to fall back to GDI."
-msgstr "QuickTime 独自のレンダラです。ビデオの表示領域がサイズ変更されたり、他のウィンドウによって部分的に隠されたりすると少し遅くなります。オーバーレイが使用できない場合、 GDI が使用されます。"
-
-msgctxt "IDC_QTDX9"
-msgid "The output of QuickTime's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "VMR-9 (レンダーレス) の DirectX 9 ベースのアロケータ プレゼンタで表示される QuickTime 用の出力エンジンです。"
 
 msgctxt "IDC_REGULARSURF"
 msgid "Video surface will be allocated as a regular offscreen surface."
@@ -2172,10 +2156,6 @@ msgctxt "IDS_AG_TITLE2"
 msgid "Title: %02d/%02d"
 msgstr "タイトル: %02d/%02d"
 
-msgctxt "IDS_REALVIDEO_INCOMPATIBLE"
-msgid "Filename contains unsupported characters (use only A-Z, 0-9)"
-msgstr "ファイル名にサポートされていない文字が使用されています (A-Z, 0-9 のみ使用可)"
-
 msgctxt "IDS_THUMB_ROWNUMBER"
 msgid "Rows:"
 msgstr "行:"
@@ -3363,14 +3343,6 @@ msgstr "入力されたフレーム レートの解析中にエラーが発生�
 msgctxt "IDS_FRAME_STEP_ERROR_RENDERER"
 msgid "Cannot frame-step, try a different video renderer."
 msgstr "コマ送りできません。別のビデオ レンダラを試してください。"
-
-msgctxt "IDS_SCREENSHOT_ERROR_REAL"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for RealMedia.\nSelect one of the DirectX renderers for RealMedia in MPC-HC's output options and reopen the file."
-msgstr "「画像を保存」 および 「サムネイルを保存」 の機能は、RealMedia 用の標準ビデオ レンダラでは動作しません。\nMPC-HC の出力オプションで、RealMedia 用の DirectX レンダラのいずれかを選択し、ファイルを再度開いてください。"
-
-msgctxt "IDS_SCREENSHOT_ERROR_QT"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for QuickTime.\nSelect one of the DirectX renderers for QuickTime in MPC-HC's output options and reopen the file."
-msgstr "「画像を保存」 および 「サムネイルを保存」 の機能は、QuickTime 用の標準ビデオ レンダラでは動作しません。\nMPC-HC の出力オプションで、QuickTime 用の DirectX レンダラのいずれかを選択し、ファイルを再度開いてください。"
 
 msgctxt "IDS_SCREENSHOT_ERROR_SHOCKWAVE"
 msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work for Shockwave files."

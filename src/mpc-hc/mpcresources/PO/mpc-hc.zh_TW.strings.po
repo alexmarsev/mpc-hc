@@ -592,8 +592,8 @@ msgid "Clip"
 msgstr "短片"
 
 msgctxt "IDC_DSSYSDEF"
-msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason. On Windown XP this is the same as VMR-7 (windowed)."
-msgstr "DirectShow 預設的視訊繪製篩選器。當其它繪製器因為某些原因無法載入時，就會回復到這個設定。在 Windown XP 裡這個與 VMR-7 (視窗式) 相同。"
+msgid "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason."
+msgstr ""
 
 msgctxt "IDC_DSOLD"
 msgid "This is the default renderer of Windows 9x/me/2k. Depending on the visibility of the video window and your video card's abilities, it will switch between GDI, DirectDraw, Overlay rendering modes dynamically."
@@ -638,22 +638,6 @@ msgstr "高品質的繪製器，需要支援 D3D9 或更新的 GPU。"
 msgctxt "IDC_DSSYNC"
 msgid "Same as the EVR (CP), but offers several options to synchronize the video frame rate with the display refresh rate to eliminate skipped or duplicated video frames."
 msgstr "和 EVR 自訂呈現相同, 但提供幾個選項來同步視頻幀速至顯示刷新率以消除跳格或重複影格。"
-
-msgctxt "IDC_RMSYSDEF"
-msgid "Real's own renderer. SMIL scripts will work, but interaction not likely. Uses DirectDraw and runs in Overlay when it can."
-msgstr "Real 自己的繪製器。SMIL 腳本檔可以運作, 但可能無法互動。使用 DirectDraw, 並且可以的話會在覆疊模式下運行。"
-
-msgctxt "IDC_RMDX9"
-msgid "The output of Real's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "Real 引擎的輸出由基於 DX9 的 VMR-9 (無轉換) 配置呈現器繪製。"
-
-msgctxt "IDC_QTSYSDEF"
-msgid "QuickTime's own renderer. Gets a little slow when its video area is resized or partially covered by another window. When Overlay is not available it likes to fall back to GDI."
-msgstr "QuickTime 自己的繪製器。當視訊區域有變更大小或是部分被其它視窗蓋住時會稍微變慢。當覆疊模式不能用的時候會回復到 GDI。"
-
-msgctxt "IDC_QTDX9"
-msgid "The output of QuickTime's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-msgstr "QuickTime 引擎的輸出由基於 DX9 的 VMR-9 (無轉換) 配置呈現器繪製。"
 
 msgctxt "IDC_REGULARSURF"
 msgid "Video surface will be allocated as a regular offscreen surface."
@@ -2179,10 +2163,6 @@ msgctxt "IDS_AG_TITLE2"
 msgid "Title: %02d/%02d"
 msgstr "標題: %02d/%02d"
 
-msgctxt "IDS_REALVIDEO_INCOMPATIBLE"
-msgid "Filename contains unsupported characters (use only A-Z, 0-9)"
-msgstr "檔案名稱含有未支援的字元 (只能使用 A-Z, 0-9)"
-
 msgctxt "IDS_THUMB_ROWNUMBER"
 msgid "Rows:"
 msgstr "列:"
@@ -3370,14 +3350,6 @@ msgstr "解析輸入的影格播放速率時發生錯誤!"
 msgctxt "IDS_FRAME_STEP_ERROR_RENDERER"
 msgid "Cannot frame-step, try a different video renderer."
 msgstr "不能步進影格, 請嘗試其他的視訊繪製器。"
-
-msgctxt "IDS_SCREENSHOT_ERROR_REAL"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for RealMedia.\nSelect one of the DirectX renderers for RealMedia in MPC-HC's output options and reopen the file."
-msgstr "\"儲存影像\" 和 \"儲存縮圖\" 功能不能與 RealMedia 的系統預設繪製器一同運作。\n請至 MPC-HC 輸出選項中選擇一個 RealMedia 的 DirectX 繪製器並重新開啟檔案。"
-
-msgctxt "IDS_SCREENSHOT_ERROR_QT"
-msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work with the default video renderer for QuickTime.\nSelect one of the DirectX renderers for QuickTime in MPC-HC's output options and reopen the file."
-msgstr "\"儲存影像\" 和 \"儲存縮圖\" 功能不能與 QuickTime 的系統預設繪製器一同運作。\n請至 MPC-HC 輸出選項中選擇一個 QuickTime 的 DirectX 繪製器並重新開啟檔案。"
 
 msgctxt "IDS_SCREENSHOT_ERROR_SHOCKWAVE"
 msgid "The \"Save Image\" and \"Save Thumbnails\" functions do not work for Shockwave files."

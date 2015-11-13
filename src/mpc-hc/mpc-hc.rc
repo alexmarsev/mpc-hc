@@ -758,29 +758,25 @@ IDD_PPAGEOUTPUT DIALOGEX 0, 0, 296, 236
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    GROUPBOX        "DirectShow Video",IDC_STATIC,5,5,285,43
+    GROUPBOX        "Video Renderer",IDC_STATIC,5,5,285,43
     COMBOBOX        IDC_VIDRND_COMBO,10,16,276,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "RealMedia Video",IDC_STATIC,5,49,139,40
-    COMBOBOX        IDC_RMRND_COMBO,10,59,131,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "QuickTime Video",IDC_STATIC,151,49,139,40
-    COMBOBOX        IDC_QTRND_COMBO,155,59,131,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Audio Renderer",IDC_STATIC,5,90,285,30
-    COMBOBOX        IDC_AUDRND_COMBO,10,102,276,46,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "VMR-9 (renderless) and EVR (CP) settings",IDC_STATIC,5,153,285,83
-    RTEXT           "Surface:",IDC_STATIC,118,184,60,8
-    COMBOBOX        IDC_DX_SURFACE,181,181,105,49,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    RTEXT           "Resizer:",IDC_STATIC,118,200,60,8
-    COMBOBOX        IDC_DX9RESIZER_COMBO,181,197,105,49,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Select D3D9 Render Device",IDC_D3D9DEVICE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,166,137,10
-    COMBOBOX        IDC_D3D9DEVICE_COMBO,147,165,139,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Audio Renderer",IDC_STATIC,5,50,285,30
+    COMBOBOX        IDC_AUDRND_COMBO,10,62,276,46,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "VMR-9 (renderless) and EVR (CP) settings",IDC_STATIC,5,113,285,83
+    RTEXT           "Surface:",IDC_STATIC,118,144,60,8
+    COMBOBOX        IDC_DX_SURFACE,181,141,105,49,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    RTEXT           "Resizer:",IDC_STATIC,118,160,60,8
+    COMBOBOX        IDC_DX9RESIZER_COMBO,181,157,105,49,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Select D3D9 Render Device",IDC_D3D9DEVICE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,126,137,10
+    COMBOBOX        IDC_D3D9DEVICE_COMBO,147,125,139,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Reinitialize when changing display",IDC_RESETDEVICE,
-                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,10,221,171,10
-    CONTROL         "D3D Fullscreen",IDC_FULLSCREEN_MONITOR_CHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,210,171,10
-    CONTROL         "Alternative VSync",IDC_DSVMR9ALTERNATIVEVSYNC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,199,108,10
-    CONTROL         "VMR-9 Mixer Mode",IDC_DSVMR9LOADMIXER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,177,108,10
-    CONTROL         "YUV Mixing",IDC_DSVMR9YUVMIXER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,188,108,10
-    RTEXT           "EVR Buffers:",IDC_EVR_BUFFERS_TXT,168,216,81,8
-    COMBOBOX        IDC_EVR_BUFFERS,252,213,34,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,10,181,171,10
+    CONTROL         "D3D Fullscreen",IDC_FULLSCREEN_MONITOR_CHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,170,171,10
+    CONTROL         "Alternative VSync",IDC_DSVMR9ALTERNATIVEVSYNC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,159,108,10
+    CONTROL         "VMR-9 Mixer Mode",IDC_DSVMR9LOADMIXER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,137,108,10
+    CONTROL         "YUV Mixing",IDC_DSVMR9YUVMIXER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,148,108,10
+    RTEXT           "EVR Buffers:",IDC_EVR_BUFFERS_TXT,168,176,81,8
+    COMBOBOX        IDC_EVR_BUFFERS,252,173,34,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "DXVA",IDC_STATIC,24,34,30,8
     ICON            "",IDC_VIDRND_DXVA_SUPPORT,10,33,20,20
     LTEXT           "Subtitles",IDC_STATIC,69,34,45,8
@@ -791,16 +787,8 @@ BEGIN
     ICON            "",IDC_VIDRND_SHADER_SUPPORT,174,33,20,20
     LTEXT           "Rotation",IDC_STATIC,240,34,45,8
     ICON            "",IDC_VIDRND_ROTATION_SUPPORT,225,33,20,20
-    LTEXT           "Subtitles",IDC_STATIC,24,76,50,8
-    ICON            "",IDC_RMRND_SUBTITLE_SUPPORT,10,75,20,20
-    LTEXT           "Screenshot",IDC_STATIC,88,76,50,8
-    ICON            "",IDC_RMRND_SAVEIMAGE_SUPPORT,74,75,20,20
-    LTEXT           "Subtitles",IDC_STATIC,170,76,50,8
-    ICON            "",IDC_QTRND_SUBTITLE_SUPPORT,155,75,20,20
-    LTEXT           "Screenshot",IDC_STATIC,235,76,50,8
-    ICON            "",IDC_QTRND_SAVEIMAGE_SUPPORT,221,75,20,20
-    GROUPBOX        "Subtitle Renderer",IDC_STATIC,5,121,285,30
-    COMBOBOX        IDC_COMBO1,10,133,276,46,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Subtitle Renderer",IDC_STATIC,5,81,285,30
+    COMBOBOX        IDC_COMBO1,10,93,276,46,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
 END
 
 IDD_PPAGEWEBSERVER DIALOGEX 0, 0, 296, 241
@@ -2387,7 +2375,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDC_DSSYSDEF            "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason. On Windown XP this is the same as VMR-7 (windowed)."
+    IDC_DSSYSDEF            "Default video renderer filter for DirectShow. Others will fall back to this one when they can't be loaded for some reason."
     IDC_DSOLD               "This is the default renderer of Windows 9x/me/2k. Depending on the visibility of the video window and your video card's abilities, it will switch between GDI, DirectDraw, Overlay rendering modes dynamically."
     IDC_DSOVERLAYMIXER      "Always renders in overlay. Generally only YUV formats are allowed, but they are presented directly without any color conversion to RGB. This is the fastest rendering method of all and the only where you can be sure about fullscreen video mirroring to tv-out activating."
     IDC_DSVMR9WIN           "Only available if you have DirectX 9 installed. Very stable but it will never use Overlay rendering and because of this it may be a little slower than Overlay mixer."
@@ -2403,10 +2391,6 @@ STRINGTABLE
 BEGIN
     IDC_DSMADVR             "High-quality renderer, requires a GPU that supports D3D9 or later."
     IDC_DSSYNC              "Same as the EVR (CP), but offers several options to synchronize the video frame rate with the display refresh rate to eliminate skipped or duplicated video frames."
-    IDC_RMSYSDEF            "Real's own renderer. SMIL scripts will work, but interaction not likely. Uses DirectDraw and runs in Overlay when it can."
-    IDC_RMDX9               "The output of Real's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
-    IDC_QTSYSDEF            "QuickTime's own renderer. Gets a little slow when its video area is resized or partially covered by another window. When Overlay is not available it likes to fall back to GDI."
-    IDC_QTDX9               "The output of QuickTime's engine rendered by the DX9-based Allocator-Presenter of VMR-9 (renderless)."
     IDC_REGULARSURF         "Video surface will be allocated as a regular offscreen surface."
 END
 
@@ -2976,8 +2960,6 @@ BEGIN
     IDS_D3DFS_WARNING       "This option is designed to avoid tearing. However, it will also prevent MPC-HC from displaying the context menu and any dialog box during playback.\n\nDo you really want to activate this option?"
     IDS_MAINFRM_139         "Sub delay: %ld ms"
     IDS_AG_TITLE2           "Title: %02d/%02d"
-    IDS_REALVIDEO_INCOMPATIBLE 
-                            "Filename contains unsupported characters (use only A-Z, 0-9)"
     IDS_THUMB_ROWNUMBER     "Rows:"
     IDS_THUMB_COLNUMBER     "Columns:"
     IDS_THUMB_IMAGE_WIDTH   "Image width"
@@ -3398,9 +3380,6 @@ BEGIN
     IDS_GOTO_ERROR_PARSING_FPS "Error parsing the entered frame rate!"
     IDS_FRAME_STEP_ERROR_RENDERER 
                             "Cannot frame-step, try a different video renderer."
-    IDS_SCREENSHOT_ERROR_REAL 
-                            "The ""Save Image"" and ""Save Thumbnails"" functions do not work with the default video renderer for RealMedia.\nSelect one of the DirectX renderers for RealMedia in MPC-HC's output options and reopen the file."
-    IDS_SCREENSHOT_ERROR_QT "The ""Save Image"" and ""Save Thumbnails"" functions do not work with the default video renderer for QuickTime.\nSelect one of the DirectX renderers for QuickTime in MPC-HC's output options and reopen the file."
     IDS_SCREENSHOT_ERROR_SHOCKWAVE 
                             "The ""Save Image"" and ""Save Thumbnails"" functions do not work for Shockwave files."
     IDS_SCREENSHOT_ERROR_OVERLAY 

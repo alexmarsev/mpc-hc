@@ -62,12 +62,6 @@
     <Filter Include="Property Dialogs\File Properties\Pages">
       <UniqueIdentifier>{4a9b9989-f6a5-499e-9611-c7bfe024b7a3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Graph\Quicktime">
-      <UniqueIdentifier>{712820f7-6798-4c06-b4ff-f66492918e78}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Graph\RealMedia">
-      <UniqueIdentifier>{f4c95cb0-6f49-4d24-9e78-0a89d8a8cf1e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Integration\Skype">
       <UniqueIdentifier>{3e62affc-727b-4af9-95eb-76f4eb63918c}</UniqueIdentifier>
     </Filter>
@@ -297,15 +291,6 @@
     </ClCompile>
     <ClCompile Include="PPageWebServer.cpp">
       <Filter>Property Dialogs\Player Options\Pages</Filter>
-    </ClCompile>
-    <ClCompile Include="QuicktimeGraph.cpp">
-      <Filter>Graph\Quicktime</Filter>
-    </ClCompile>
-    <ClCompile Include="RealMediaGraph.cpp">
-      <Filter>Graph\RealMedia</Filter>
-    </ClCompile>
-    <ClCompile Include="RealMediaWindowlessSite.cpp">
-      <Filter>Graph\RealMedia</Filter>
     </ClCompile>
     <ClCompile Include="RegFilterChooserDlg.cpp">
       <Filter>Modal Dialogs</Filter>
@@ -663,15 +648,6 @@
     </ClInclude>
     <ClInclude Include="PPageTweaks.h">
       <Filter>Property Dialogs\Player Options\Pages</Filter>
-    </ClInclude>
-    <ClInclude Include="QuicktimeGraph.h">
-      <Filter>Graph\Quicktime</Filter>
-    </ClInclude>
-    <ClInclude Include="RealMediaGraph.h">
-      <Filter>Graph\RealMedia</Filter>
-    </ClInclude>
-    <ClInclude Include="RealMediaWindowlessSite.h">
-      <Filter>Graph\RealMedia</Filter>
     </ClInclude>
     <ClInclude Include="RegFilterChooserDlg.h">
       <Filter>Modal Dialogs</Filter>
