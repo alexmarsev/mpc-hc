@@ -133,9 +133,6 @@
     <ClCompile Include="OpenDlg.cpp">
       <Filter>Modal Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="OpenFileDlg.cpp">
-      <Filter>Modal Dialogs</Filter>
-    </ClCompile>
     <ClCompile Include="PlayerSeekBar.cpp">
       <Filter>Toolbars</Filter>
     </ClCompile>
@@ -482,9 +479,6 @@
       <Filter>Modal Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="OpenDlg.h">
-      <Filter>Modal Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenFileDlg.h">
       <Filter>Modal Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="PlayerSeekBar.h">

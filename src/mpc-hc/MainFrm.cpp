@@ -36,7 +36,6 @@
 #include "SysVersion.h"
 #include "WinAPIUtils.h"
 #include "PathUtils.h"
-#include "OpenFileDlg.h"
 #include "OpenDlg.h"
 #include "SaveDlg.h"
 #include "GoToDlg.h"
@@ -3714,12 +3713,12 @@ void CMainFrame::OnFileOpenQuick()
     CAtlArray<CString> mask;
     s.m_Formats.GetFilter(filter, mask);
 
-    DWORD dwFlags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_ENABLEINCLUDENOTIFY | OFN_NOCHANGEDIR;
+    DWORD dwFlags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_NOCHANGEDIR;
     if (!s.fKeepHistory) {
         dwFlags |= OFN_DONTADDTORECENT;
     }
 
-    COpenFileDlg fd(mask, true, nullptr, nullptr, dwFlags, filter, GetModalParent());
+    CFileDialog fd(TRUE, nullptr, nullptr, dwFlags, filter, GetModalParent());
     if (fd.DoModal() != IDOK) {
         return;
     }

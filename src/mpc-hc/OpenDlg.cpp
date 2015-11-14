@@ -24,7 +24,6 @@
 #include "mplayerc.h"
 #include "PathUtils.h"
 #include "OpenDlg.h"
-#include "OpenFileDlg.h"
 
 
 // COpenDlg dialog
@@ -141,12 +140,12 @@ void COpenDlg::OnBrowseFile()
     CAtlArray<CString> mask;
     s.m_Formats.GetFilter(filter, mask);
 
-    DWORD dwFlags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_ENABLEINCLUDENOTIFY | OFN_NOCHANGEDIR;
+    DWORD dwFlags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_NOCHANGEDIR;
     if (!s.fKeepHistory) {
         dwFlags |= OFN_DONTADDTORECENT;
     }
 
-    COpenFileDlg fd(mask, true, nullptr, m_path, dwFlags, filter, this);
+    CFileDialog fd(TRUE, nullptr, m_path, dwFlags, filter, this);
     if (fd.DoModal() != IDOK) {
         return;
     }
@@ -188,12 +187,12 @@ void COpenDlg::OnBrowseDubFile()
     CAtlArray<CString> mask;
     s.m_Formats.GetAudioFilter(filter, mask);
 
-    DWORD dwFlags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_HIDEREADONLY | OFN_ENABLEINCLUDENOTIFY | OFN_NOCHANGEDIR;
+    DWORD dwFlags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_HIDEREADONLY | OFN_NOCHANGEDIR;
     if (!s.fKeepHistory) {
         dwFlags |= OFN_DONTADDTORECENT;
     }
 
-    COpenFileDlg fd(mask, false, nullptr, m_pathDub, dwFlags, filter, this);
+    CFileDialog fd(TRUE, nullptr, m_pathDub, dwFlags, filter, this);
 
     if (fd.DoModal() != IDOK) {
         return;
