@@ -20,81 +20,91 @@
 
 #include "stdafx.h"
 #include "Translations.h"
+#include "Constexpr.h"
 #include "FileVersionInfo.h"
-#include "VersionInfo.h"
 #include "PathUtils.h"
+#include "VersionInfo.h"
 
-static const std::vector<Translations::LanguageResource> languageResources = {
-    { 1025,   _T("Arabic"),                   _T("Lang\\mpcresources.ar.dll") },
-    { 1067,   _T("Armenian"),                 _T("Lang\\mpcresources.hy.dll") },
-    { 1069,   _T("Basque"),                   _T("Lang\\mpcresources.eu.dll") },
-    { 1059,   _T("Belarusian"),               _T("Lang\\mpcresources.be.dll") },
-    { 1093,   _T("Bengali"),                  _T("Lang\\mpcresources.bn.dll") },
-    { 1027,   _T("Catalan"),                  _T("Lang\\mpcresources.ca.dll") },
-    { 2052,   _T("Chinese (Simplified)"),     _T("Lang\\mpcresources.zh_CN.dll") },
-    { 1028,   _T("Chinese (Traditional)"),    _T("Lang\\mpcresources.zh_TW.dll") },
-    { 1050,   _T("Croatian"),                 _T("Lang\\mpcresources.hr.dll") },
-    { 1029,   _T("Czech"),                    _T("Lang\\mpcresources.cs.dll") },
-    { 1030,   _T("Danish"),                   _T("Lang\\mpcresources.da.dll") },
-    { 1043,   _T("Dutch"),                    _T("Lang\\mpcresources.nl.dll") },
-    { 0,      _T("English"),                  nullptr },
-    { 2057,   _T("English (British)"),        _T("Lang\\mpcresources.en_GB.dll") },
-    { 1035,   _T("Finnish"),                  _T("Lang\\mpcresources.fi.dll") },
-    { 1036,   _T("French"),                   _T("Lang\\mpcresources.fr.dll") },
-    { 1110,   _T("Galician"),                 _T("Lang\\mpcresources.gl.dll") },
-    { 1031,   _T("German"),                   _T("Lang\\mpcresources.de.dll") },
-    { 1032,   _T("Greek"),                    _T("Lang\\mpcresources.el.dll") },
-    { 1037,   _T("Hebrew"),                   _T("Lang\\mpcresources.he.dll") },
-    { 1038,   _T("Hungarian"),                _T("Lang\\mpcresources.hu.dll") },
-    { 1057,   _T("Indonesian"),               _T("Lang\\mpcresources.id.dll") },
-    { 1040,   _T("Italian"),                  _T("Lang\\mpcresources.it.dll") },
-    { 1041,   _T("Japanese"),                 _T("Lang\\mpcresources.ja.dll") },
-    { 1042,   _T("Korean"),                   _T("Lang\\mpcresources.ko.dll") },
-    { 1063,   _T("Lithuanian"),               _T("Lang\\mpcresources.lt.dll") },
-    { 1086,   _T("Malay"),                    _T("Lang\\mpcresources.ms_MY.dll") },
-    { 1045,   _T("Polish"),                   _T("Lang\\mpcresources.pl.dll") },
-    { 1046,   _T("Portuguese (Brazil)"),      _T("Lang\\mpcresources.pt_BR.dll") },
-    { 1094,   _T("Punjabi"),                  _T("Lang\\mpcresources.pa.dll") },
-    { 1048,   _T("Romanian"),                 _T("Lang\\mpcresources.ro.dll") },
-    { 1049,   _T("Russian"),                  _T("Lang\\mpcresources.ru.dll") },
-    { 3098,   _T("Serbian"),                  _T("Lang\\mpcresources.sr.dll") },
-    { 1051,   _T("Slovak"),                   _T("Lang\\mpcresources.sk.dll") },
-    { 1060,   _T("Slovenian"),                _T("Lang\\mpcresources.sl.dll") },
-    { 1053,   _T("Swedish"),                  _T("Lang\\mpcresources.sv.dll") },
-    { 3082,   _T("Spanish"),                  _T("Lang\\mpcresources.es.dll") },
-    { 1092,   _T("Tatar"),                    _T("Lang\\mpcresources.tt.dll") },
-    { 1054,   _T("Thai"),                     _T("Lang\\mpcresources.th_TH.dll") },
-    { 1055,   _T("Turkish"),                  _T("Lang\\mpcresources.tr.dll") },
-    { 1058,   _T("Ukrainian"),                _T("Lang\\mpcresources.uk.dll") },
-    { 1066,   _T("Vietnamese"),               _T("Lang\\mpcresources.vi.dll") }
-};
+namespace
+{
+    MPCHC_CONSTEXPR std::array<Translations::LanguageResource, 42> languageResources{{
+            { 1025,   _T("Arabic"),                   _T("Lang\\mpcresources.ar.dll") },
+            { 1067,   _T("Armenian"),                 _T("Lang\\mpcresources.hy.dll") },
+            { 1069,   _T("Basque"),                   _T("Lang\\mpcresources.eu.dll") },
+            { 1059,   _T("Belarusian"),               _T("Lang\\mpcresources.be.dll") },
+            { 1093,   _T("Bengali"),                  _T("Lang\\mpcresources.bn.dll") },
+            { 1027,   _T("Catalan"),                  _T("Lang\\mpcresources.ca.dll") },
+            { 2052,   _T("Chinese (Simplified)"),     _T("Lang\\mpcresources.zh_CN.dll") },
+            { 1028,   _T("Chinese (Traditional)"),    _T("Lang\\mpcresources.zh_TW.dll") },
+            { 1050,   _T("Croatian"),                 _T("Lang\\mpcresources.hr.dll") },
+            { 1029,   _T("Czech"),                    _T("Lang\\mpcresources.cs.dll") },
+            { 1030,   _T("Danish"),                   _T("Lang\\mpcresources.da.dll") },
+            { 1043,   _T("Dutch"),                    _T("Lang\\mpcresources.nl.dll") },
+            { 0,      _T("English"),                  nullptr },
+            { 2057,   _T("English (British)"),        _T("Lang\\mpcresources.en_GB.dll") },
+            { 1035,   _T("Finnish"),                  _T("Lang\\mpcresources.fi.dll") },
+            { 1036,   _T("French"),                   _T("Lang\\mpcresources.fr.dll") },
+            { 1110,   _T("Galician"),                 _T("Lang\\mpcresources.gl.dll") },
+            { 1031,   _T("German"),                   _T("Lang\\mpcresources.de.dll") },
+            { 1032,   _T("Greek"),                    _T("Lang\\mpcresources.el.dll") },
+            { 1037,   _T("Hebrew"),                   _T("Lang\\mpcresources.he.dll") },
+            { 1038,   _T("Hungarian"),                _T("Lang\\mpcresources.hu.dll") },
+            { 1057,   _T("Indonesian"),               _T("Lang\\mpcresources.id.dll") },
+            { 1040,   _T("Italian"),                  _T("Lang\\mpcresources.it.dll") },
+            { 1041,   _T("Japanese"),                 _T("Lang\\mpcresources.ja.dll") },
+            { 1042,   _T("Korean"),                   _T("Lang\\mpcresources.ko.dll") },
+            { 1063,   _T("Lithuanian"),               _T("Lang\\mpcresources.lt.dll") },
+            { 1086,   _T("Malay"),                    _T("Lang\\mpcresources.ms_MY.dll") },
+            { 1045,   _T("Polish"),                   _T("Lang\\mpcresources.pl.dll") },
+            { 1046,   _T("Portuguese (Brazil)"),      _T("Lang\\mpcresources.pt_BR.dll") },
+            { 1094,   _T("Punjabi"),                  _T("Lang\\mpcresources.pa.dll") },
+            { 1048,   _T("Romanian"),                 _T("Lang\\mpcresources.ro.dll") },
+            { 1049,   _T("Russian"),                  _T("Lang\\mpcresources.ru.dll") },
+            { 3098,   _T("Serbian"),                  _T("Lang\\mpcresources.sr.dll") },
+            { 1051,   _T("Slovak"),                   _T("Lang\\mpcresources.sk.dll") },
+            { 1060,   _T("Slovenian"),                _T("Lang\\mpcresources.sl.dll") },
+            { 1053,   _T("Swedish"),                  _T("Lang\\mpcresources.sv.dll") },
+            { 3082,   _T("Spanish"),                  _T("Lang\\mpcresources.es.dll") },
+            { 1092,   _T("Tatar"),                    _T("Lang\\mpcresources.tt.dll") },
+            { 1054,   _T("Thai"),                     _T("Lang\\mpcresources.th_TH.dll") },
+            { 1055,   _T("Turkish"),                  _T("Lang\\mpcresources.tr.dll") },
+            { 1058,   _T("Ukrainian"),                _T("Lang\\mpcresources.uk.dll") },
+            { 1066,   _T("Vietnamese"),               _T("Lang\\mpcresources.vi.dll") }
+        }};
+
+    LRESULT CALLBACK RTLWindowsLayoutCbtFilterHook(int code, WPARAM wParam, LPARAM lParam)
+    {
+        if (code == HCBT_CREATEWND) {
+            HWND hWnd = (HWND)wParam;
+            if ((GetWindowLongPtr(hWnd, GWL_STYLE) & WS_CHILD) == 0) {
+                SetWindowLongPtr(hWnd, GWL_EXSTYLE, GetWindowLongPtr(hWnd, GWL_EXSTYLE) | WS_EX_LAYOUTRTL);
+            }
+        }
+        return CallNextHookEx(nullptr, code, wParam, lParam);
+    }
+}
 
 Translations::LanguageResource Translations::GetLanguageResourceByLocaleID(LANGID localeID)
 {
-    Translations::LanguageResource defaultResource;
-
-    for (auto& lr : languageResources) {
+    for (const auto& lr : languageResources) {
         if (localeID == lr.localeID) {
             return lr;
-        } else if (0 == lr.localeID) {
-            defaultResource = lr;
         }
     }
 
-    return defaultResource;
+    return { 0, _T("English"), nullptr };
 }
 
 std::list<Translations::LanguageResource> Translations::GetAvailableLanguageResources()
 {
-    std::list<Translations::LanguageResource> availableResources;
+    std::list<LanguageResource> availableResources;
 
-    CString appPath = PathUtils::GetProgramPath();
+    const CString appPath = PathUtils::GetProgramPath();
 
-    for (auto& lr : languageResources) {
-        if (0 == lr.localeID || PathUtils::Exists(PathUtils::CombinePaths(appPath, lr.dllPath))) {
-            availableResources.emplace_back(lr);
-        }
-    }
+    std::copy_if(languageResources.cbegin(), languageResources.cend(),
+    std::back_inserter(availableResources), [&](const LanguageResource & lr) {
+        return 0 == lr.localeID || PathUtils::Exists(PathUtils::CombinePaths(appPath, lr.dllPath));
+    });
 
     return availableResources;
 }
@@ -106,17 +116,6 @@ LANGID Translations::SetDefaultLanguage()
     // Try to set the language resource but don't fail if it can't be loaded
     // English will we used instead in case of error
     return SetLanguage(languageResource, false) ? languageResource.localeID : 0;
-}
-
-static LRESULT CALLBACK RTLWindowsLayoutCbtFilterHook(int code, WPARAM wParam, LPARAM lParam)
-{
-    if (code == HCBT_CREATEWND) {
-        HWND hWnd = (HWND)wParam;
-        if ((GetWindowLongPtr(hWnd, GWL_STYLE) & WS_CHILD) == 0) {
-            SetWindowLongPtr(hWnd, GWL_EXSTYLE, GetWindowLongPtr(hWnd, GWL_EXSTYLE) | WS_EX_LAYOUTRTL);
-        }
-    }
-    return CallNextHookEx(nullptr, code, wParam, lParam);
 }
 
 bool Translations::SetLanguage(LanguageResource languageResource, bool showErrorMsg /*= true*/)

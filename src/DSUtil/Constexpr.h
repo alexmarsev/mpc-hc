@@ -20,10 +20,8 @@
 
 #pragma once
 
-#include "Constexpr.h"
-
-template <typename... T>
-MPCHC_CONSTEXPR std::array<typename std::common_type<T...>::type, sizeof...(T)> make_array(T&& ... values)
-{
-    return { std::forward<T>(values)... };
-}
+#if (_MSC_VER >= 1900)
+#define MPCHC_CONSTEXPR constexpr
+#else
+#define MPCHC_CONSTEXPR const
+#endif
