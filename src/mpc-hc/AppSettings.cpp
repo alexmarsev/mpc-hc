@@ -45,7 +45,6 @@ CAppSettings::CAppSettings()
     , lDVDChapter(0)
     , iMonitor(0)
     , fShowDebugInfo(false)
-    , iAdminOption(0)
     , fAllowMultipleInst(false)
     , fTrayIcon(false)
     , fShowOSD(true)
@@ -1984,7 +1983,6 @@ void CAppSettings::ParseCommandLine(CAtlList<CString>& cmdln)
     lDVDTitle = 0;
     lDVDChapter = 0;
     ZeroMemory(&DVDPosition, sizeof(DVDPosition));
-    iAdminOption = 0;
     sizeFixedWindow.SetSize(0, 0);
     iMonitor = 0;
     strPnSPreset.Empty();
@@ -2083,9 +2081,7 @@ void CAppSettings::ParseCommandLine(CAtlList<CString>& cmdln)
                 nCLSwitches |= CLSW_LOCK;
             } else if (sw == _T("d3dfs")) {
                 nCLSwitches |= CLSW_D3DFULLSCREEN;
-            } else if (sw == _T("adminoption") && pos) {
-                nCLSwitches |= CLSW_ADMINOPTION;
-                iAdminOption = _ttoi(cmdln.GetNext(pos));
+            } else if (sw == _T("adminoption")) {
             } else if (sw == _T("slave") && pos) {
                 nCLSwitches |= CLSW_SLAVE;
                 hMasterWnd = (HWND)IntToPtr(_ttoi(cmdln.GetNext(pos)));

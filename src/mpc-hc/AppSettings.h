@@ -79,8 +79,7 @@ enum : UINT64 {
     CLSW_FIXEDSIZE = CLSW_NOFOCUS << 1,
     CLSW_MONITOR = CLSW_FIXEDSIZE << 1,
     CLSW_D3DFULLSCREEN = CLSW_MONITOR << 1,
-    CLSW_ADMINOPTION = CLSW_D3DFULLSCREEN << 1,
-    CLSW_SLAVE = CLSW_ADMINOPTION << 1,
+    CLSW_SLAVE = CLSW_D3DFULLSCREEN << 2,
     CLSW_AUDIORENDERER = CLSW_SLAVE << 1,
     CLSW_RESET = CLSW_AUDIORENDERER << 1,
     CLSW_UNRECOGNIZEDSWITCH = CLSW_RESET << 1 // 35
@@ -405,7 +404,6 @@ public:
 
     // Added a Debug display to the screen (/debug option)
     bool            fShowDebugInfo;
-    int             iAdminOption;
 
 
     // Player

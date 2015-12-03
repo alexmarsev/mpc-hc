@@ -1588,24 +1588,6 @@ BOOL CMPlayerCApp::InitInstance()
         return FALSE;
     }
 
-    // Enable to open options with administrator privilege (for Vista UAC)
-    if (m_s->nCLSwitches & CLSW_ADMINOPTION) {
-        m_s->LoadSettings(); // read all settings. long time but not critical at this point
-
-        switch (m_s->iAdminOption) {
-            case CPPageFormats::IDD: {
-                CPPageSheet options(ResStr(IDS_OPTIONS_CAPTION), nullptr, nullptr, m_s->iAdminOption);
-                options.LockPage();
-                options.DoModal();
-            }
-            break;
-
-            default:
-                ASSERT(FALSE);
-        }
-        return FALSE;
-    }
-
     m_mutexOneInstance.Create(nullptr, TRUE, MPC_WND_CLASS_NAME);
 
     if (GetLastError() == ERROR_ALREADY_EXISTS &&
