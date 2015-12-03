@@ -24,6 +24,7 @@ from multiprocessing import Pool
 from UpdatePOT import *
 from UpdatePO import *
 from UpdateRC import *
+from UpdateShell import *
 
 def processRC(file):
     ret = file + '\n'
@@ -48,6 +49,10 @@ def processRC(file):
 if __name__ == '__main__':
     print 'Updating POT file'
     UpdatePOT()
+    print '----------------------'
+
+    print 'Updating Shell file'
+    UpdateShell()
     print '----------------------'
 
     pool = Pool()
