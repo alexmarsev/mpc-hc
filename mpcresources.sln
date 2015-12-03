@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mpcresources", "src\mpc-hc\
 		{904017F7-EE7A-49B6-A000-0D2FE5D5809A} = {904017F7-EE7A-49B6-A000-0D2FE5D5809A}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BuildAll", "src\mpc-hc\mpcresources\BuildAll.vcxproj", "{F0D412BF-C98E-48C7-A032-607AE043B0F7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AllTranslations", "src\mpc-hc\mpcresources\AllTranslations.vcxproj", "{F0D412BF-C98E-48C7-A032-607AE043B0F7}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SyncTranslations", "src\mpc-hc\mpcresources\SyncTranslations.vcxproj", "{904017F7-EE7A-49B6-A000-0D2FE5D5809A}"
 EndProject
