@@ -49,9 +49,6 @@ FOR %%G IN (%ARG%) DO (
   IF /I "%%G" == "API"          SET "CONFIG=API"         & SET /A ARGC+=1  & SET "NO_INST=True" & SET "NO_ZIP=True" & SET "NO_LITE=True"
   IF /I "%%G" == "MPCHC"        SET "CONFIG=MPCHC"       & SET /A ARGC+=1
   IF /I "%%G" == "MPC-HC"       SET "CONFIG=MPCHC"       & SET /A ARGC+=1
-  IF /I "%%G" == "Resources"    SET "CONFIG=Resources"   & SET /A ARGC+=1  & SET "NO_INST=True" & SET "NO_ZIP=True" & SET "NO_LITE=True"
-  IF /I "%%G" == "MPCIconLib"   SET "CONFIG=IconLib"     & SET /A ARGC+=1  & SET "NO_INST=True" & SET "NO_ZIP=True" & SET "NO_LITE=True"
-  IF /I "%%G" == "IconLib"      SET "CONFIG=IconLib"     & SET /A ARGC+=1  & SET "NO_INST=True" & SET "NO_ZIP=True" & SET "NO_LITE=True"
   IF /I "%%G" == "Debug"        SET "BUILDCFG=Debug"     & SET /A ARGBC+=1 & SET "NO_INST=True"
   IF /I "%%G" == "Release"      SET "BUILDCFG=Release"   & SET /A ARGBC+=1
   IF /I "%%G" == "VS2013"       SET "COMPILER=VS2013"    & SET /A ARGCOMP+=1
@@ -151,18 +148,10 @@ IF /I "%CONFIG%" == "Filters" (
   EXIT /B
 )
 
-IF /I "%CONFIG%" == "IconLib" (
-  CALL :SubMPCIconLib %PPLATFORM%
-  EXIT /B
-)
-
 IF /I "%CONFIG%" == "API" (
   CALL :SubMPCTestAPI %PPLATFORM%
   EXIT /B
 )
-
-IF /I "%CONFIG%" NEQ "Resources" CALL :SubMPCHC %PPLATFORM%
-IF /I "%CONFIG%" NEQ "Main"      CALL :SubResources %PPLATFORM%
 
 IF /I "%INSTALLER%" == "True" CALL :SubCreateInstaller %PPLATFORM%
 IF /I "%ZIP%" == "True"       CALL :SubCreatePackages MPC-HC %PPLATFORM%
@@ -233,41 +222,7 @@ IF DEFINED MPCHC_LITE (
 IF /I "%SIGN%" == "True" CALL :SubSign MPC-HC mpcresources.??.dll Lang
 IF /I "%SIGN%" == "True" CALL :SubSign MPC-HC mpcresources.??_??.dll Lang
 
-EXIT /B
-
-
-:SubResources
-IF %ERRORLEVEL% NEQ 0 EXIT /B
-
-IF /I "%BUILDCFG%" == "Debug" (
-  CALL "%COMMON%" :SubMsg "WARNING" "/debug was used, resources will not be built"
-  EXIT /B
-)
-
-CALL :SubMPCIconLib %1
-EXIT /B
-
-
-:SubMPCIconLib
-IF %ERRORLEVEL% NEQ 0 EXIT /B
-
-TITLE Compiling mpciconlib %COMPILER% - Release^|%1...
-MSBuild.exe mpciconlib.sln %MSBUILD_SWITCHES%^
- /target:%BUILDTYPE% /property:Configuration=Release;Platform=%1
-IF %ERRORLEVEL% NEQ 0 (
-  CALL "%COMMON%" :SubMsg "ERROR" "mpciconlib.sln %1 - Compilation failed!"
-  EXIT /B
-) ELSE (
-  CALL "%COMMON%" :SubMsg "INFO" "mpciconlib.sln %1 compiled successfully"
-)
-IF /I "%SIGN%" == "True" CALL :SubSign MPC-HC mpciconlib.dll
-
-IF /I "%1" == "Win32" (SET "VS_OUT_DIR=mpc-hc_x86") ELSE (SET "VS_OUT_DIR=mpc-hc_x64")
-IF DEFINED MPCHC_LITE (
-  PUSHD "%BIN_DIR%"
-  COPY /Y /V "%VS_OUT_DIR%\mpciconlib.dll" "%VS_OUT_DIR% Lite" >NUL
-  POPD
-)
+IF /I "%SIGN%" == "True" CALL :SubSign MPC-HC shellres.dll
 
 EXIT /B
 
@@ -430,7 +385,7 @@ IF /I "%NAME%" == "MPC-HC" (
   ) ELSE (
     COPY /Y /V "%VS_OUT_DIR%\mpc-hc.exe"   "%PCKG_NAME%\mpc-hc.exe" >NUL
   )
-  COPY /Y /V "%VS_OUT_DIR%\mpciconlib.dll"                "%PCKG_NAME%\*.dll" >NUL
+  COPY /Y /V "%VS_OUT_DIR%\shellres.dll"                  "%PCKG_NAME%\*.dll" >NUL
   IF NOT DEFINED MPCHC_LITE (
     COPY /Y /V "%VS_OUT_DIR%\Lang\mpcresources.??.dll"    "%PCKG_NAME%\Lang\" >NUL
     COPY /Y /V "%VS_OUT_DIR%\Lang\mpcresources.??_??.dll" "%PCKG_NAME%\Lang\" >NUL
