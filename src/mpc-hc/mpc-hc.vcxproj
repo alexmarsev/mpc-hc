@@ -681,6 +681,9 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
+    <ProjectReference Include="mpcresources\BuildAll.vcxproj">
+      <Project>{f0d412bf-c98e-48c7-a032-607ae043b0f7}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\check_all.bmp" />
