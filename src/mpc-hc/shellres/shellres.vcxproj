@@ -64,6 +64,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
+      <PreprocessorDefinitions Condition="'$(Configuration)'=='Debug Lite' Or '$(Configuration)'=='Release Lite'">LITE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ResourceCompile>
