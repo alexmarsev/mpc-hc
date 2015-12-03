@@ -681,7 +681,7 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
-    <ProjectReference Include="mpcresources\BuildAll.vcxproj">
+    <ProjectReference Include="mpcresources\AllTranslations.vcxproj">
       <Project>{f0d412bf-c98e-48c7-a032-607ae043b0f7}</Project>
     </ProjectReference>
   </ItemGroup>
