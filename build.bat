@@ -52,7 +52,6 @@ FOR %%G IN (%ARG%) DO (
   IF /I "%%G" == "Resources"    SET "CONFIG=Resources"   & SET /A ARGC+=1  & SET "NO_INST=True" & SET "NO_ZIP=True" & SET "NO_LITE=True"
   IF /I "%%G" == "MPCIconLib"   SET "CONFIG=IconLib"     & SET /A ARGC+=1  & SET "NO_INST=True" & SET "NO_ZIP=True" & SET "NO_LITE=True"
   IF /I "%%G" == "IconLib"      SET "CONFIG=IconLib"     & SET /A ARGC+=1  & SET "NO_INST=True" & SET "NO_ZIP=True" & SET "NO_LITE=True"
-  IF /I "%%G" == "Translations" SET "CONFIG=Translation" & SET /A ARGC+=1  & SET "NO_INST=True" & SET "NO_ZIP=True" & SET "NO_LITE=True"
   IF /I "%%G" == "Debug"        SET "BUILDCFG=Debug"     & SET /A ARGBC+=1 & SET "NO_INST=True"
   IF /I "%%G" == "Release"      SET "BUILDCFG=Release"   & SET /A ARGBC+=1
   IF /I "%%G" == "VS2013"       SET "COMPILER=VS2013"    & SET /A ARGCOMP+=1
@@ -157,11 +156,6 @@ IF /I "%CONFIG%" == "IconLib" (
   EXIT /B
 )
 
-IF /I "%CONFIG%" == "Translation" (
-  CALL :SubMPCRresources %PPLATFORM%
-  EXIT /B
-)
-
 IF /I "%CONFIG%" == "API" (
   CALL :SubMPCTestAPI %PPLATFORM%
   EXIT /B
@@ -231,6 +225,14 @@ IF /I "%SIGN%" == "True" CALL :SubSign MPC-HC *.dll %LAVFILTERSDIR%
 IF /I "%SIGN%" == "True" CALL :SubSign MPC-HC *.ax %LAVFILTERSDIR%
 IF /I "%SIGN%" == "True" CALL :SubSign MPC-HC CrashReporterDialog.dll CrashReporter
 
+IF DEFINED MPCHC_LITE (
+  CALL "%COMMON%" :SubMsg "WARNING" "/lite was used, translations will not be built"
+  EXIT /B
+)
+
+IF /I "%SIGN%" == "True" CALL :SubSign MPC-HC mpcresources.??.dll Lang
+IF /I "%SIGN%" == "True" CALL :SubSign MPC-HC mpcresources.??_??.dll Lang
+
 EXIT /B
 
 
@@ -243,13 +245,6 @@ IF /I "%BUILDCFG%" == "Debug" (
 )
 
 CALL :SubMPCIconLib %1
-
-IF DEFINED MPCHC_LITE (
-  CALL "%COMMON%" :SubMsg "WARNING" "/lite was used, translations will not be built"
-  EXIT /B
-)
-
-CALL :SubMPCRresources %1
 EXIT /B
 
 
@@ -274,18 +269,6 @@ IF DEFINED MPCHC_LITE (
   POPD
 )
 
-EXIT /B
-
-
-:SubMPCRresources
-IF %ERRORLEVEL% NEQ 0 EXIT /B
-
-TITLE Compiling mpcresources %COMPILER%...
-MSBuild.exe mpcresources.sln %MSBUILD_SWITCHES%^
- /target:%BUILDTYPE% /property:Configuration="Release";Platform=%1
-IF %ERRORLEVEL% NEQ 0 CALL "%COMMON%" :SubMsg "ERROR" "Compilation failed!" & EXIT /B
-IF /I "%SIGN%" == "True" CALL :SubSign MPC-HC mpcresources.??.dll Lang
-IF /I "%SIGN%" == "True" CALL :SubSign MPC-HC mpcresources.??_??.dll Lang
 EXIT /B
 
 
