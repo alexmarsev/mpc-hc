@@ -213,6 +213,7 @@ IF /I "%SIGN%" == "True" CALL :SubSign MPC-HC mpc-hc*.exe
 IF /I "%SIGN%" == "True" CALL :SubSign MPC-HC *.dll %LAVFILTERSDIR%
 IF /I "%SIGN%" == "True" CALL :SubSign MPC-HC *.ax %LAVFILTERSDIR%
 IF /I "%SIGN%" == "True" CALL :SubSign MPC-HC CrashReporterDialog.dll CrashReporter
+IF /I "%SIGN%" == "True" CALL :SubSign MPC-HC shellres.dll
 
 IF DEFINED MPCHC_LITE (
   CALL "%COMMON%" :SubMsg "WARNING" "/lite was used, translations will not be built"
@@ -221,8 +222,6 @@ IF DEFINED MPCHC_LITE (
 
 IF /I "%SIGN%" == "True" CALL :SubSign MPC-HC mpcresources.??.dll Lang
 IF /I "%SIGN%" == "True" CALL :SubSign MPC-HC mpcresources.??_??.dll Lang
-
-IF /I "%SIGN%" == "True" CALL :SubSign MPC-HC shellres.dll
 
 EXIT /B
 
