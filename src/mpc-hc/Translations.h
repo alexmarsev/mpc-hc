@@ -27,12 +27,6 @@
 namespace Translations
 {
     struct LanguageResource {
-        MPCHC_CONSTEXPR LanguageResource(LANGID localeID, LPCTSTR name, LPCTSTR dllPath)
-            : localeID(localeID)
-            , name(name)
-            , dllPath(dllPath)
-        {};
-
         LANGID localeID; // Check http://msdn.microsoft.com/en-us/goglobal/bb964664
         LPCTSTR name;
         LPCTSTR dllPath;
@@ -43,5 +37,5 @@ namespace Translations
     std::list<LanguageResource> GetAvailableLanguageResources();
 
     LANGID SetDefaultLanguage();
-    bool SetLanguage(LanguageResource languageResource, bool showErrorMsg = true);
+    bool SetLanguage(LANGID localeID, bool showErrorMsg = true);
 };
